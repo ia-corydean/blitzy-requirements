@@ -108,6 +108,161 @@ class PolicyService
         
         return $policy;
     }
+    
+    public function cancelPolicy(Policy $policy, string $reason): Policy
+    {
+        // Business rule validation
+        if (!$policy->canBeCanceled()) {
+            throw new PolicyCannotBeCanceledException();
+        }
+        
+        // Update status
+        $policy->cancel($reason);
+        
+        // Evaluate reinstatement eligibility
+        if ($this->isEligibleForReinstatement($policy, $reason)) {
+            $policy->markEligibleForReinstatement();
+            $this->scheduleReinstatementExpiration($policy);
+        }
+        
+        // Dispatch events
+        event(new PolicyCanceled($policy));
+        
+        return $policy;
+    }
+    
+    public function validateReinstatementEligibility(Policy $policy): ReinstatementEligibility
+    {
+        // Check cancellation reason eligibility
+        if (!in_array($policy->cancellation_reason, $this->getEligibleCancellationReasons())) {
+            return ReinstatementEligibility::ineligible('Cancellation reason not eligible for reinstatement');
+        }
+        
+        // Check time window
+        $program = $policy->program;
+        $windowExpiration = $policy->cancelled_at->addDays($program->reinstatement_window_days);
+        
+        if (now()->isAfter($windowExpiration)) {
+            return ReinstatementEligibility::ineligible('Reinstatement window has expired');
+        }
+        
+        // Check policy status
+        if (!$policy->status->isEligibleForReinstatement()) {
+            return ReinstatementEligibility::ineligible('Policy status not eligible for reinstatement');
+        }
+        
+        return ReinstatementEligibility::eligible();
+    }
+    
+    public function calculateReinstatementAmount(Policy $policy, Carbon $reinstatementDate): ReinstatementCalculation
+    {
+        // Calculate daily premium rate
+        $totalPremium = $policy->total_premium;
+        $totalDays = $policy->effective_date->diffInDays($policy->expiration_date);
+        $dailyRate = $totalPremium / $totalDays;
+        
+        // Calculate lapse period
+        $lapseDays = $policy->cancelled_at->diffInDays($reinstatementDate);
+        $lapsedPremium = $dailyRate * $lapseDays;
+        
+        // Calculate adjusted premium
+        $adjustedPremium = $totalPremium - $lapsedPremium;
+        
+        // Add unpaid amounts and fees
+        $unpaidPremium = $policy->getUnpaidPremium();
+        $reinstatementFees = $this->calculateReinstatementFees($policy);
+        
+        $totalDue = $adjustedPremium + $unpaidPremium + $reinstatementFees;
+        
+        return new ReinstatementCalculation([
+            'original_premium' => $totalPremium,
+            'daily_rate' => $dailyRate,
+            'lapse_days' => $lapseDays,
+            'lapsed_premium' => $lapsedPremium,
+            'adjusted_premium' => $adjustedPremium,
+            'unpaid_premium' => $unpaidPremium,
+            'reinstatement_fees' => $reinstatementFees,
+            'total_due' => $totalDue,
+        ]);
+    }
+    
+    public function processReinstatement(Policy $policy, Payment $payment): Policy
+    {
+        // Validate eligibility
+        $eligibility = $this->validateReinstatementEligibility($policy);
+        if (!$eligibility->isEligible()) {
+            throw new PolicyReinstatementNotEligibleException($eligibility->reason);
+        }
+        
+        // Validate payment amount
+        $calculation = $this->calculateReinstatementAmount($policy, $payment->paid_at);
+        if (!$payment->amount->equals($calculation->total_due)) {
+            throw new InvalidReinstatementPaymentException();
+        }
+        
+        // Process reinstatement
+        $policy->reinstate($payment->paid_at);
+        
+        // Restructure payment schedule
+        $this->restructurePaymentSchedule($policy, $calculation);
+        
+        // Generate documents
+        $this->documentService->generateReinstatementDocuments($policy);
+        
+        // Dispatch events
+        event(new PolicyReinstated($policy));
+        
+        return $policy;
+    }
+    
+    private function isEligibleForReinstatement(Policy $policy, string $reason): bool
+    {
+        return in_array($reason, $this->getEligibleCancellationReasons());
+    }
+    
+    private function getEligibleCancellationReasons(): array
+    {
+        // Program-configurable eligible reasons
+        return ['NONPAYMENT']; // Default, can be extended per program
+    }
+    
+    private function scheduleReinstatementExpiration(Policy $policy): void
+    {
+        $program = $policy->program;
+        $expirationDate = $policy->cancelled_at->addDays($program->reinstatement_window_days);
+        
+        // Schedule job to expire reinstatement eligibility
+        ReinstatementExpirationJob::dispatch($policy)
+            ->delay($expirationDate);
+    }
+    
+    private function calculateReinstatementFees(Policy $policy): Money
+    {
+        $program = $policy->program;
+        $reinstatementFee = $program->reinstatement_fee ?? Money::zero();
+        $endorsementFee = $program->endorsement_fee ?? Money::zero();
+        
+        return $reinstatementFee->add($endorsementFee);
+    }
+    
+    private function restructurePaymentSchedule(Policy $policy, ReinstatementCalculation $calculation): void
+    {
+        // Get remaining installments
+        $remainingInstallments = $policy->getRemainingInstallments();
+        
+        if ($remainingInstallments->isEmpty()) {
+            return; // No remaining payments to restructure
+        }
+        
+        // Calculate per-installment amount
+        $remainingBalance = $calculation->total_due->subtract($calculation->unpaid_premium);
+        $installmentAmount = $remainingBalance->divide($remainingInstallments->count());
+        
+        // Update installment amounts
+        foreach ($remainingInstallments as $installment) {
+            $installment->update(['amount' => $installmentAmount]);
+        }
+    }
 }
 ```
 
@@ -527,3 +682,11 @@ class PolicyApiTest extends TestCase
     }
 }
 ```
+
+## Cross-References
+
+### Related Global Requirements
+- **GR-64**: Policy Reinstatement with Lapse Process - Business logic patterns for reinstatement service methods
+- **GR-18**: Workflow Requirements - Integration with workflow event handling
+- **GR-37**: Action Tracking - Audit trail requirements for business operations
+- **GR-63**: Aguila Dorada Program - Program-specific business rule implementations

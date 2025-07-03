@@ -91,6 +91,7 @@ This document serves as a high-level guide and reference aggregator, pointing to
 - **Component-Based Security** → See GR-52
 
 ### Workflow & Business Logic
+- **Policy Reinstatement Process** → See GR-64
 - **Workflow Requirements** → See GR-18
 - **Business Logic Standards** → See GR-20
 - **Locking & Action Tracking** → See GR-37
@@ -110,6 +111,7 @@ This document serves as a high-level guide and reference aggregator, pointing to
 - **Compliance & Audit** → See GR-51
 - **Documentation Standards** → See GR-14
 - **API Gateway Architecture** → See GR-47
+- **SR22/SR26 Financial Responsibility Filing** → See GR-10
 
 ## Section C Requirements (Backend Mappings)
 
@@ -149,7 +151,9 @@ Group tables by type in this order:
 ## Quality Checklist
 
 ### Pre-Implementation
-- [ ] **Review applicable global requirements** (GR-52, GR-48, GR-44, GR-41, GR-19)
+- [ ] **Review applicable global requirements** (GR-52, GR-48, GR-44, GR-41, GR-19, GR-64)
+- [ ] **Check GR-64 for reinstatement patterns** if policy lifecycle involved
+- [ ] **Check SR22/SR26 filing requirements** if financial responsibility filing needed (GR-10)
 - [ ] **Check domain-specific approved requirements** for reusable patterns
 - [ ] **Review infrastructure codebase** for existing implementations
 - [ ] **Check if entity is external** - Use universal entity pattern if so (GR-52)

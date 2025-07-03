@@ -230,6 +230,169 @@ const updatePolicyInCache = (policyId: string, updates: Partial<Policy>) => {
 };
 ```
 
+### Policy Reinstatement State Management
+
+#### Reinstatement Hooks
+```typescript
+// Custom hooks for policy reinstatement workflow (GR-64)
+
+// Hook for checking reinstatement eligibility
+const useReinstatementEligibility = (policyId: string) => {
+  return useQuery({
+    queryKey: ['policy', policyId, 'reinstatement-eligibility'],
+    queryFn: () => api.checkReinstatementEligibility(policyId),
+    refetchInterval: 60000, // Check every minute for time-sensitive eligibility
+    enabled: !!policyId,
+  });
+};
+
+// Hook for reinstatement calculation
+const useReinstatementCalculation = (policyId: string, reinstatementDate?: Date) => {
+  return useQuery({
+    queryKey: ['policy', policyId, 'reinstatement-calculation', reinstatementDate],
+    queryFn: () => api.calculateReinstatementAmount(policyId, reinstatementDate),
+    enabled: !!policyId && !!reinstatementDate,
+    staleTime: 5 * 60 * 1000, // 5 minutes - calculations change with time
+  });
+};
+
+// Hook for processing reinstatement
+const useReinstatementProcess = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ policyId, paymentData }: { policyId: string; paymentData: PaymentData }) =>
+      api.processReinstatement(policyId, paymentData),
+    onSuccess: (data, variables) => {
+      // Update policy status in cache
+      queryClient.setQueryData(['policy', variables.policyId], (old: Policy) => ({
+        ...old,
+        status: 'ACTIVE',
+        effective_date: data.new_effective_date,
+        reinstatement_date: data.reinstatement_date,
+      }));
+      
+      // Invalidate related queries
+      queryClient.invalidateQueries(['policy', variables.policyId, 'reinstatement-eligibility']);
+      queryClient.invalidateQueries(['policies']);
+    },
+    onError: (error) => {
+      // Handle reinstatement processing errors
+      console.error('Reinstatement processing failed:', error);
+    },
+  });
+};
+
+// Hook for reinstatement eligibility countdown
+const useReinstatementCountdown = (policy: Policy) => {
+  const [timeRemaining, setTimeRemaining] = useState<{
+    days: number;
+    hours: number;
+    minutes: number;
+    expired: boolean;
+  }>({ days: 0, hours: 0, minutes: 0, expired: true });
+
+  useEffect(() => {
+    if (!policy?.cancelled_at || !policy?.program?.reinstatement_window_days) {
+      return;
+    }
+
+    const updateCountdown = () => {
+      const cancelledAt = new Date(policy.cancelled_at);
+      const expirationDate = new Date(cancelledAt);
+      expirationDate.setDate(expirationDate.getDate() + policy.program.reinstatement_window_days);
+      
+      const now = new Date();
+      const diff = expirationDate.getTime() - now.getTime();
+      
+      if (diff <= 0) {
+        setTimeRemaining({ days: 0, hours: 0, minutes: 0, expired: true });
+        return;
+      }
+      
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      
+      setTimeRemaining({ days, hours, minutes, expired: false });
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, [policy?.cancelled_at, policy?.program?.reinstatement_window_days]);
+
+  return timeRemaining;
+};
+```
+
+#### Reinstatement Form State
+```typescript
+// Form data for reinstatement process
+interface ReinstatementFormData {
+  policyId: string;
+  reinstatementDate: Date;
+  paymentMethod: PaymentMethod;
+  paymentAmount: number;
+  acknowledgements: {
+    noBackdating: boolean;
+    feesAccepted: boolean;
+    scheduleUpdated: boolean;
+  };
+}
+
+// Reinstatement form component with state management
+const ReinstatementForm: React.FC<{ policy: Policy }> = ({ policy }) => {
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<ReinstatementFormData>({
+    defaultValues: {
+      policyId: policy.id,
+      reinstatementDate: new Date(),
+      acknowledgements: {
+        noBackdating: false,
+        feesAccepted: false,
+        scheduleUpdated: false,
+      },
+    },
+    resolver: yupResolver(reinstatementSchema),
+  });
+
+  const reinstatementDate = watch('reinstatementDate');
+  
+  // Get real-time calculation based on selected date
+  const { data: calculation, isLoading: calculationLoading } = useReinstatementCalculation(
+    policy.id,
+    reinstatementDate
+  );
+  
+  // Update payment amount when calculation changes
+  useEffect(() => {
+    if (calculation?.total_due) {
+      setValue('paymentAmount', calculation.total_due);
+    }
+  }, [calculation, setValue]);
+
+  const reinstatementMutation = useReinstatementProcess();
+
+  const onSubmit = async (data: ReinstatementFormData) => {
+    await reinstatementMutation.mutateAsync({
+      policyId: data.policyId,
+      paymentData: {
+        amount: data.paymentAmount,
+        method: data.paymentMethod,
+        date: data.reinstatementDate,
+      },
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {/* Form implementation */}
+    </form>
+  );
+};
+```
+
 ## Form State Management
 
 ### React Hook Form Integration
@@ -432,3 +595,11 @@ test('fetches policies successfully', async () => {
   expect(result.current.data).toHaveLength(10);
 });
 ```
+
+## Cross-References
+
+### Related Global Requirements
+- **GR-64**: Policy Reinstatement with Lapse Process - Frontend state management patterns for reinstatement workflow
+- **GR-18**: Workflow Requirements - Integration with workflow state transitions
+- **GR-20**: Business Logic Standards - API integration for state management hooks
+- **GR-37**: Action Tracking - State updates tracking for audit compliance

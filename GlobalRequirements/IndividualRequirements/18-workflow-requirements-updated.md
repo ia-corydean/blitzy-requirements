@@ -579,6 +579,9 @@ class WorkflowEventListener
             'policy_bound' => $this->handlePolicyBound($event->policy),
             'policy_cancelled' => $this->handlePolicyCancelled($event->policy),
             'policy_renewed' => $this->handlePolicyRenewed($event->policy),
+            'policy_reinstatement_eligible' => $this->handleReinstatementEligible($event->policy),
+            'policy_reinstated' => $this->handlePolicyReinstated($event->policy),
+            'policy_reinstatement_expired' => $this->handleReinstatementExpired($event->policy),
             default => null
         };
         
@@ -608,6 +611,48 @@ class WorkflowEventListener
         
         // 5. Schedule first payment reminder
         $this->schedulePaymentReminder($policy);
+    }
+    
+    private function handleReinstatementEligible(Policy $policy): void
+    {
+        // 1. Calculate reinstatement window expiration
+        $this->scheduleReinstatementExpiration($policy);
+        
+        // 2. Send reinstatement notification
+        $this->sendReinstatementNotification($policy);
+        
+        // 3. Create reinstatement calculation record
+        $this->createReinstatementCalculation($policy);
+    }
+    
+    private function handlePolicyReinstated(Policy $policy): void
+    {
+        // 1. Restore billing schedule with adjusted dates
+        $this->restoreBillingSchedule($policy);
+        
+        // 2. Generate reinstatement documents
+        $this->generateReinstatementDocuments($policy);
+        
+        // 3. Send reinstatement confirmation
+        $this->sendReinstatementConfirmation($policy);
+        
+        // 4. Update agent commissions for reinstated policy
+        $this->updateAgentCommissionForReinstatement($policy);
+        
+        // 5. Resume automated payment reminders
+        $this->resumePaymentReminders($policy);
+    }
+    
+    private function handleReinstatementExpired(Policy $policy): void
+    {
+        // 1. Mark policy as ineligible for reinstatement
+        $this->markReinstatementExpired($policy);
+        
+        // 2. Send expiration notification
+        $this->sendReinstatementExpirationNotification($policy);
+        
+        // 3. Archive reinstatement records
+        $this->archiveReinstatementRecords($policy);
     }
 }
 ```
@@ -1026,5 +1071,13 @@ class WorkflowAnalyticsService
     }
 }
 ```
+
+## Cross-References
+
+### Related Global Requirements
+- **GR-64**: Policy Reinstatement with Lapse Process - Reinstatement workflow state transitions and event handling
+- **GR-20**: Business Logic Standards - Service architecture for workflow processing
+- **GR-37**: Action Tracking - Comprehensive audit trail requirements
+- **GR-09**: State Management - Frontend workflow state management patterns
 
 This comprehensive workflow requirements document provides the complete framework for managing complex insurance business processes with full audit trails, automated processing capabilities, and regulatory compliance features integrated into the Laravel 11.x+ and React 18+ application architecture.

@@ -251,12 +251,14 @@
 ### TexasSure - FRVP
 - **Purpose**: Texas insurance verification
 - **Integration Type**: REST API + Batch
+- **SR22/SR26 Support**: Supports GR-10 SR22/SR26 filing requirements
 - **Requirements**:
   - Real-time verification API
   - Daily batch updates
   - Weekly full extracts
   - Monthly reconciliation
-- **Compliance**: Texas DOT requirements
+  - SR22/SR26 filing data submission
+- **Compliance**: Texas DOT requirements, GR-10 compliance framework
 - **Penalties**: Automated fine avoidance
 
 ## Integration Monitoring and Management

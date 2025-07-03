@@ -177,6 +177,53 @@ class PolicyManagementService
             return $policy;
         });
     }
+    
+    /**
+     * Reinstate canceled policy within eligibility window (GR-64)
+     */
+    public function reinstatePolicy(Policy $policy, ReinstatementRequest $request): Policy
+    {
+        return DB::transaction(function () use ($policy, $request) {
+            // Validate reinstatement eligibility
+            $eligibility = $this->validateReinstatementEligibility($policy);
+            if (!$eligibility->isEligible()) {
+                throw new PolicyReinstatementNotEligibleException($eligibility->reason);
+            }
+            
+            // Calculate reinstatement amount
+            $calculation = $this->calculateReinstatementAmount($policy, $request->reinstatement_date);
+            
+            // Process payment
+            $payment = $this->processReinstatementPayment($policy, $calculation, $request->payment_data);
+            
+            // Update policy status and dates
+            $policy->update([
+                'status_id' => $this->getStatusId('ACTIVE'),
+                'effective_date' => $request->reinstatement_date,
+                'reinstatement_date' => $request->reinstatement_date,
+                'reinstatement_calculation_id' => $calculation->id,
+            ]);
+            
+            // Restructure billing schedule
+            $this->restructurePaymentSchedule($policy, $calculation);
+            
+            // Generate reinstatement documents
+            $this->generateReinstatementDocuments($policy);
+            
+            // Send notifications
+            $this->sendReinstatementConfirmation($policy);
+            
+            // Log reinstatement action
+            $this->logAction('policy_reinstated', $policy->id, [
+                'policy_number' => $policy->policy_number,
+                'reinstatement_date' => $request->reinstatement_date,
+                'total_amount_paid' => $calculation->total_due,
+                'lapse_days' => $calculation->lapse_days
+            ]);
+            
+            return $policy;
+        });
+    }
 }
 ```
 
@@ -465,5 +512,13 @@ class ActionLoggingService
 - **State Insurance Regulations**: Compliance with state-specific requirements
 - **Data Privacy**: GDPR, CCPA, and other privacy regulation compliance
 - **Business Continuity**: Disaster recovery and business continuity planning
+
+## Cross-References
+
+### Related Global Requirements
+- **GR-64**: Policy Reinstatement with Lapse Process - Functional requirements for policy reinstatement capabilities
+- **GR-18**: Workflow Requirements - Integration with workflow management systems
+- **GR-20**: Business Logic Standards - Service architecture and business rule implementation
+- **GR-37**: Action Tracking - Comprehensive audit trail for policy lifecycle events
 
 This comprehensive functional requirements document provides the complete blueprint for a modern, scalable, and compliant insurance management system that supports the evolution from monolith to microservices while maintaining operational excellence and regulatory compliance.

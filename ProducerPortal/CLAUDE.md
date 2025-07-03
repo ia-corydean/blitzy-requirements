@@ -369,6 +369,28 @@ Based on **GR-44 template categories**:
 - **Correlation tracking**: Link related communications across workflows
 - **Retention policies**: 7-year retention for insurance compliance
 
+## Policy Reinstatement Patterns (GR-64)
+
+### Reinstatement Workflow
+- **30-day eligibility window** for nonpayment cancellations
+- **Premium recalculation** based on lapse period using daily rate methodology
+- **Payment-triggered reinstatement** processing with real-time effective dates
+- **Installment schedule restructuring** for remaining payment periods
+- **No backdating** - coverage effective from reinstatement date only
+
+### Service Layer Integration
+- **ReinstatementService** for business logic following GR-20 patterns
+- **Integration with existing PolicyService** for consistency
+- **Payment processing coordination** using established PaymentService
+- **Audit trail requirements** following GR-37 action tracking
+- **SR22 status continuity** during reinstatement (GR-10 integration)
+
+### State Management Patterns
+- **Real-time eligibility checking** with countdown timers
+- **Dynamic premium calculation** based on reinstatement date
+- **Form state management** with validation and acknowledgments
+- **Cache invalidation** for policy status and calculation updates
+
 ## Anti-Patterns to Avoid
 
 ### DON'T

@@ -455,6 +455,47 @@ Implement comprehensive DCS data privacy controls with 7-year retention and PII 
 - Requires additional storage and processing overhead
 - Complex data lifecycle management
 
+## ADR-030: Policy Reinstatement Architecture
+**Date**: 2025-01-07  
+**Status**: ✅ Accepted  
+**Requirement**: GR-64 Policy Reinstatement with Lapse Process
+
+### Context
+Need to implement policy reinstatement functionality following Global Requirement patterns while maintaining consistency with existing policy lifecycle architecture. Policy reinstatement allows customers to restore canceled policies within a specified time window, subject to specific business rules and premium adjustments.
+
+### Decision
+Implement reinstatement using existing workflow patterns from GR-18 and business logic patterns from GR-20, extending PolicyService with dedicated reinstatement methods and integrating with established audit and payment processing systems.
+
+### Rationale
+- Reuses proven policy lifecycle patterns from GR-18 workflow requirements
+- Maintains consistency with existing architecture established in ADR-024, ADR-025, ADR-027
+- Leverages existing payment processing infrastructure from PaymentService patterns
+- Follows established audit and logging requirements from GR-37
+- Integrates with SR22 filing system (GR-10) without requiring new filings
+- Supports program-specific business rules through configuration hierarchy
+
+### Consequences
+**Positive:**
+- Extends existing services rather than creating new architecture
+- Maintains consistency with established policy workflow patterns
+- Leverages existing payment and document generation infrastructure
+- Comprehensive audit trail through established action tracking
+- Integration with SR22 system maintains regulatory compliance
+
+**Negative:**
+- Additional complexity in policy state management with new reinstatement states
+- Premium calculation logic requires time-sensitive adjustments
+- But: Complexity managed through existing service layer patterns
+
+### Implementation References
+- **Business Logic** → See GR-20 PolicyService reinstatement methods
+- **Workflow Integration** → See GR-18 reinstatement state transitions
+- **Database Schema** → See GR-41 reinstatement calculation table
+- **Action Tracking** → See GR-37 reinstatement audit requirements
+- **SR22 Integration** → See GR-10 reinstatement impact on filing status
+
+---
+
 ## ADR-024: Laravel Infrastructure Standards
 **Date**: 2025-01-07  
 **Status**: ✅ Accepted  

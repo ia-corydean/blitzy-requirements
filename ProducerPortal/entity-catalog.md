@@ -371,10 +371,11 @@ Based on Universal Entity Management patterns from GR-52:
 
 #### policy
 - **Purpose**: Insurance policy contracts
-- **Key Fields**: policy_prefix_id, number, policy_type_id, effective_date, expiration_date, status_id
+- **Key Fields**: policy_prefix_id, number, policy_type_id, effective_date, expiration_date, status_id, cancellation_reason, reinstatement_date
 - **Infrastructure Pattern**: Laravel Eloquent model with SoftDeletes
-- **Relationships**: Has many transactions, belongs to policy_type and policy_prefix
-- **Current Usage**: Insured Portal, payment processing
+- **Relationships**: Has many transactions, belongs to policy_type and policy_prefix, has many reinstatement_calculations
+- **Current Usage**: Insured Portal, payment processing, reinstatement workflow
+- **Reinstatement Support**: Supports GR-64 reinstatement process with status tracking and premium calculations
 
 #### user 
 - **Purpose**: System users (policyholders, agents, staff)
@@ -403,6 +404,14 @@ Based on Universal Entity Management patterns from GR-52:
 - **Infrastructure Pattern**: Eloquent model with audit fields
 - **Relationships**: Belongs to policy via map table
 - **Current Usage**: Premium calculations, financial reporting
+
+#### reinstatement_calculation
+- **Purpose**: Stores reinstatement premium calculations for audit and replay
+- **Key Fields**: policy_id, cancellation_date, reinstatement_date, original_premium, lapse_days, adjusted_premium, total_due
+- **Infrastructure Pattern**: Laravel Eloquent model with audit fields
+- **Relationships**: Belongs to policy
+- **Current Usage**: Reinstatement workflow, audit trails, premium adjustments
+- **Requirements**: GR-64 Policy Reinstatement with Lapse Process
 
 ### Document Management Entities
 
@@ -806,6 +815,7 @@ Based on Universal Entity Management patterns from GR-52:
 - **External Integrations** (GR-48): Follow Apache Camel integration patterns
 - **Database Standards** (GR-41): Follow table schema requirements and naming conventions
 - **Security Components** (GR-52): Use system_component for permission-based access control
+- **Policy Reinstatement** (GR-64): Use reinstatement_calculation for premium calculations and audit trails
 
 ### Common Reusable Patterns
 - **External Entities**: entity/entity_type/entity_category with JSON metadata schemas

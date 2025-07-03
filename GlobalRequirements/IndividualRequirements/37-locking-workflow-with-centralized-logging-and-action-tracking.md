@@ -119,3 +119,52 @@
     - Locks, actions, and entity updates must be wrapped in a database transaction to prevent partial writes.
 3. Role-Based Lock Overrides
     - Certain user roles (e.g., managers, administrators) can override locks when necessary.
+
+### 37.4 Policy Reinstatement Action Types
+
+To support comprehensive audit trails for policy reinstatement processes (GR-64), the following action types must be tracked:
+
+1. **Reinstatement Process Actions**
+    - **POLICY_REINSTATEMENT_ELIGIBILITY_EVALUATED** - When reinstatement eligibility is checked
+        - Description: "Evaluated reinstatement eligibility for Policy #123 - [Result: Eligible/Ineligible]"
+        - Metadata: eligibility_reason, time_window_remaining, cancellation_reason
+    
+    - **POLICY_REINSTATEMENT_CALCULATION_PERFORMED** - When premium calculation is done
+        - Description: "Calculated reinstatement amount for Policy #123 - Total Due: $XXX.XX"
+        - Metadata: original_premium, lapse_days, adjusted_premium, fees, total_due
+    
+    - **POLICY_REINSTATEMENT_PAYMENT_RECEIVED** - When reinstatement payment is processed
+        - Description: "Received reinstatement payment for Policy #123 - Amount: $XXX.XX"
+        - Metadata: payment_method, payment_amount, payment_reference
+    
+    - **POLICY_REINSTATEMENT_COMPLETED** - When reinstatement is successfully processed
+        - Description: "Policy #123 successfully reinstated with effective date [DATE]"
+        - Metadata: new_effective_date, payment_schedule_updated, documents_generated
+    
+    - **POLICY_REINSTATEMENT_FAILED** - When reinstatement processing fails
+        - Description: "Policy #123 reinstatement failed - [Reason]"
+        - Metadata: failure_reason, validation_errors, attempted_amount
+    
+    - **POLICY_REINSTATEMENT_ELIGIBILITY_EXPIRED** - When reinstatement window expires
+        - Description: "Policy #123 reinstatement eligibility expired after [X] days"
+        - Metadata: cancellation_date, expiration_date, window_days
+
+2. **Action Logging Requirements**
+    - All reinstatement actions must include policy_id in the record_id field
+    - User accountability must be maintained for manual actions vs. system-triggered actions
+    - Financial amounts must be logged with full precision for audit compliance
+    - Time-sensitive actions must include precise timestamps for regulatory reporting
+
+3. **Integration with Locking System**
+    - Policy records must be locked during reinstatement processing to prevent concurrent modifications
+    - Lock type: "REINSTATEMENT_PROCESSING" to distinguish from regular editing locks
+    - Lock duration: Automatic release upon completion or failure
+    - Lock override: Allow administrative override for exceptional circumstances
+
+## Cross-References
+
+### Related Global Requirements
+- **GR-64**: Policy Reinstatement with Lapse Process - Comprehensive reinstatement audit requirements
+- **GR-18**: Workflow Requirements - Integration with workflow event tracking
+- **GR-20**: Business Logic Standards - Service-level action logging patterns
+- **GR-41**: Table Schema Requirements - Database schema for action tracking
