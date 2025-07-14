@@ -2,12 +2,13 @@
 
 ## Overview
 
-This guide provides practical instructions for using the multi-agent requirements generation system. Whether you're creating new requirements, reviewing existing ones, or working across multiple domains, this guide will help you navigate the system effectively.
+This guide provides practical instructions for using the simplified 5-agent requirements generation system with mandatory approval workflow. The system emphasizes simplification, pattern reuse, and human oversight to ensure high-quality requirements.
 
 ## Table of Contents
 
 - [Getting Started](#getting-started)
 - [Submitting Requirements](#submitting-requirements)
+- [Approval Workflow](#approval-workflow)
 - [Understanding the Queue System](#understanding-the-queue-system)
 - [Working with Different Domains](#working-with-different-domains)
 - [Quality Checklist and Validation](#quality-checklist-and-validation)
@@ -17,165 +18,281 @@ This guide provides practical instructions for using the multi-agent requirement
 
 ## Getting Started
 
+### What's New in the Simplified System
+
+- **5-Agent Architecture**: Reduced from 11 agents for simplicity
+- **Mandatory Approval**: Every requirement needs approval before implementation
+- **Pattern-First Approach**: 85%+ pattern reuse target
+- **Simple File-Based Queue**: No complex message brokers
+- **Clear Workflow**: Submit → Analyze → Approve → Implement
+
 ### Prerequisites
 
 Before using the system, ensure you have:
 - Access to the `/app/workspace/requirements/` directory
 - Understanding of your business domain (ProducerPortal, Accounting, etc.)
-- Familiarity with Global Requirements standards
-- Basic knowledge of requirement structure and format
+- Familiarity with the approval process
+- Basic knowledge of markdown format
 
-### System Access
+### Key Locations
 
-The requirements generation system is organized around these key locations:
-- **Queue System**: `/app/workspace/requirements/processing-queues/`
-- **Global Standards**: `/app/workspace/requirements/GlobalRequirements/`
-- **Domain Patterns**: `/app/workspace/requirements/{Domain}/`
-- **Shared Knowledge**: `/app/workspace/requirements/shared-infrastructure/`
+```
+/requirements/
+├── processing-queues/{domain}/prompt/    # WHERE YOU SUBMIT
+├── processing-queues/{domain}/in-progress/approaches/    # WHERE YOU REVIEW
+├── GlobalRequirements/    # Pattern library
+├── blitzy-requirements/    # Reference implementations (READ-ONLY)
+└── shared-infrastructure/templates/    # Templates for consistency
+```
 
-### Initial Setup Checklist
+### Quick Start Checklist
 
-- [ ] **Review Domain Standards**: Check `/app/workspace/requirements/{YourDomain}/CLAUDE.md`
-- [ ] **Understand Global Requirements**: Browse `/app/workspace/requirements/GlobalRequirements/`
-- [ ] **Check Approved Patterns**: Review `/app/workspace/requirements/{YourDomain}/approved-requirements/`
-- [ ] **Access Queue System**: Verify access to `/app/workspace/requirements/processing-queues/{YourDomain}/`
+- [ ] **Choose Your Domain**: Identify which domain your requirement belongs to
+- [ ] **Create Requirement File**: Use markdown format with clear description
+- [ ] **Submit to Prompt Directory**: Place in `/processing-queues/{domain}/prompt/`
+- [ ] **Review Approach File**: Check `/in-progress/approaches/` for `-approach.md`
+- [ ] **Provide Approval Decision**: Mark your decision in the approach file
 
 ## Submitting Requirements
 
-### Single Domain Requirements
+### Step 1: Choose Your Submission Method
 
-**Step 1: Prepare Your Requirement**
+**Single Domain Requirements**
 ```bash
-# Create requirement file in appropriate domain queue
-touch /app/workspace/requirements/processing-queues/{domain}/pending/{requirement-name}.md
+# Submit to specific domain
+/processing-queues/{domain}/prompt/prompt-{feature}.md
 ```
 
-**Step 2: Use the Template Structure**
-```markdown
-# Requirement Title
-
-## Pre-Analysis Checklist
-- [ ] Reviewed applicable Global Requirements
-- [ ] Checked domain-specific approved requirements
-- [ ] Verified entity catalog for reuse opportunities
-- [ ] Confirmed infrastructure compatibility
-
-## Requirement Description
-[Clear description of what needs to be implemented]
-
-## Entity Analysis
-[Identify entities involved and check for reuse]
-
-## Implementation Requirements
-[Detailed implementation specifications]
-
-## Quality Validation
-[Compliance and testing requirements]
-```
-
-**Step 3: Submit for Processing**
-- Save the file in `pending/` directory
-- System automatically detects and begins processing
-- Monitor progress through queue status updates
-
-### Multi-Domain Requirements
-
-**Step 1: Identify Affected Domains**
-- List all business domains that will be impacted
-- Identify shared entities and workflows
-- Determine cross-domain dependencies
-
-**Step 2: Submit to Multi-Domain Queue**
+**Cross-Domain Requirements**
 ```bash
-# Place in multi-domain queue for coordinated processing
-touch /app/workspace/requirements/processing-queues/multi-domain/pending/{requirement-name}.md
+# Submit to multi-domain queue
+/processing-queues/multi-domain/prompt/prompt-{feature}.md
 ```
 
-**Step 3: Include Cross-Domain Analysis**
+### Step 2: Create Your Requirement File
+
+**Simple Requirement Format**
 ```markdown
-# Multi-Domain Requirement Title
+# [Feature Name] Requirement
 
-## Affected Domains
-- ProducerPortal: [specific impact]
-- Accounting: [specific impact]
-- [Other domains as applicable]
+## What We Need
+[Clear description of the feature or change needed]
 
-## Shared Entities
-- [Entity 1]: Used by [domains]
-- [Entity 2]: Used by [domains]
+## Why It's Needed
+[Business justification]
 
-## Cross-Domain Dependencies
-- [Dependency 1]: [description]
-- [Dependency 2]: [description]
+## Acceptance Criteria
+- [ ] [Specific criterion 1]
+- [ ] [Specific criterion 2]
+- [ ] [Specific criterion 3]
 
-## Integration Requirements
-[How domains will work together]
+## Additional Context
+[Any relevant information, similar features, constraints]
 ```
 
-### System-Wide Requirements
+### Step 3: Submit and Wait
 
-For requirements affecting 4+ domains or fundamental system changes:
+1. **Save your file** in the appropriate `prompt/` directory
+2. **System picks it up** automatically (no manual trigger needed)
+3. **Approach file created** in 5-10 minutes
+4. **Review notification** when approach is ready
 
-**Step 1: Comprehensive Impact Analysis**
-- Document all affected domains
-- Identify infrastructure implications
-- List Global Requirements that may need updates
+## Approval Workflow
 
-**Step 2: Submit with Full Context**
-- Use multi-domain queue with system-wide flag
-- Include comprehensive dependency mapping
-- Provide detailed integration specifications
+### Understanding the Approval Process
+
+The system uses a mandatory approval checkpoint to ensure quality and prevent wasted effort:
+
+```mermaid
+graph LR
+    A[Submit Requirement] --> B[System Analysis]
+    B --> C[Approach Generated]
+    C --> D{Your Review}
+    D -->|Approve| E[Implementation]
+    D -->|Revise| B
+    D -->|Reject| F[Archived]
+    E --> G[Completed Requirement]
+```
+
+### Step 1: Finding Your Approach File
+
+After submitting a requirement, the system generates an approach file:
+
+```bash
+# Location of approach files
+/processing-queues/{domain}/in-progress/approaches/{requirement-id}-approach.md
+```
+
+**Approach File Contents:**
+- Requirement understanding
+- Pattern analysis (which GRs apply)
+- Reference implementations found
+- Simplification suggestions
+- Proposed implementation plan
+- Risk assessment
+
+### Step 2: Reviewing the Approach
+
+**What to Look For:**
+1. **Correct Understanding**: Does the system understand your requirement?
+2. **Pattern Reuse**: Are existing patterns being leveraged (85%+ target)?
+3. **Simplification**: Is the solution as simple as possible?
+4. **Completeness**: Does the approach cover all your needs?
+5. **Trade-offs**: Are the trade-offs acceptable?
+
+**Example Approach File:**
+```markdown
+# IP269-UW-Questions - Implementation Approach
+
+## Status: AWAITING APPROVAL
+
+## Requirement Understanding
+System will add underwriting questions to the quote flow with:
+- Dynamic question rendering based on rules
+- Answer validation and storage
+- Integration with quote API
+
+## Pattern Analysis
+- Applicable GRs: [GR-52, GR-44, GR-41]
+- Reference implementations: 
+  - quote-questions.tsx (similar UI pattern)
+  - uw-api.php (existing API structure)
+- Reuse score: 87%
+
+## Simplification Approach
+- Original complexity: Real-time question updates
+- Simplified solution: Batch question loading
+- Trade-offs: 
+  - Lose: Real-time rule changes
+  - Gain: 50% simpler implementation
+  
+## Proposed Implementation
+1. Extend existing quote API endpoints
+2. Reuse question component from approved-requirements
+3. Add validation using existing patterns
+4. Store answers in quote_uw_answers table
+
+## Risk Assessment
+- Low risk: Using proven patterns
+- Medium risk: New table needs migration
+- Mitigation: Follow GR-41 standards
+
+## Approval Section
+**Decision**: [ ] APPROVED [ ] REVISE [ ] REJECT [ ] DEFER
+**Feedback**: [Your comments here]
+```
+
+### Step 3: Making Your Decision
+
+**APPROVED**
+```markdown
+**Decision**: [X] APPROVED [ ] REVISE [ ] REJECT [ ] DEFER
+**Feedback**: Looks good. Proceed with implementation.
+```
+- Implementation begins immediately
+- Full requirement generated using approved approach
+- Moved to completed when done
+
+**REVISE**
+```markdown
+**Decision**: [ ] APPROVED [X] REVISE [ ] REJECT [ ] DEFER
+**Feedback**: Need to include driver-specific questions. Also consider using the existing validation framework from GR-39.
+```
+- System incorporates feedback
+- Generates new approach
+- Returns for your review
+
+**REJECT**
+```markdown
+**Decision**: [ ] APPROVED [ ] REVISE [X] REJECT [ ] DEFER
+**Feedback**: This duplicates functionality in the risk assessment module.
+```
+- Requirement archived
+- No further processing
+- Can be resubmitted later if needed
+
+**DEFER**
+```markdown
+**Decision**: [ ] APPROVED [ ] REVISE [ ] REJECT [X] DEFER
+**Feedback**: Good idea but wait for Q2 when quote v2 launches.
+```
+- Requirement paused
+- Can be reactivated later
+- Preserves context and analysis
+
+### Step 4: After Approval
+
+Once approved, the system:
+1. **Moves to implementations/**: Active work begins
+2. **Generates full requirement**: Using the requirement template
+3. **Validates quality**: Final checks against standards
+4. **Delivers to completed/**: Ready for development team
+
+You can monitor progress:
+```bash
+# Check implementation status
+ls /processing-queues/{domain}/in-progress/implementations/
+
+# View completed requirement
+cat /processing-queues/{domain}/completed/{requirement-id}.md
+```
 
 ## Understanding the Queue System
 
-### Queue Structure
+### Simplified Queue Structure
 
-Each domain has a standardized queue structure:
+Each domain follows the same simple structure:
 
 ```
 processing-queues/{domain}/
-├── pending/                    # Requirements awaiting processing
-├── in-progress/               # Currently being processed
-│   ├── individual/           # Single requirement processing
-│   └── batch-{id}/           # Grouped requirements
-├── completed/                # Finished requirements
-├── intelligence/             # Pre-processing analysis results
-└── cross-domain-batches/     # Multi-domain requirement sets
+├── prompt/                    # WHERE YOU SUBMIT NEW REQUIREMENTS
+├── pending/                   # Waiting to be processed
+├── in-progress/               
+│   ├── approaches/           # APPROACH FILES FOR YOUR REVIEW
+│   └── implementations/      # Being implemented (after approval)
+└── completed/                # Finished requirements
 ```
 
-### Queue Status Indicators
+### How Files Move Through the System
 
-**Pending Queue**
-- Requirements waiting for agent availability
-- Automatic prioritization based on dependencies
-- Cross-domain coordination scheduling
+```
+1. prompt/ → You place file here
+2. pending/ → System picks it up
+3. in-progress/approaches/ → System creates -approach.md
+4. [WAITING FOR YOUR APPROVAL]
+5. in-progress/implementations/ → After you approve
+6. completed/ → Final requirement delivered
+```
 
-**In-Progress Queue**
-- Active processing by Domain Specialists
-- Real-time collaboration between agents
-- Progressive validation stages
+### File Naming Convention
 
-**Completed Queue**
-- Finished requirements with full documentation
-- Pattern library updates applied
-- Performance metrics collected
+**Your submission:**
+```
+prompt-{feature-name}.md
+```
 
-### Processing Priority
+**System generates:**
+```
+{ID}-{feature-name}-approach.md    # For your review
+{ID}-{feature-name}.md              # Final requirement
+```
 
-**High Priority:**
-- System-wide infrastructure changes
-- Multi-domain requirements with dependencies
-- Global Requirements updates
+### Queue Status
 
-**Medium Priority:**
-- Single domain requirements with new patterns
-- Cross-domain requirements without critical dependencies
-- Enhancement to existing workflows
+**Check what's happening:**
+```bash
+# See pending requirements
+ls /processing-queues/{domain}/pending/
 
-**Low Priority:**
-- Minor modifications to existing requirements
-- Documentation updates
-- Pattern library maintenance
+# Find approach files to review
+ls /processing-queues/{domain}/in-progress/approaches/
+
+# Check implementations in progress
+ls /processing-queues/{domain}/in-progress/implementations/
+
+# View completed requirements
+ls /processing-queues/{domain}/completed/
+```
 
 ## Working with Different Domains
 
@@ -431,116 +548,141 @@ ls -la /app/workspace/requirements/processing-queues/multi-domain/in-progress/
 
 ## Troubleshooting Common Issues
 
-### Validation Failures
+### Approval Workflow Issues
 
-**Global Requirements Non-Compliance**
-- **Issue**: Requirement fails GR compliance validation
-- **Solution**: Review applicable GRs and update requirement
-- **Prevention**: Use pre-submission checklist
+**Can't Find Approach File**
+- **Issue**: Approach file not in expected location
+- **Solution**: Check `/in-progress/approaches/` directory
+- **Tip**: Files are named `{ID}-{feature}-approach.md`
 
-**Entity Duplication**
-- **Issue**: Creating new entity when existing one should be reused
-- **Solution**: Check Universal Entity Catalog and reuse existing patterns
-- **Prevention**: Review entity catalog before creating new entities
+**Approach Not Generated**
+- **Issue**: No approach file after 15 minutes
+- **Solution**: Check if file is still in `prompt/` or `pending/`
+- **Prevention**: Ensure proper markdown format in submission
 
-**Cross-Domain Inconsistency**
-- **Issue**: Shared entities defined differently across domains
-- **Solution**: Coordinate entity definitions through shared context
-- **Prevention**: Use multi-domain queue for cross-domain requirements
+**Revision Loop**
+- **Issue**: Multiple revisions without progress
+- **Solution**: Be specific in feedback about what needs changing
+- **Example**: "Add validation for negative numbers" vs "needs better validation"
 
-### Processing Delays
+### Simplification Challenges
 
-**Queue Congestion**
-- **Issue**: Requirements stuck in pending queue
-- **Solution**: Check for dependency conflicts and batch optimization
-- **Prevention**: Submit related requirements together
+**Over-Complicated Approach**
+- **Issue**: System proposes complex solution
+- **Solution**: Request revision focusing on simplification
+- **Feedback**: "Please simplify by removing real-time updates and using batch processing instead"
 
-**Agent Coordination Issues**
-- **Issue**: Multi-domain processing taking longer than expected
-- **Solution**: Check shared context synchronization
-- **Prevention**: Ensure clear cross-domain dependency mapping
+**Missing Pattern Reuse**
+- **Issue**: Not leveraging existing patterns
+- **Solution**: Point to specific patterns in feedback
+- **Feedback**: "Use the quote validation pattern from IP-123 instead of creating new"
 
-**Infrastructure Validation Delays**
-- **Issue**: Extended validation time against codebase
-- **Solution**: Verify requirement alignment with existing patterns
-- **Prevention**: Review infrastructure patterns before submission
+### File Management
 
-### Quality Issues
+**Wrong Directory**
+- **Issue**: File placed in wrong location
+- **Solution**: Move to correct `prompt/` directory
+- **Prevention**: Double-check domain before submitting
 
-**Low Pattern Reuse**
-- **Issue**: Requirement not leveraging existing patterns effectively
-- **Solution**: Review pattern library and approved requirements
-- **Prevention**: Conduct thorough pattern analysis pre-submission
-
-**Infrastructure Misalignment**
-- **Issue**: Requirement conflicts with existing codebase patterns
-- **Solution**: Adjust requirement to align with established patterns
-- **Prevention**: Validate against infrastructure patterns
+**File Naming**
+- **Issue**: System can't process incorrectly named files
+- **Solution**: Use `prompt-{feature}.md` format
+- **Example**: `prompt-uw-questions.md` ✓
 
 ## Best Practices
 
-### Requirement Preparation
+### Writing Clear Requirements
 
-**Research Existing Patterns:**
-- Review approved requirements in your domain
-- Check Universal Entity Catalog for reusable entities
-- Study Global Requirements for applicable standards
-- Examine cross-domain patterns for shared workflows
+**DO:**
+- Use simple, clear language
+- Include specific examples
+- List concrete acceptance criteria
+- Reference similar existing features
 
-**Clear Documentation:**
-- Write unambiguous requirement descriptions
-- Include complete entity analysis
-- Specify all integration requirements
-- Define clear acceptance criteria
+**DON'T:**
+- Write vague descriptions
+- Skip the business justification
+- Assume context
+- Over-specify implementation details
 
-**Cross-Domain Coordination:**
-- Identify all affected domains early
-- Map shared entities and dependencies
-- Coordinate with domain experts
-- Plan integration workflows
+**Good Example:**
+```markdown
+# Add Export Button to Quote List
 
-### Efficient Processing
+## What We Need
+Add a button to export the quote list to CSV format
 
-**Batch Related Requirements:**
-- Submit related requirements together
-- Use cross-domain batches for coordinated processing
-- Group requirements by shared entities
-- Coordinate timing for dependent requirements
+## Why It's Needed
+Producers need to analyze quotes in Excel for monthly reporting
 
-**Leverage Pattern Reuse:**
-- Always check for existing patterns first
-- Reuse entities whenever possible
-- Follow established naming conventions
-- Build on approved requirement patterns
+## Acceptance Criteria
+- [ ] Export button visible on quote list page
+- [ ] CSV includes: quote number, customer name, premium, status, date
+- [ ] File downloads to user's computer
+- [ ] Works with filtered results
 
-**Quality Focus:**
-- Use pre-submission checklists consistently
-- Address validation feedback promptly
-- Learn from successful requirement patterns
-- Contribute to pattern library growth
+## Additional Context
+Similar to the export feature in the commission report
+```
 
-### Continuous Improvement
+### Effective Approval Reviews
 
-**Learn from Metrics:**
-- Review processing performance regularly
-- Analyze pattern reuse effectiveness
-- Study cross-domain coordination efficiency
-- Track Global Requirements compliance trends
+**Quick Approval Checklist:**
+1. ✓ Requirement understood correctly?
+2. ✓ Existing patterns being reused (85%+ target)?
+3. ✓ Solution simplified appropriately?
+4. ✓ Trade-offs acceptable?
+5. ✓ All needs covered?
 
-**Contribute to Knowledge Base:**
-- Document new patterns discovered
-- Share successful integration approaches
-- Update entity catalog with new entities
-- Contribute to Global Requirements evolution
+**Good Feedback Examples:**
 
-**Collaborate Effectively:**
-- Coordinate with other domain experts
-- Share knowledge across domains
-- Participate in pattern library development
-- Provide feedback on system improvements
+✓ **Specific**: "Add error handling for network timeouts"
+✗ **Vague**: "Needs better error handling"
+
+✓ **Actionable**: "Use the validation pattern from GR-41"
+✗ **Unclear**: "Follow best practices"
+
+✓ **Focused**: "Simplify by removing the caching layer"
+✗ **Broad**: "Make it simpler"
+
+### Maximizing Pattern Reuse
+
+**Before Submitting:**
+1. Search GlobalRequirements for similar patterns
+2. Check blitzy-requirements for implementations
+3. Review domain's approved-requirements
+4. Reference patterns in your requirement
+
+**In Your Requirement:**
+```markdown
+## Additional Context
+Similar to the quote validation in approved-requirements/IP-145
+Could reuse the export component from blitzy-requirements/commission-export.tsx
+Should follow GR-52 for entity management
+```
+
+### Working with the Simplified System
+
+**Embrace Simplicity:**
+- Trust the 5-agent system
+- Don't over-specify requirements
+- Let the system find patterns
+- Focus on what, not how
+
+**Use the Approval Checkpoint:**
+- Review approaches thoroughly
+- Provide clear feedback
+- Iterate when needed
+- Approve when satisfied
+
+**Learn from the System:**
+- Study generated approaches
+- Understand pattern selections
+- Learn simplification strategies
+- Apply lessons to future requirements
 
 ---
 
-**Last Updated**: 2025-01-07  
-**User Guide Version**: Phase 1 Implementation  
+**Last Updated**: 2025-01-14  
+**User Guide Version**: 5-Agent System with Approval Workflow  
 **Support**: Review documentation or submit questions through appropriate domain queue

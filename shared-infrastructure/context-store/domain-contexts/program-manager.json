@@ -1,0 +1,72 @@
+{
+  "domain": "program-manager",
+  "description": "Rate management, underwriting rules, and program configuration",
+  "last_updated": "2025-01-14",
+  "entities": {
+    "primary": [
+      "rate_factor",
+      "underwriting_rule",
+      "program_configuration",
+      "rate_table",
+      "rule_set"
+    ],
+    "supporting": [
+      "rate_modifier",
+      "rule_condition",
+      "program_version",
+      "effective_date",
+      "approval_workflow"
+    ]
+  },
+  "workflows": {
+    "rate_calculation": {
+      "description": "Rate calculation and factor application",
+      "steps": ["load_factors", "apply_rules", "calculate_base", "apply_modifiers", "finalize"],
+      "integrations": ["quote_engine", "underwriting_service"]
+    },
+    "rule_evaluation": {
+      "description": "Underwriting rule evaluation process",
+      "steps": ["load_rules", "evaluate_conditions", "apply_actions", "document_decisions"],
+      "integrations": ["quote_service", "risk_assessment"]
+    },
+    "program_setup": {
+      "description": "Program configuration and management",
+      "steps": ["configure", "validate", "test", "approve", "deploy"],
+      "integrations": ["deployment_service", "testing_framework"]
+    }
+  },
+  "integrations": {
+    "rating_engines": {
+      "purpose": "Rate calculation services",
+      "engines": ["internal_rater", "iso_rating", "custom_rater"],
+      "pattern": "GR-38"
+    },
+    "compliance_systems": {
+      "purpose": "Regulatory compliance validation",
+      "checks": ["state_filing", "rate_approval", "form_compliance"],
+      "pattern": "GR-51"
+    }
+  },
+  "patterns": {
+    "approved_requirements": "/ProgramManager/approved-requirements/",
+    "common_patterns": [
+      "rate-management",
+      "rule-engine",
+      "program-versioning",
+      "approval-workflow"
+    ]
+  },
+  "global_requirements": {
+    "primary": ["GR-52", "GR-41", "GR-38"],
+    "conditional": {
+      "rate_management": ["GR-27"],
+      "compliance": ["GR-51"],
+      "versioning": ["GR-19"]
+    }
+  },
+  "performance_targets": {
+    "rate_calculation": "< 500ms",
+    "rule_evaluation": "< 200ms per rule",
+    "program_deployment": "< 5 minutes"
+  }
+}

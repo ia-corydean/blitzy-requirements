@@ -25,6 +25,16 @@ git checkout staging
 git pull origin staging
 ```
 
+**GitHub Repository**: https://github.com/blitzy-public-samples/insure-pilot-new/tree/staging
+
+#### Infrastructure Reference Guidelines
+1. **Read-Only Access**: NEVER modify any files in blitzy-requirements
+2. **Pattern Discovery**: Search for existing implementations before creating new patterns
+3. **Validation**: Cross-reference all new requirements against existing code
+4. **Documentation**: Note which parts of blitzy-requirements implement similar features
+
+⚠️ **CRITICAL**: The blitzy-requirements directory contains active development code. Any modifications could break the production system. This directory is for REFERENCE ONLY.
+
 #### Cross-Reference Standards
 Every requirement must validate against existing infrastructure:
 

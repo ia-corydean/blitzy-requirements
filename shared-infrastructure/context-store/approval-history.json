@@ -1,0 +1,33 @@
+{
+  "approval_history": [],
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-01-14",
+    "description": "Track approval decisions and feedback"
+  },
+  "schema": {
+    "requirement_id": "string",
+    "approach_version": "number",
+    "decision": "approved|revised|rejected|deferred",
+    "feedback": "string",
+    "decision_maker": "string",
+    "timestamp": "ISO-8601",
+    "revision_details": {
+      "previous_issues": ["string"],
+      "changes_made": ["string"],
+      "improvement_score": "number"
+    }
+  },
+  "statistics": {
+    "total_reviews": 0,
+    "first_pass_approvals": 0,
+    "average_revision_cycles": 0,
+    "approval_rate_by_domain": {},
+    "common_revision_reasons": []
+  },
+  "trends": {
+    "approval_rate_trend": [],
+    "revision_cycle_trend": [],
+    "complexity_vs_approval": {}
+  }
+}

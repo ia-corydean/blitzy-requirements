@@ -1,0 +1,27 @@
+{
+  "pattern_applications": [],
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-01-14",
+    "description": "Track pattern applications across requirements"
+  },
+  "schema": {
+    "requirement_id": "string",
+    "patterns_applied": [
+      {
+        "pattern_id": "string",
+        "source": "GR|blitzy|approved",
+        "confidence": "number",
+        "adaptations": ["string"]
+      }
+    ],
+    "reuse_score": "number",
+    "timestamp": "ISO-8601"
+  },
+  "statistics": {
+    "total_requirements": 0,
+    "average_reuse_score": 0,
+    "most_used_patterns": [],
+    "pattern_success_rate": {}
+  }
+}

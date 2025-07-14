@@ -2,17 +2,16 @@
 
 ## Overview
 
-This guide explains the complete requirements generation process using our multi-agent architecture. The system transforms manual, domain-specific requirement creation into an intelligent, unified workflow that leverages cross-domain patterns and automated validation.
+This guide explains the simplified 5-agent requirements generation process with mandatory approval workflow. The system emphasizes simplification, pattern reuse, and human approval before any implementation begins.
 
 ## Table of Contents
 
 - [Process Flow](#process-flow)
-- [Multi-Agent Architecture](#multi-agent-architecture)
-- [Workflow Types](#workflow-types)
-- [Cross-Domain Coordination](#cross-domain-coordination)
-- [Quality Assurance Process](#quality-assurance-process)
-- [Performance Optimization](#performance-optimization)
-- [Monitoring and Tracking](#monitoring-and-tracking)
+- [5-Agent Architecture](#5-agent-architecture)
+- [Approval Workflow](#approval-workflow)
+- [Simplification Process](#simplification-process)
+- [Context Preservation](#context-preservation)
+- [Quality Checkpoints](#quality-checkpoints)
 
 ## Process Flow
 
@@ -20,456 +19,567 @@ This guide explains the complete requirements generation process using our multi
 
 ```mermaid
 graph TD
-    A[Requirement Submitted] --> B[System Orchestrator Analysis]
-    B --> C{Domain Classification}
-    C -->|Single Domain| D[Domain Specialist Processing]
-    C -->|Multi-Domain| E[Cross-Domain Coordination]
-    C -->|System-Wide| F[Multi-Agent Coordination]
-    
-    D --> G[Pattern Recognition]
-    E --> G
-    F --> G
-    
-    G --> H[Global Requirements Assignment]
-    H --> I[Entity Analysis & Reuse]
-    I --> J[Infrastructure Validation]
-    J --> K[Universal Validator Review]
-    K --> L{Quality Gates Passed?}
-    
-    L -->|Yes| M[Requirement Approved]
-    L -->|No| N[Iteration Required]
-    N --> O[Feedback Integration]
-    O --> G
-    
-    M --> P[Pattern Library Update]
-    P --> Q[Performance Metrics Update]
+    A[User Submits to prompt/] --> B[Prompt Analyzer]
+    B --> C[Pattern Matcher]
+    B --> D[Simplification Enforcer]
+    C --> E[Generate -approach.md]
+    D --> E
+    E --> F{User Reviews Approach}
+    F -->|Approve| G[Implementation Generator]
+    F -->|Revise| B
+    F -->|Reject| H[Archive]
+    G --> I[Quality Validator]
+    I --> J[Completed Requirement]
 ```
+
+### Key Process Points
+1. **Submission**: User places requirement in `/prompt/` directory
+2. **Analysis**: Parallel processing by Pattern Matcher and Simplification Enforcer
+3. **Approach Generation**: Creates `-approach.md` file for review
+4. **MANDATORY STOP**: System waits for user approval
+5. **Implementation**: Only begins after explicit approval
+6. **Validation**: Final quality checks before completion
 
 ### Detailed Process Steps
 
 #### 1. Requirement Submission
-- **Input Location**: `processing-queues/{domain}/pending/`
-- **Automatic Triggers**: System detects new requirement files
-- **Initial Classification**: System Orchestrator analyzes content for domain relevance
+- **Input Location**: `processing-queues/{domain}/prompt/`
+- **File Naming**: `prompt-{feature-name}.md`
+- **Content Requirements**: Clear description, acceptance criteria, context
 
-#### 2. Domain Analysis and Routing
-- **Single Domain**: Routed to appropriate Domain Specialist
-- **Multi-Domain**: Coordinated processing across multiple domains
-- **System-Wide**: Full multi-agent coordination with infrastructure impact
+#### 2. Initial Analysis (Prompt Analyzer)
+- **Deep Understanding**: Comprehends the full requirement
+- **Domain Classification**: Single, multi, or system-wide
+- **Context Creation**: Builds initial context for other agents
+- **Complexity Assessment**: Initial complexity evaluation
 
-#### 3. Intelligent Pre-Processing
-- **Pattern Recognition**: Cross-domain pattern matching using similarity engines
-- **Entity Identification**: Universal entity catalog consultation for reuse opportunities
-- **Global Requirements Mapping**: Automatic assignment of applicable GRs
-- **Dependency Analysis**: Cross-domain relationship evaluation
+#### 3. Pattern Discovery (Pattern Matcher)
+- **GlobalRequirements Search**: Finds applicable GRs
+- **Codebase Reference**: Searches blitzy-requirements for examples
+- **Reuse Identification**: Maximizes pattern reuse
+- **Implementation Examples**: Provides concrete references
 
-#### 4. Collaborative Processing
-- **Domain Expertise**: Specialized agents apply domain-specific knowledge
-- **Shared Context**: Real-time synchronization of entity definitions and decisions
-- **Infrastructure Alignment**: Validation against existing codebase patterns
-- **Quality Coordination**: Continuous validation throughout processing
+#### 4. Simplification Review (Simplification Enforcer)
+- **Complexity Analysis**: Identifies unnecessary complexity
+- **Alternative Suggestions**: Proposes simpler approaches
+- **Trade-off Documentation**: Documents what is gained/lost
+- **Approval Readiness**: Ensures approach is review-ready
 
-#### 5. Progressive Validation
-- **Structure Validation** (3 minutes): Format compliance and basic structure
-- **Domain Patterns** (7 minutes): Domain-specific validation
-- **Cross-Domain** (10 minutes): Shared entity consistency
-- **Global Requirements** (15 minutes): Comprehensive GR compliance
-- **Infrastructure** (10 minutes): Codebase alignment validation
+#### 5. Approach Generation
+- **Unified Output**: Combines all agent inputs
+- **Template Usage**: Uses standard approach template
+- **Clear Proposal**: Makes implementation plan explicit
+- **Decision Points**: Highlights key choices made
 
-#### 6. Results Consolidation
-- **Pattern Learning**: Successful patterns added to knowledge base
-- **Performance Tracking**: Metrics collection for continuous improvement
-- **Cross-Reference Updates**: Links established with related requirements
+#### 6. User Approval (MANDATORY STOP)
+- **Review Period**: User reviews -approach.md file
+- **Feedback Options**: Approve, Revise, Reject, Defer
+- **Revision Support**: Can iterate on approach
+- **No Auto-Proceed**: System waits for explicit approval
 
-## Multi-Agent Architecture
+## 5-Agent Architecture
 
-### System Orchestrator (Agent SO)
+### Agent 1: Prompt Analyzer (PA)
 
-**Primary Responsibilities:**
-- Cross-domain workflow coordination and strategic planning
-- Multi-domain intelligence and dependency analysis
-- Global Requirements mastery and automatic assignment
-- Infrastructure orchestration and pattern reuse coordination
+**Purpose**: Maximize first-approach accuracy through deep analysis
 
-**Enhanced Capabilities:**
-- Analyze requirements across all business domains simultaneously
-- Detect cross-domain dependencies (e.g., quote → billing → payment workflows)
-- Identify shared entity opportunities across domains
-- Coordinate batch processing of related requirements
+**Responsibilities:**
+- Comprehensive requirement understanding
+- Domain classification and routing
+- Initial complexity assessment
+- Context initialization for other agents
 
-**Tools and Resources:**
-- Complete knowledge of all 64+ Global Requirements
-- Cross-domain pattern matcher
-- Universal entity catalog access
-- Infrastructure coordination capabilities
+**Key Outputs:**
+- Requirement summary
+- Domain classification
+- Initial context structure
+- Complexity level assessment
 
-### Domain Specialists (Agents D1-D7)
-
-**Agent Configurations:**
-
-**Agent D1 (ProducerPortal)**
-- **Entities**: Quote, driver, vehicle, producer, entity relationships
-- **Workflows**: Quote creation, producer management, entity relationships
-- **Integrations**: DCS API, communication hub
-- **Specializations**: Quote lifecycle, producer workflows, entity management
-
-**Agent D2 (Accounting)**
-- **Entities**: Billing, payment, commission, ACH transaction
-- **Workflows**: Billing cycle, payment processing, commission calculation
-- **Integrations**: Payment gateways, banking APIs
-- **Specializations**: Financial workflows, payment processing, commission reconciliation
-
-**Agent D3 (ProgramManager)**
-- **Entities**: Rate factor, underwriting rule, program configuration
-- **Workflows**: Rate calculation, rule evaluation, program setup
-- **Integrations**: Rating engines, compliance systems
-- **Specializations**: Rate management, underwriting rules, program configuration
-
-**Agent D4 (ProgramTraits)**
-- **Entities**: Program-specific rules, Aguila Dorada configurations
-- **Workflows**: Program-specific validation, trait application
-- **Integrations**: Program management systems
-- **Specializations**: Aguila Dorada program rules, program-specific customizations
-
-**Agent D5 (EntityIntegration)**
-- **Entities**: External API mappings, DCS integrations
-- **Workflows**: External system integration, data verification
-- **Integrations**: DCS household APIs, criminal background, verification services
-- **Specializations**: External API integration, data verification workflows
-
-**Agent D6 (Reinstatement)**
-- **Entities**: Policy lifecycle, lapse processing, reinstatement workflows
-- **Workflows**: Policy reinstatement, lapse management, lifecycle tracking
-- **Integrations**: Policy management systems, payment processing
-- **Specializations**: Policy lifecycle management, reinstatement processes
-
-**Agent D7 (Sr22)**
-- **Entities**: Financial responsibility filing, compliance tracking
-- **Workflows**: SR22/SR26 filing, compliance monitoring
-- **Integrations**: State filing systems, compliance tracking
-- **Specializations**: Financial responsibility filing, compliance requirements
-
-### Universal Validator (Agent UV)
-
-**Primary Responsibilities:**
-- Cross-domain validation with Global Requirements expertise
-- Global standards enforcement across all domains
-- Cross-domain consistency validation
-- Infrastructure alignment verification
-
-**Validation Stages:**
-
-1. **Structure Validation** (3 minutes)
-   - Format compliance checking
-   - Basic requirement structure validation
-   - Template adherence verification
-
-2. **Domain Patterns** (7 minutes)
-   - Domain-specific pattern validation
-   - Business rule compliance checking
-   - Entity relationship validation
-
-3. **Cross-Domain** (10 minutes)
-   - Shared entity consistency checking
-   - Cross-domain relationship validation
-   - Integration point verification
-
-4. **Global Requirements** (15 minutes)
-   - Comprehensive GR compliance validation
-   - Universal entity management compliance (GR-52)
-   - Communication architecture integration (GR-44)
-   - Database standards adherence (GR-41)
-
-5. **Infrastructure** (10 minutes)
-   - Codebase alignment validation
-   - Existing pattern compatibility
-   - Service layer integration compliance
-
-## Workflow Types
-
-### Single Domain Processing
-
-**When Used:**
-- Requirement affects only one business domain
-- No cross-domain entities or workflows involved
-- Minimal integration requirements
-
-**Process:**
-1. Domain Specialist takes primary responsibility
-2. System Orchestrator provides pattern library access
-3. Universal Validator ensures Global Requirements compliance
-4. Results integrated into domain-specific patterns
-
-**Example:** ProducerPortal quote form field addition
-
-### Cross-Domain Processing
-
-**When Used:**
-- Requirement affects 2-3 business domains
-- Shared entities or workflows involved
-- Integration between domains required
-
-**Process:**
-1. System Orchestrator coordinates domain assignment
-2. Multiple Domain Specialists work in parallel
-3. Shared context management ensures consistency
-4. Universal Validator checks cross-domain integrity
-
-**Example:** Quote-to-billing workflow enhancement
-
-### System-Wide Processing
-
-**When Used:**
-- Requirement affects 4+ business domains
-- Fundamental system changes required
-- New global patterns or standards involved
-
-**Process:**
-1. Full multi-agent coordination
-2. System Orchestrator manages complex dependencies
-3. All Domain Specialists contribute expertise
-4. Enhanced validation with infrastructure impact assessment
-
-**Example:** New universal entity type introduction
-
-## Cross-Domain Coordination
-
-### Shared Entity Management
-
-**Universal Entity Catalog (GR-52 Compliant)**
-- Central repository of all business entities across domains
-- Consistent entity definitions with 90% faster development
-- Cross-domain relationship mapping
-- Integration point identification
-
-**Key Shared Entities:**
-- **Quote**: Used by ProducerPortal, Accounting, ProgramManager
-- **Driver**: Used by ProducerPortal, EntityIntegration, Sr22
-- **Payment**: Used by Accounting, ProducerPortal, Reinstatement
-- **Policy**: Used by ProducerPortal, Accounting, Reinstatement, Sr22
-
-### Cross-Domain Workflows
-
-**Quote-to-Payment Integration**
+**Configuration:**
 ```yaml
-domains: [producer-portal, accounting]
-trigger: quote_binding_completed
-
-shared_entities:
-  - quote (primary)
-  - policy_holder (from quote.named_insured)
-  - payment_schedule (generated)
-  - billing_cycle (created)
-
-processing_steps:
-  1. producer_portal_agent: generates complete quote with all entities
-  2. system_orchestrator: validates cross-domain entity consistency
-  3. accounting_agent: creates billing entities using shared quote data
-
-validation_points:
-  - shared entity integrity
-  - GR-41 database consistency
-  - GR-38 service boundary compliance
+name: prompt-analyzer
+type: analysis
+capabilities:
+  - Requirement deep understanding
+  - Domain classification
+  - Complexity assessment
+  - Context initialization
+knowledge_base:
+  - All 64+ Global Requirements
+  - Domain-specific patterns
+  - Entity catalog
+  - Infrastructure patterns
 ```
 
-**Rate Factor to Program Traits Integration**
+### Agent 2: Pattern Matcher (PM)
+
+**Purpose**: Find and apply reusable patterns from GlobalRequirements and codebase
+
+**Responsibilities:**
+- Search GlobalRequirements for applicable patterns
+- Find similar implementations in blitzy-requirements
+- Identify reusable components
+- Map patterns to new requirement
+
+**Key Outputs:**
+- Applicable Global Requirements list
+- Reference implementations
+- Reusable pattern recommendations
+- Pattern adaptation strategies
+
+**Configuration:**
 ```yaml
-domains: [program-manager, program-traits]
-trigger: rate_factor_update
-
-shared_entities:
-  - program_configuration
-  - rate_factor_matrix
-  - underwriting_rules
-  - program_specific_adjustments
-
-processing_steps:
-  1. program_manager_agent: updates base rate factors
-  2. program_traits_agent: applies Aguila Dorada specific adjustments
-
-integration_requirements:
-  - GR-52 universal entity management for program configs
-  - GR-38 microservice boundaries for rate calculation
-  - shared validation rules across programs
+name: pattern-matcher
+type: discovery
+capabilities:
+  - GlobalRequirements search
+  - Codebase pattern analysis
+  - Similarity scoring
+  - Pattern adaptation
+search_locations:
+  - /GlobalRequirements/
+  - /blitzy-requirements/ (read-only)
+  - /approved-requirements/
 ```
 
-### Dependency Resolution
+### Agent 3: Simplification Enforcer (SE)
 
-**Automatic Dependency Detection:**
-- Entity relationship analysis across domains
-- Workflow sequence identification
-- Integration point mapping
-- Resource requirement calculation
+**Purpose**: Ensure solutions remain simple and maintainable
 
-**Processing Order Optimization:**
-- Critical path analysis for multi-domain requirements
-- Parallel processing opportunities identification
-- Resource allocation optimization
-- Bottleneck prevention
+**Responsibilities:**
+- Identify unnecessary complexity
+- Propose simpler alternatives
+- Document trade-offs
+- Enforce "simple as possible" principle
 
-## Quality Assurance Process
+**Key Outputs:**
+- Complexity analysis
+- Simplification suggestions
+- Trade-off documentation
+- Approval readiness assessment
 
-### Progressive Validation Framework
+**Configuration:**
+```yaml
+name: simplification-enforcer
+type: optimization
+principles:
+  - Prefer existing patterns
+  - Direct over abstract
+  - Clear over clever
+  - Documented decisions
+metrics:
+  - Complexity score
+  - Pattern reuse percentage
+  - Implementation clarity
+```
 
-**Stage 1: Structure (3 minutes)**
-- Template compliance verification
-- Required section presence checking
-- Format standardization validation
+### Agent 4: Implementation Generator (IG)
 
-**Stage 2: Domain Patterns (7 minutes)**
-- Domain-specific business rule validation
-- Entity pattern compliance checking
-- Workflow consistency verification
+**Purpose**: Create detailed requirements after approval
 
-**Stage 3: Cross-Domain (10 minutes)**
-- Shared entity definition consistency
-- Cross-domain relationship integrity
-- Integration pattern validation
+**Responsibilities:**
+- Generate comprehensive requirement document
+- Apply approved approach
+- Include all technical details
+- Ensure completeness
 
-**Stage 4: Global Requirements (15 minutes)**
-- Comprehensive GR compliance checking
-- Universal entity management validation (GR-52)
-- Communication architecture compliance (GR-44)
-- Database standards verification (GR-41)
-- Microservice architecture alignment (GR-38)
+**Key Outputs:**
+- Complete requirement document
+- Implementation specifications
+- API definitions
+- Database schemas
 
-**Stage 5: Infrastructure (10 minutes)**
-- Existing codebase pattern alignment
-- Database schema compatibility
-- API endpoint consistency
-- Service layer integration verification
+**Configuration:**
+```yaml
+name: implementation-generator
+type: generation
+triggers:
+  - User approval of -approach.md
+templates:
+  - /shared-infrastructure/templates/requirement-template.md
+validation:
+  - All sections complete
+  - Cross-references accurate
+  - Standards compliance
+```
 
-### Quality Gates
+### Agent 5: Quality Validator (QV)
 
-**Minimum Compliance Thresholds:**
-- Global Requirements compliance: 95%
-- Cross-domain consistency: 90%
-- Infrastructure alignment: 85%
-- Pattern reuse rate: 80%
+**Purpose**: Final validation against all standards
 
-**Fail-Fast Capabilities:**
-- Early termination for critical failures
-- Immediate feedback for structural issues
-- Progressive complexity validation
-- Resource optimization through early detection
+**Responsibilities:**
+- Validate Global Requirements compliance
+- Check pattern consistency
+- Verify infrastructure alignment
+- Ensure quality standards
 
-### Automated Compliance Checking
+**Key Outputs:**
+- Validation report
+- Compliance checklist
+- Quality score
+- Completion confirmation
 
-**Global Requirements Validation:**
-- Automatic assignment of applicable GRs
-- Compliance verification against all 64+ standards
-- Integration requirement identification
-- Performance impact assessment
+**Configuration:**
+```yaml
+name: quality-validator
+type: validation
+checks:
+  - Global Requirements compliance
+  - Pattern consistency
+  - Infrastructure alignment
+  - Documentation completeness
+thresholds:
+  - GR compliance: 95%
+  - Pattern reuse: 80%
+  - Quality score: 90%
+```
 
-**Cross-Domain Consistency:**
-- Shared entity definition synchronization
-- Relationship integrity verification
-- Integration point validation
-- Workflow consistency checking
+## Agent Coordination
+
+### Sequential Flow
+```mermaid
+graph LR
+    A[Prompt Analyzer] --> B[Pattern Matcher]
+    A --> C[Simplification Enforcer]
+    B --> D[Approach Generation]
+    C --> D
+    D --> E{User Approval}
+    E -->|Yes| F[Implementation Generator]
+    F --> G[Quality Validator]
+    G --> H[Completed]
+    E -->|No| A
+```
+
+### Context Sharing
+- Unified context store maintains state
+- Each agent builds on previous outputs
+- No information loss between agents
+- Continuous refinement process
+
+## Approval Workflow
+
+### Overview
+The approval workflow ensures quality by requiring human review before implementation begins. This mandatory checkpoint prevents wasted effort and ensures alignment with business needs.
+
+### Workflow States
+1. **Pending**: Initial submission in prompt directory
+2. **In Analysis**: Being processed by 5-agent system
+3. **Awaiting Approval**: -approach.md generated and ready for review
+4. **Approved**: User has approved the approach
+5. **In Implementation**: Requirement being generated
+6. **Completed**: Final requirement delivered
+
+### Approval Process
+
+#### Step 1: Approach Generation
+After analysis by Prompt Analyzer, Pattern Matcher, and Simplification Enforcer:
+- System generates `-approach.md` file
+- File placed in `/in-progress/approaches/`
+- User notified of ready approach
+
+#### Step 2: User Review
+User reviews the approach file containing:
+- Requirement understanding
+- Pattern analysis
+- Simplification approach
+- Proposed implementation plan
+- Risk assessment
+- Context preservation
+
+#### Step 3: Decision Options
+- **APPROVE**: Proceed to implementation
+- **REVISE**: Request changes to approach
+- **REJECT**: Stop processing this requirement
+- **DEFER**: Postpone for later consideration
+
+#### Step 4: Implementation (if approved)
+- Implementation Generator creates full requirement
+- Quality Validator ensures compliance
+- Final requirement moved to completed/
+
+### Revision Workflow
+When user requests revisions:
+1. Feedback incorporated into context
+2. Agents re-process with new constraints
+3. Updated -approach.md generated
+4. Review cycle repeats
+
+## Simplification Process
+
+### Core Principle
+"Make everything as simple as possible, but not simpler." - This guides every decision in the system.
+
+### Simplification Strategies
+
+#### 1. Pattern Reuse First
+- Always check GlobalRequirements for existing patterns
+- Search blitzy-requirements for implementations
+- Adapt existing solutions before creating new ones
+- Document why new patterns are needed (if they are)
+
+#### 2. Direct Over Abstract
+- Use straightforward implementations
+- Avoid unnecessary abstraction layers
+- Prefer explicit over implicit behavior
+- Make code intent obvious
+
+#### 3. Reduce Complexity
+- Break large requirements into smaller pieces
+- Remove unnecessary features
+- Consolidate duplicate functionality
+- Simplify data structures
+
+#### 4. Clear Documentation
+- Document the "why" not just the "what"
+- Explain trade-offs made
+- Note simplification decisions
+- Preserve context for future developers
+
+### Simplification Metrics
+- **Pattern Reuse Rate**: Target 85%+
+- **Complexity Score**: Lower is better
+- **Lines of Code**: Minimize while maintaining clarity
+- **Dependency Count**: Reduce external dependencies
+
+### Trade-off Documentation
+Every simplification involves trade-offs. Document:
+- What was simplified
+- What functionality was preserved
+- What was intentionally omitted
+- Why the trade-off is acceptable
+
+## Context Preservation
+
+### Purpose
+Maintain complete context throughout the requirements process to ensure nothing is lost between agents or approval cycles.
+
+### Context Store Structure
+```
+/shared-infrastructure/context-store/
+├── domain-contexts/
+│   ├── producer-portal.json
+│   ├── accounting.json
+│   └── [domain].json
+├── pattern-applications.json
+├── simplification-decisions.json
+└── approval-history.json
+```
+
+### Context Components
+
+#### 1. Requirement Context
+- Original requirement text
+- User feedback and revisions
+- Business justification
+- Acceptance criteria
+
+#### 2. Analysis Context
+- Domain classification results
+- Complexity assessment
+- Entity identification
+- Relationship mapping
+
+#### 3. Pattern Context
+- Applied Global Requirements
+- Referenced implementations
+- Reuse decisions
+- Adaptation notes
+
+#### 4. Simplification Context
+- Complexity reduction decisions
+- Trade-offs documented
+- Alternative approaches considered
+- Final simplification rationale
+
+#### 5. Approval Context
+- Review feedback
+- Revision history
+- Decision rationale
+- Implementation constraints
+
+### Context Flow
+1. **Initial Capture**: Prompt Analyzer creates base context
+2. **Enrichment**: Each agent adds their findings
+3. **Preservation**: Context saved at each stage
+4. **Retrieval**: Agents access full context
+5. **Archive**: Final context stored with requirement
+
+## Quality Checkpoints
+
+### Pre-Analysis Checkpoint
+Before processing begins:
+- [ ] Requirement is complete and clear
+- [ ] Domain can be identified
+- [ ] Acceptance criteria are present
+- [ ] No obvious duplicates exist
+
+### Pattern Discovery Checkpoint
+After pattern matching:
+- [ ] Relevant GRs identified
+- [ ] Similar implementations found
+- [ ] Reuse opportunities documented
+- [ ] Gaps clearly noted
+
+### Simplification Checkpoint
+After simplification review:
+- [ ] Complexity reduced where possible
+- [ ] Trade-offs documented
+- [ ] Solution remains functional
+- [ ] Approach is clear
+
+### Pre-Approval Checkpoint
+Before user review:
+- [ ] Approach document complete
+- [ ] All sections filled
+- [ ] Risks identified
+- [ ] Context preserved
+
+### Implementation Checkpoint
+After approval:
+- [ ] Approach faithfully followed
+- [ ] All details included
+- [ ] Standards met
+- [ ] Quality validated
+
+### Final Quality Checkpoint
+Before completion:
+- [ ] GR compliance verified
+- [ ] Pattern consistency checked
+- [ ] Documentation complete
+- [ ] All tests pass
 
 ## Performance Optimization
 
-### Batch Processing
+### Processing Strategies
 
-**Multi-Domain Batch Coordination:**
-- Related requirement identification
-- Shared entity optimization
-- Parallel processing orchestration
-- Resource utilization optimization
+#### Single Requirement Processing
+- Standard sequential flow
+- Full context for single item
+- Typical time: 10-15 minutes
 
-**Processing Strategies:**
-- **Single Requirements**: Standard individual processing
-- **Related Batches**: Coordinated processing with shared context
-- **System Updates**: Full multi-agent coordination
+#### Batch Processing
+- Related requirements grouped
+- Shared context reused
+- Parallel pattern matching
+- Time savings: 30-40%
 
-### Pattern Reuse Optimization
-
-**Pattern Recognition Engine:**
-- Cross-domain similarity analysis
-- Entity reuse identification
-- Workflow pattern matching
-- Integration template application
-
-**Performance Targets:**
-- 85%+ pattern reuse across domains
-- 70-80% reduction in processing time
-- 90%+ first-pass approval rate
-- <5% coordination overhead
+#### Domain-Specific Optimization
+- Domain expertise cached
+- Common patterns pre-loaded
+- Validation rules optimized
+- Performance gain: 20-30%
 
 ### Resource Management
 
-**Agent Coordination:**
-- Real-time context synchronization
-- Shared memory management
-- Processing queue optimization
-- Load balancing across agents
+#### Context Store Optimization
+- Indexed for fast retrieval
+- Compressed for storage
+- Versioned for history
+- Cached for performance
 
-**Infrastructure Optimization:**
-- Codebase pattern caching
-- Global Requirements indexing
-- Entity relationship precomputation
-- Validation rule optimization
+#### Pattern Matching Optimization
+- Pre-indexed Global Requirements
+- Cached codebase patterns
+- Similarity scoring optimized
+- Search time < 30 seconds
 
-## Monitoring and Tracking
+#### Validation Optimization
+- Parallel validation checks
+- Early termination on failure
+- Cached validation rules
+- Result caching for reuse
 
-### Real-Time Performance Dashboard
+## Monitoring and Metrics
 
-**System-Wide Metrics:**
-- Processing time across all domains
-- Pattern reuse effectiveness
-- Cross-domain coordination efficiency
-- Global Requirements compliance rates
+### Key Performance Indicators
 
-**Domain-Specific Tracking:**
-- Individual domain performance
-- Bottleneck identification
-- Resource utilization analysis
-- Quality trend monitoring
+#### Quality Metrics
+- **First-Approach Accuracy**: Target 90%+
+- **Pattern Reuse Rate**: Target 85%+
+- **Approval Rate**: Target 90%+
+- **Revision Cycles**: Target < 2
+
+#### Performance Metrics
+- **Processing Time**: Target < 15 minutes
+- **Approval Turnaround**: Target < 1 day
+- **Implementation Time**: Target < 30 minutes
+- **End-to-End**: Target < 2 days
+
+#### System Health Metrics
+- **Agent Availability**: 99.9%
+- **Context Store Uptime**: 99.9%
+- **Pattern Match Success**: 95%+
+- **Validation Pass Rate**: 98%+
 
 ### Continuous Improvement
 
-**Pattern Learning:**
-- Successful pattern identification
-- Automatic pattern library updates
-- Confidence score improvements
-- Cross-domain pattern promotion
+#### Pattern Library Growth
+- New patterns discovered
+- Existing patterns refined
+- Cross-domain patterns promoted
+- Obsolete patterns archived
 
-**Performance Optimization:**
-- Automated threshold adjustments
-- Processing workflow optimization
-- Resource allocation improvements
-- Quality gate refinements
+#### Process Refinement
+- Bottleneck identification
+- Workflow optimization
+- Tool enhancement
+- Documentation updates
 
-### Metrics and KPIs
+#### Feedback Integration
+- User feedback analyzed
+- Common issues addressed
+- Process adjustments made
+- Success patterns reinforced
 
-**Primary Performance Indicators:**
-- **Processing Time Reduction**: Target 70-80% improvement
-- **Pattern Reuse Rate**: Target 85%+ across domains
-- **First-Pass Approval Rate**: Target 90%+ success
-- **Cross-Domain Efficiency**: Target 3x speedup for multi-domain batches
+## Troubleshooting Guide
 
-**Quality Indicators:**
-- **Global Requirements Compliance**: Target 98%+ automatic validation
-- **Infrastructure Alignment**: Target 95%+ pattern reuse
-- **Cross-Domain Consistency**: Target 90%+ entity definition alignment
-- **System Scalability**: Target <1 week integration for new domains
+### Common Issues
 
-## Future Enhancements
+#### Requirement Not Processing
+- Check prompt directory placement
+- Verify file naming convention
+- Ensure markdown format
+- Check for domain directory
 
-### AI-Enhanced Capabilities (Planned)
-- Natural language processing for requirement analysis
-- Predictive pattern matching based on business trends
-- Automated business rule extraction from documentation
-- Intelligent quality assurance with AI-powered assessment
+#### Approach Not Generated
+- Verify requirement completeness
+- Check for processing errors
+- Review context store
+- Confirm agent availability
 
-### Advanced Integration (Planned)
-- Real-time infrastructure monitoring and pattern analysis
-- Automated testing integration with requirement generation
-- Documentation generation from requirements
-- Compliance monitoring with regulatory change detection
+#### Pattern Matching Failures
+- Verify GlobalRequirements access
+- Check blitzy-requirements connection
+- Review search parameters
+- Confirm pattern index current
+
+#### Approval Workflow Issues
+- Check approach file location
+- Verify approval format
+- Review revision feedback
+- Confirm status updates
+
+### Resolution Steps
+
+1. **Check Logs**: Review agent processing logs
+2. **Verify Context**: Ensure context store accessible
+3. **Test Patterns**: Confirm pattern matching works
+4. **Review Status**: Check requirement status
+5. **Escalate**: Contact system administrator if needed
+
+## Summary
+
+The simplified 5-agent system provides:
+- **Clear workflow** with mandatory approval
+- **High accuracy** through deep analysis
+- **Pattern reuse** for consistency
+- **Simplification** for maintainability
+- **Quality assurance** at every step
+
+This process ensures requirements are well-understood, properly analyzed, simplified appropriately, and implemented correctly - all with human oversight at the critical approval checkpoint.
 
 ---
 
-**Last Updated**: 2025-01-07  
-**Process Version**: Phase 1 Implementation  
-**Status**: Multi-Agent System Operational, Intelligence Engines Pending
+**Last Updated**: 2025-01-14  
+**Process Version**: 5-Agent Architecture with Approval Workflow  
+**Status**: Simplified system ready for implementation

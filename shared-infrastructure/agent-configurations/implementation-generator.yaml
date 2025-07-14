@@ -1,0 +1,138 @@
+# Implementation Generator Agent Configuration
+# Purpose: Create detailed requirements after approval
+
+agent:
+  name: "Implementation Generator"
+  type: "generation"
+  version: "1.0"
+  purpose: "Generate complete requirement documentation after approval"
+
+trigger_condition: "user_approval_received"
+
+capabilities:
+  - requirement_generation
+  - template_application
+  - detail_expansion
+  - specification_creation
+  - documentation_assembly
+
+inputs:
+  - approved_approach
+  - full_context
+  - user_feedback
+  - pattern_selections
+
+outputs:
+  - complete_requirement_document
+  - implementation_specifications
+  - api_definitions
+  - database_schemas
+  - integration_details
+
+template:
+  location: "/shared-infrastructure/templates/requirement-template.md"
+  sections:
+    - pre_analysis_checklist
+    - entity_analysis
+    - field_mappings
+    - api_specifications
+    - database_schema
+    - implementation_notes
+    - quality_checklist
+
+generation_process:
+  1_apply_template:
+    action: "Load and prepare requirement template"
+    customization: "Domain-specific adjustments"
+    
+  2_expand_approach:
+    action: "Convert approach into detailed specifications"
+    includes:
+      - technical_details
+      - implementation_steps
+      - integration_points
+      
+  3_generate_schemas:
+    action: "Create database schemas from entity analysis"
+    standards: "GR-41 compliance"
+    includes:
+      - table_definitions
+      - relationships
+      - indexes
+      - audit_fields
+      
+  4_define_apis:
+    action: "Generate API specifications"
+    format: "RESTful endpoints"
+    includes:
+      - endpoints
+      - request_formats
+      - response_formats
+      - error_handling
+      
+  5_document_integrations:
+    action: "Detail integration requirements"
+    covers:
+      - external_services
+      - internal_services
+      - data_flows
+      - security_requirements
+
+detail_expansion:
+  entity_specifications:
+    - attributes
+    - relationships
+    - validations
+    - business_rules
+    
+  workflow_specifications:
+    - step_sequences
+    - decision_points
+    - error_paths
+    - performance_requirements
+    
+  integration_specifications:
+    - protocols
+    - authentication
+    - data_formats
+    - error_handling
+
+quality_standards:
+  completeness:
+    - all_sections_filled: "true"
+    - no_placeholders: "true"
+    - cross_references_valid: "true"
+    
+  consistency:
+    - naming_conventions: "GR-41"
+    - pattern_usage: "approved_patterns"
+    - terminology: "domain_specific"
+    
+  clarity:
+    - unambiguous_requirements: "true"
+    - specific_criteria: "true"
+    - measurable_outcomes: "true"
+
+documentation_assembly:
+  order:
+    1: "requirement_overview"
+    2: "entity_analysis"
+    3: "technical_specifications"
+    4: "implementation_details"
+    5: "quality_validation"
+    
+  formatting:
+    - markdown_compliant
+    - consistent_headers
+    - proper_code_blocks
+    - clear_tables
+
+performance_targets:
+  generation_time: "< 5 minutes"
+  validation_time: "< 2 minutes"
+  total_processing: "< 7 minutes"
+
+post_generation:
+  validation: "automatic"
+  destination: "/in-progress/implementations/"
+  notification: "user_notified"

@@ -1,0 +1,72 @@
+{
+  "domain": "producer-portal",
+  "description": "Quote management, producer workflows, and entity relationships",
+  "last_updated": "2025-01-14",
+  "entities": {
+    "primary": [
+      "quote",
+      "driver", 
+      "vehicle",
+      "producer",
+      "coverage",
+      "uw_question"
+    ],
+    "supporting": [
+      "entity_relationship",
+      "producer_hierarchy",
+      "quote_status",
+      "driver_violation"
+    ]
+  },
+  "workflows": {
+    "quote_management": {
+      "description": "Quote creation through binding",
+      "steps": ["create", "add_drivers", "add_vehicles", "calculate", "review", "bind"],
+      "integrations": ["dcs_verification", "rate_calculation", "payment_processing"]
+    },
+    "producer_workflows": {
+      "description": "Producer onboarding and management",
+      "steps": ["registration", "verification", "activation", "hierarchy_setup"],
+      "integrations": ["background_check", "licensing_verification"]
+    },
+    "entity_relationships": {
+      "description": "Hierarchical entity management",
+      "types": ["parent_child", "sibling", "associated"],
+      "operations": ["create", "modify", "delete", "transfer"]
+    }
+  },
+  "integrations": {
+    "dcs_api": {
+      "purpose": "Household data verification",
+      "endpoints": ["drivers", "vehicles", "criminal_history"],
+      "pattern": "GR-53"
+    },
+    "communication_hub": {
+      "purpose": "Producer and customer notifications",
+      "channels": ["email", "sms", "in_app"],
+      "pattern": "GR-44"
+    }
+  },
+  "patterns": {
+    "approved_requirements": "/ProducerPortal/approved-requirements/",
+    "common_patterns": [
+      "quote-workflow",
+      "entity-management",
+      "producer-hierarchy",
+      "dcs-integration"
+    ]
+  },
+  "global_requirements": {
+    "primary": ["GR-52", "GR-44", "GR-41", "GR-38", "GR-53"],
+    "conditional": {
+      "quote_workflows": ["GR-18", "GR-37"],
+      "entity_management": ["GR-52"],
+      "dcs_integration": ["GR-53"]
+    }
+  },
+  "performance_targets": {
+    "quote_creation": "< 30 seconds",
+    "dcs_verification": "< 5 seconds",
+    "rate_calculation": "< 10 seconds"
+  }
+}

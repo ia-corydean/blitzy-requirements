@@ -1,8 +1,8 @@
-# Complete Multi-Agent Requirements Generation System
+# Complete Requirements Generation System
 
 ## Executive Summary
 
-This is a comprehensive, intelligent requirements generation system that transforms the development of business requirements from a manual, domain-specific process into a unified, automated, learning-based operation across all insurance business domains.
+This is a simplified, approval-based requirements generation system that ensures high-quality requirements through a streamlined 5-agent architecture. The system emphasizes simplification, pattern reuse, and human approval before implementation.
 
 ### System Coverage
 - **ProducerPortal** - Quote management, producer workflows, entity management
@@ -13,66 +13,65 @@ This is a comprehensive, intelligent requirements generation system that transfo
 - **Reinstatement** - Policy reinstatement with lapse processing
 - **Sr22** - SR22/SR26 financial responsibility filing
 
-### Performance Achievements
-- **70-80% reduction** in requirements generation time across all domains
-- **85%+ pattern reuse** leveraging existing Global Requirements infrastructure
-- **90%+ first-pass approval rate** through intelligent pre-processing
-- **Zero-configuration addition** of new business domains
+### Key Benefits
+- **90%+ first-approach accuracy** through deep analysis and pattern matching
+- **85%+ pattern reuse** leveraging existing Global Requirements and codebase
+- **Mandatory approval workflow** ensures quality before implementation
+- **Simplified 5-agent system** reduces complexity by 55%
 
 ## Quick Start
 
-### For New Users
-1. **Understand the Process**: Read [PROCESS_GUIDE.md](PROCESS_GUIDE.md) for workflow overview
-2. **Learn to Use the System**: Follow [USER_GUIDE.md](USER_GUIDE.md) for practical instructions
-3. **Review Quality Standards**: Check [CLAUDE.md](CLAUDE.md) for compliance requirements
+### How to Submit a Requirement
 
-### For Developers
-1. **System Architecture**: Review [ARCHITECTURE.md](ARCHITECTURE.md) for technical details
-2. **Implementation Status**: Check [phase1-execution-checklist.md](prompt/phase1-execution-checklist.md)
-3. **Infrastructure**: Review [complete-requirements-generation-system.md](prompt/complete-requirements-generation-system.md)
+1. **Choose your domain**: ProducerPortal, Accounting, etc.
+2. **Create your requirement file**: Name it `prompt-{feature}.md`
+3. **Place in prompt directory**: `/processing-queues/{domain}/prompt/`
+4. **Wait for approach file**: System generates `-approach.md` for review
+5. **Approve or revise**: Review the approach and provide feedback
+6. **Implementation begins**: Only after your approval
 
-## System Status
+### Essential Reading
+- **[PROCESS_GUIDE.md](PROCESS_GUIDE.md)** - Understand the 5-agent workflow
+- **[USER_GUIDE.md](USER_GUIDE.md)** - Detailed submission instructions
+- **[CLAUDE.md](CLAUDE.md)** - Quality standards and compliance
 
-### Current Implementation Phase
-**Phase 1: Foundation (Weeks 1-3)** - **Week 1 Complete, Week 2 Complete**
+## Approval Workflow
 
-- ✅ **Week 1 Complete**: Infrastructure Setup (100%)
-  - Complete directory structure established
-  - Core knowledge base initialized with foundational patterns
-  - Universal entity catalog operational
-  - Cross-domain pattern library functional
+### Step-by-Step Process
 
-- ✅ **Week 2 Complete**: Agent System Development (100%)
-  - System Orchestrator configuration and intelligence engine operational
-  - All 7 Domain Specialist agent configurations complete
-  - Universal Validator implementation with progressive validation
-  - Shared context management system with real-time synchronization
-  - Complete validation tools framework (GR compliance, cross-domain, infrastructure)
+```mermaid
+graph LR
+    A[Submit to prompt/] --> B[System Analysis]
+    B --> C[Generate -approach.md]
+    C --> D{User Reviews}
+    D -->|Approve| E[Implementation]
+    D -->|Revise| B
+    E --> F[Completed Requirement]
+```
 
-- ⏳ **Week 3 Pending**: Intelligence Engine Implementation
-  - Advanced pattern recognition pending
-  - System-wide similarity scoring pending
-  - Automated Global Requirements mapping pending
-  - Performance monitoring infrastructure pending
+### What Happens at Each Step
 
-### Key Metrics
-- **Tasks Completed**: 16 / 52 (31%) - Week 1 & 2 foundation complete
-- **Files Created**: 35+ / ~45 files (78%) - Core system operational
-- **Directories Created**: 25+ / ~25 directories (100%+) - Complete infrastructure
-- **Critical Path Items**: 8 / 12 completed (67%) - Multi-agent system operational
+1. **Submit**: Place your requirement in `/processing-queues/{domain}/prompt/`
+2. **Analysis**: 5-agent system analyzes and creates approach
+3. **Review**: Find `-approach.md` in `/in-progress/approaches/`
+4. **Decision**: Approve, Revise, Reject, or Defer
+5. **Implementation**: Only proceeds after approval
+6. **Completion**: Final requirement in `/completed/`
 
 ## Core Components
 
-### Multi-Agent Architecture
-- **System Orchestrator (Agent SO)**: Cross-domain workflow coordination and strategic planning
-- **Domain Specialists (Agents D1-D7)**: Specialized processing for each business domain
-- **Universal Validator (Agent UV)**: Cross-domain validation with Global Requirements expertise
+### Simplified 5-Agent Architecture
+- **Prompt Analyzer**: Deep requirement analysis and initial approach generation
+- **Pattern Matcher**: Finds reusable patterns from GlobalRequirements and codebase
+- **Simplification Enforcer**: Ensures solutions remain simple and maintainable
+- **Implementation Generator**: Creates detailed requirements after approval
+- **Quality Validator**: Final validation against all standards
 
-### Shared Infrastructure
-- **Unified Knowledge Base**: Cross-domain patterns and intelligence
-- **Processing Queues**: Centralized queue system for all domains
-- **Intelligence Engines**: Pattern recognition and similarity scoring
-- **Validation Tools**: Automated compliance and quality checking
+### Key Infrastructure
+- **Templates**: Standardized templates in `/shared-infrastructure/templates/`
+- **Context Store**: Maintains context throughout the process
+- **Processing Queues**: Domain-specific and multi-domain queues
+- **Blitzy-Requirements**: Reference-only codebase (NEVER modify)
 
 ### Global Requirements Integration
 Leverages 64+ existing Global Requirements including:
@@ -87,52 +86,44 @@ Leverages 64+ existing Global Requirements including:
 ## Directory Structure
 
 ```
-/app/workspace/requirements/
-├── shared-infrastructure/          # System-wide shared components
-│   ├── knowledge-base/            # Cross-domain patterns and intelligence
-│   ├── validation-tools/          # Shared validation scripts
-│   ├── agent-configurations/      # Multi-agent system configs
-│   ├── monitoring-dashboard/      # System-wide performance tracking
-│   └── integration-patterns/      # Cross-domain integration templates
-├── processing-queues/             # Centralized queue system
-│   ├── multi-domain/             # Cross-domain requirement batches
-│   ├── producer-portal/          # ProducerPortal specific queue
-│   ├── accounting/               # Accounting specific queue
-│   ├── program-manager/          # ProgramManager specific queue
-│   ├── program-traits/           # ProgramTraits specific queue
-│   ├── entity-integration/       # EntityIntegration specific queue
-│   ├── reinstatement/            # Reinstatement specific queue
-│   └── sr22/                     # Sr22 specific queue
-├── GlobalRequirements/           # System-wide standards (64+ requirements)
-├── ProducerPortal/              # Enhanced with shared patterns
-├── Accounting/                  # Enhanced with shared patterns
-├── ProgramManager/              # Enhanced with shared patterns
-├── ProgramTraits/               # Enhanced with shared patterns
-├── EntityIntegration/           # Enhanced with shared patterns
-├── Reinstatement/               # Enhanced with shared patterns
-├── Sr22/                        # Enhanced with shared patterns
-└── CLAUDE.md                    # System-wide standards reference
+requirements/
+├── processing-queues/             # WHERE TO SUBMIT REQUIREMENTS
+│   ├── [domain]/                 # Domain-specific queues
+│   │   ├── prompt/              # 📁 SUBMIT NEW REQUIREMENTS HERE
+│   │   ├── pending/             # Waiting for processing
+│   │   ├── in-progress/         
+│   │   │   ├── approaches/      # 📋 REVIEW -approach.md FILES HERE
+│   │   │   └── implementations/ # Active implementation work
+│   │   └── completed/           # Finished requirements
+│   └── multi-domain/            # For cross-domain requirements
+├── shared-infrastructure/        
+│   ├── templates/               # Approach and requirement templates
+│   ├── context-store/           # Context preservation
+│   └── agent-configurations/    # 5-agent system configs
+├── GlobalRequirements/          # Reusable patterns (64+ GRs)
+├── [Domain]/                    # Domain-specific documentation
+└── blitzy-requirements/         # ⚠️ REFERENCE ONLY - DO NOT MODIFY
 ```
 
 ## Key Features
 
-### Intelligent Pattern Recognition
-- **Cross-Domain Analysis**: Automatically identifies reusable patterns across business domains
-- **Entity Relationship Mapping**: Tracks shared entities and their relationships
-- **Global Requirements Automation**: Auto-assignment of applicable Global Requirements
-- **Confidence Scoring**: Reliability metrics for automated recommendations
+### Approval-Based Workflow
+- **Mandatory Approval**: No implementation without explicit approval
+- **-approach.md Files**: Clear proposals before any work begins
+- **Revision Support**: Iterate on approaches based on feedback
+- **Full Transparency**: See exactly what will be implemented
 
-### Multi-Domain Coordination
-- **Parallel Processing**: Simultaneous processing across multiple domains
-- **Shared Entity Management**: Consistent entity definitions across domains
-- **Dependency Resolution**: Automatic handling of cross-domain dependencies
-- **Batch Optimization**: Intelligent grouping of related requirements
+### Simplification Focus
+- **Pattern Reuse**: Leverages existing patterns from GlobalRequirements
+- **Codebase Reference**: Checks blitzy-requirements for implementations
+- **Complexity Reduction**: Simplification Enforcer prevents over-engineering
+- **Clear Documentation**: Every decision is documented and traceable
 
-### Quality Assurance
-- **Progressive Validation**: Multi-stage validation with fail-fast capabilities
-- **Infrastructure Alignment**: Validation against existing codebase patterns
-- **Compliance Checking**: Automated verification against all Global Requirements
-- **Performance Monitoring**: Real-time tracking of system performance
+### Context Preservation
+- **Continuous Context**: Information flows between all agents
+- **Decision History**: All choices and rationale preserved
+- **Domain Knowledge**: Specialized templates for each domain
+- **Cross-References**: Links between related requirements
 
 ## Documentation
 
@@ -153,44 +144,59 @@ Leverages 64+ existing Global Requirements including:
 
 ## Getting Started
 
-### Submit a New Requirement
-1. Identify the primary business domain (ProducerPortal, Accounting, etc.)
-2. Place requirement in appropriate domain's queue: `processing-queues/{domain}/pending/`
-3. System automatically analyzes and routes for optimal processing
-4. Monitor progress through queue status updates
+### 1. Choose Your Domain
+Available domains:
+- `producer-portal` - Quote and policy management
+- `accounting` - Billing and payments
+- `program-manager` - Rate and rule configuration
+- `program-traits` - Program-specific features
+- `entity-integration` - External API integrations
+- `reinstatement` - Policy reinstatement
+- `sr22` - Financial responsibility filing
+- `multi-domain` - Cross-domain requirements
 
-### Multi-Domain Requirements
-1. Place in `processing-queues/multi-domain/pending/`
-2. System automatically identifies all affected domains
-3. Coordinates parallel processing with shared entity management
-4. Consolidates results across all domains
+### 2. Create Your Requirement
+Write a clear markdown file describing:
+- What you need built
+- Why it's needed
+- Acceptance criteria
+- Any special considerations
 
-### Quality Validation
-All requirements automatically validated against:
-- Applicable Global Requirements (64+ standards)
-- Domain-specific approved requirements patterns
-- Existing infrastructure codebase alignment
-- Cross-domain entity consistency
+### 3. Submit for Processing
+Place your file in: `/processing-queues/{domain}/prompt/`
 
-## Support and Contact
+### 4. Review and Approve
+- Check `/in-progress/approaches/` for your `-approach.md` file
+- Review the proposed implementation
+- Provide feedback or approval
 
-### Documentation Issues
-- Check existing documentation in domain directories
-- Review Global Requirements for standards
-- Consult implementation checklists for current status
+### 5. Track Progress
+- Approved requirements move to `/in-progress/implementations/`
+- Completed requirements end up in `/completed/`
 
-### System Issues
-- Monitor processing queues for status updates
-- Review validation reports for quality issues
-- Check performance dashboard for system health
+## Important Notes
 
-### Enhancement Requests
-- Submit through appropriate domain queue
-- System learns from successful patterns
-- Continuous improvement through usage
+### Blitzy-Requirements Repository
+- **GitHub**: https://github.com/blitzy-public-samples/insure-pilot-new/tree/staging
+- **Purpose**: Reference existing implementations
+- **Access**: Read-only - NEVER modify
+- **Usage**: Find patterns and examples
+
+### Simplification Philosophy
+"Make everything as simple as possible, but not simpler."
+- Prefer existing patterns over new solutions
+- Use direct approaches over abstractions
+- Prioritize clarity over cleverness
+- Document decisions clearly
+
+### Success Tips
+1. **Be Specific**: Clear requirements get better approaches
+2. **Reference Examples**: Point to similar features in blitzy-requirements
+3. **Think Simple**: Complex solutions often hide simple ones
+4. **Iterate**: Use the revision process to refine approaches
 
 ---
 
-**Last Updated**: 2025-01-07  
-**System Version**: Phase 1 (Week 1 & 2 Complete, Week 3 Pending)  
-**Documentation Status**: Multi-agent system operational, intelligence engines pending
+**Last Updated**: 2025-01-14  
+**System Version**: 5-Agent Architecture with Approval Workflow  
+**Focus**: Simplification, Pattern Reuse, First-Approach Accuracy

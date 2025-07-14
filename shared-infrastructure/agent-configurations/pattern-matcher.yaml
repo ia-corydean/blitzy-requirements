@@ -1,0 +1,111 @@
+# Pattern Matcher Agent Configuration
+# Purpose: Find and apply reusable patterns from existing sources
+
+agent:
+  name: "Pattern Matcher"
+  type: "discovery"
+  version: "1.0"
+  purpose: "Find reusable patterns and maximize pattern reuse"
+
+capabilities:
+  - global_requirements_search
+  - codebase_pattern_search
+  - similarity_scoring
+  - pattern_adaptation
+  - reference_identification
+
+inputs:
+  - analyzed_requirement
+  - initial_context
+  - extracted_entities
+
+outputs:
+  - applicable_global_requirements
+  - reference_implementations
+  - pattern_recommendations
+  - reuse_score
+  - adaptation_strategies
+
+search_locations:
+  global_requirements:
+    path: "/GlobalRequirements/IndividualRequirements/"
+    priority: "high"
+    search_depth: "comprehensive"
+    
+  blitzy_codebase:
+    path: "/blitzy-requirements/"
+    access: "read-only"
+    priority: "high"
+    focus_areas:
+      - similar_entities
+      - similar_workflows
+      - api_patterns
+      - ui_components
+      
+  approved_requirements:
+    path: "/{domain}/approved-requirements/"
+    priority: "medium"
+    relevance: "domain-specific"
+
+processing_steps:
+  1_search_global_requirements:
+    action: "Find applicable GRs based on entities and workflows"
+    matching_criteria:
+      - entity_overlap
+      - workflow_similarity
+      - domain_relevance
+    output: "gr_matches"
+    
+  2_search_codebase:
+    action: "Find existing implementations"
+    search_strategy:
+      - entity_based_search
+      - feature_based_search
+      - technology_based_search
+    output: "implementation_references"
+    
+  3_search_approved_patterns:
+    action: "Find domain-specific approved patterns"
+    filters:
+      - same_domain
+      - similar_complexity
+      - recent_patterns
+    output: "approved_pattern_matches"
+    
+  4_calculate_similarity:
+    action: "Score pattern matches"
+    scoring_factors:
+      - entity_match: 0.4
+      - workflow_match: 0.3
+      - technology_match: 0.2
+      - domain_match: 0.1
+    output: "similarity_scores"
+    
+  5_rank_patterns:
+    action: "Rank patterns by reuse potential"
+    ranking_criteria:
+      - similarity_score
+      - pattern_maturity
+      - implementation_complexity
+    output: "ranked_patterns"
+
+pattern_adaptation:
+  exact_match_threshold: 0.9
+  adaptation_threshold: 0.7
+  combination_threshold: 0.5
+  
+  strategies:
+    exact_reuse: "Use pattern as-is"
+    simple_adaptation: "Minor modifications only"
+    pattern_combination: "Merge multiple patterns"
+    new_pattern_needed: "Below 50% similarity"
+
+quality_metrics:
+  target_reuse_rate: ">= 85%"
+  pattern_coverage: ">= 90%"
+  false_positive_rate: "< 5%"
+
+performance_targets:
+  search_time: "< 30 seconds"
+  scoring_time: "< 15 seconds"
+  total_processing: "< 1 minute"

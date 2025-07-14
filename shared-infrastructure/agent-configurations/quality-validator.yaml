@@ -1,0 +1,150 @@
+# Quality Validator Agent Configuration
+# Purpose: Final validation against all standards
+
+agent:
+  name: "Quality Validator"
+  type: "validation"
+  version: "1.0"
+  purpose: "Ensure requirement quality and standards compliance"
+
+capabilities:
+  - global_requirements_validation
+  - pattern_consistency_checking
+  - infrastructure_alignment_verification
+  - documentation_completeness_validation
+  - quality_scoring
+
+inputs:
+  - generated_requirement
+  - implementation_context
+  - pattern_applications
+  - approach_document
+
+outputs:
+  - validation_report
+  - compliance_checklist
+  - quality_score
+  - improvement_recommendations
+  - final_status
+
+validation_stages:
+  1_structure_validation:
+    checks:
+      - template_compliance
+      - section_completeness
+      - format_standards
+    threshold: "100%"
+    fail_fast: true
+    
+  2_content_validation:
+    checks:
+      - requirement_clarity
+      - specification_completeness
+      - acceptance_criteria_specificity
+    threshold: "95%"
+    
+  3_pattern_validation:
+    checks:
+      - pattern_usage_correctness
+      - reuse_score_verification
+      - adaptation_appropriateness
+    threshold: "85%"
+    
+  4_gr_compliance:
+    checks:
+      - applicable_grs_referenced
+      - compliance_standards_met
+      - naming_conventions_followed
+    threshold: "95%"
+    
+  5_infrastructure_alignment:
+    checks:
+      - codebase_pattern_consistency
+      - api_standard_compliance
+      - database_convention_alignment
+    threshold: "90%"
+
+validation_checks:
+  global_requirements:
+    GR_52_entity_management:
+      - universal_entity_pattern_used
+      - entity_catalog_updated
+      - performance_targets_met
+      
+    GR_44_communication:
+      - communication_patterns_followed
+      - template_usage_correct
+      - compliance_requirements_met
+      
+    GR_41_database:
+      - naming_conventions_correct
+      - audit_fields_present
+      - relationships_defined
+      
+    GR_38_microservices:
+      - service_boundaries_respected
+      - api_patterns_followed
+      - integration_standards_met
+
+  pattern_consistency:
+    - pattern_source_valid
+    - adaptation_documented
+    - reuse_maximized
+    - new_patterns_justified
+
+  documentation_quality:
+    - no_ambiguous_statements
+    - all_fields_completed
+    - examples_provided
+    - cross_references_valid
+
+quality_scoring:
+  weights:
+    gr_compliance: 0.3
+    pattern_reuse: 0.25
+    documentation: 0.25
+    infrastructure: 0.2
+    
+  thresholds:
+    excellent: ">= 95%"
+    good: ">= 90%"
+    acceptable: ">= 85%"
+    needs_improvement: "< 85%"
+
+failure_handling:
+  structure_failure:
+    action: "Return to implementation generator"
+    feedback: "Specific structure issues"
+    
+  content_failure:
+    action: "Request clarification"
+    feedback: "Missing or unclear content"
+    
+  compliance_failure:
+    action: "Provide compliance guidance"
+    feedback: "Specific GR violations"
+
+final_actions:
+  on_success:
+    - move_to_completed
+    - update_pattern_library
+    - record_metrics
+    - notify_stakeholders
+    
+  on_failure:
+    - document_issues
+    - return_for_correction
+    - provide_guidance
+    - track_revision
+
+performance_metrics:
+  validation_completeness: "100%"
+  false_positive_rate: "< 5%"
+  processing_time: "< 5 minutes"
+  first_pass_success: ">= 90%"
+
+continuous_improvement:
+  - track_common_failures
+  - update_validation_rules
+  - refine_thresholds
+  - enhance_feedback_quality

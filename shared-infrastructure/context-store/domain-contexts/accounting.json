@@ -1,0 +1,77 @@
+{
+  "domain": "accounting",
+  "description": "Billing, payments, commissions, and financial transactions",
+  "last_updated": "2025-01-14",
+  "entities": {
+    "primary": [
+      "billing",
+      "payment",
+      "commission",
+      "ach_transaction",
+      "invoice"
+    ],
+    "supporting": [
+      "billing_cycle",
+      "payment_schedule",
+      "commission_structure",
+      "payment_method",
+      "transaction_log"
+    ]
+  },
+  "workflows": {
+    "billing_cycle": {
+      "description": "Billing generation through collection",
+      "steps": ["generate", "review", "send", "track", "collect"],
+      "integrations": ["payment_gateway", "communication_hub", "banking_api"]
+    },
+    "payment_processing": {
+      "description": "Payment initiation through settlement",
+      "steps": ["initiate", "validate", "process", "settle", "reconcile"],
+      "integrations": ["payment_gateway", "ach_processor", "credit_card_processor"]
+    },
+    "commission_calculation": {
+      "description": "Commission calculation from quote to payout",
+      "steps": ["calculate", "review", "approve", "process", "disburse"],
+      "integrations": ["producer_portal", "banking_api", "tax_service"]
+    }
+  },
+  "integrations": {
+    "payment_gateways": {
+      "purpose": "Multi-processor payment support",
+      "providers": ["stripe", "authorize_net", "paypal"],
+      "pattern": "GR-38"
+    },
+    "banking_apis": {
+      "purpose": "ACH and wire processing",
+      "operations": ["ach_debit", "ach_credit", "wire_transfer"],
+      "pattern": "GR-38"
+    }
+  },
+  "patterns": {
+    "approved_requirements": "/Accounting/approved-requirements/",
+    "common_patterns": [
+      "payment-processing",
+      "billing-cycle",
+      "commission-calculation",
+      "financial-reporting"
+    ]
+  },
+  "global_requirements": {
+    "primary": ["GR-52", "GR-44", "GR-41", "GR-38"],
+    "conditional": {
+      "payment_processing": ["GR-12", "GR-24"],
+      "billing_cycles": ["GR-18", "GR-37"],
+      "compliance": ["GR-51"]
+    }
+  },
+  "performance_targets": {
+    "payment_processing": "< 3 seconds",
+    "billing_generation": "< 1 minute per 1000 policies",
+    "commission_calculation": "< 30 seconds"
+  },
+  "compliance": {
+    "pci_dss": "Level 1",
+    "sox": "Compliant",
+    "data_retention": "7 years"
+  }
+}

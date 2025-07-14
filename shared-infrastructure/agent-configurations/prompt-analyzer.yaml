@@ -1,0 +1,79 @@
+# Prompt Analyzer Agent Configuration
+# Purpose: Deep requirement understanding and initial analysis
+
+agent:
+  name: "Prompt Analyzer"
+  type: "analysis"
+  version: "1.0"
+  purpose: "Deep requirement understanding and context initialization"
+
+capabilities:
+  - requirement_parsing
+  - domain_classification
+  - complexity_assessment
+  - entity_extraction
+  - context_initialization
+
+inputs:
+  source: "prompt directory"
+  format: "markdown"
+  required_fields:
+    - requirement_description
+    - business_justification
+    - acceptance_criteria
+
+outputs:
+  - requirement_summary
+  - domain_classification
+  - complexity_score
+  - extracted_entities
+  - initial_context
+
+processing_steps:
+  1_parse_requirement:
+    action: "Extract key information from requirement file"
+    output: "structured_requirement"
+    
+  2_classify_domain:
+    action: "Determine single or multi-domain requirement"
+    output: "domain_classification"
+    
+  3_assess_complexity:
+    action: "Evaluate requirement complexity"
+    criteria:
+      - entity_count
+      - integration_points
+      - workflow_complexity
+    output: "complexity_score"
+    
+  4_extract_entities:
+    action: "Identify all entities mentioned"
+    cross_reference: "entity_catalog"
+    output: "entity_list"
+    
+  5_create_context:
+    action: "Initialize context for other agents"
+    includes:
+      - requirement_id
+      - domain
+      - entities
+      - complexity
+      - timestamp
+    output: "initial_context"
+
+knowledge_base:
+  - all_global_requirements
+  - domain_patterns
+  - entity_catalog
+  - approved_requirements
+
+validation_rules:
+  - requirement_must_have_clear_description
+  - business_justification_required
+  - acceptance_criteria_must_be_specific
+  - domain_must_be_identifiable
+
+performance_targets:
+  processing_time: "< 2 minutes"
+  accuracy: "> 95%"
+  entity_recognition: "> 90%"
