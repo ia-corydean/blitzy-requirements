@@ -1,0 +1,49 @@
+This is in response to Aime/workspace/requirements/processing-queues/accounting/pending/accounting-global-requirements-generation-v8.md
+- please put all revisions in a -v9 file
+- remove batch check posting from the requirements. Single check posting is still in.
+- integrate the concepts for Paysafe within this documentation as well. Reference: Aime/workspace/requirements/Accounting/output/paysafe-integration-plan.md
+- Payment Processing Questions
+  - Check Imaging Integration: Should the system integrate with bank check imaging systems for Day 2 functionality?
+    - We should integrate to send ACH NACHA files for positive pay.
+  - Payment Rejection Handling: How should the system handle partial NSF situations where some funds are available?
+    - The full minimum down is required in order to process the payment.
+  - Payment Priority: When multiple policies have payments due, what determines application priority?
+    - Payments towards premium are on a per policy basis. Therefore, the above should not matter, right?
+- Cancellation Logic Questions
+  - Grace Period Variability: Is the 11/12 day grace period fixed or program-configurable?
+    - Program configurable.
+  - Refund Prevention: What are acceptable tolerances for cancellation date adjustment to prevent small refunds?
+    - Explain?
+  - Multi-State Operations: How do state-specific cancellation rules override standard logic?
+    - All cancellation rules are per program.
+      - One state per program.
+      - Rating is per program.
+      - policy is rated per program.
+- Batch Processing Questions
+  - Batch Reversal: What is the process for reversing an entire batch if errors are discovered?
+  - Partial Batch Posting: Can batches be partially posted if some payments have errors?
+  - Batch Approval: Is management approval required for batches over certain thresholds?
+    - Batch processing checks are now removed from scope.
+- Commission Questions
+  - Split Commissions: While currently single producer, should the system be designed to support future splits?
+    - It depends. As long as it does not overcomplicate what we need for now and naturally falls into place.
+  - Commission Advances: How should the system handle commission advances or draws?
+    - No commission advances.
+  - Hierarchy Commissions: Should the system support agency hierarchy override commissions?
+    - Explain?
+- Reconciliation Questions
+  - Timing Differences: How should the system handle timing differences between payment posting and bank clearance?
+    - Isn't this what Positive Pay is for?
+  - Automated Matching: What tolerance levels are acceptable for automated payment matching?
+  - Exception Handling: What workflow should handle reconciliation exceptions?
+- Future Considerations
+  - Electronic Payment Growth: How should the system prepare for decreasing physical check volume?
+    - Being able to provide a more flexible api interface for connecting to payment gatways / providers.
+    - As digital payment are becoming more and more prevelant, we need to ensure we can accomodate this space.
+  - Real-Time Payments: Should the system prepare for instant payment networks?
+    - This is the case with Paysafe, correct?
+  - Cryptocurrency: Should the architecture consider future alternative payment methods?
+    - This should be avilable via the Gateway.
+- if their are additional questions from you that you may need providing a full accounting gameplan, please also include those
+- the main tables for accounting should be transaction and transaction_line
+- ensure that we are not over-complicating the accounting foundation.

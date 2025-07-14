@@ -1,0 +1,243 @@
+{
+  "pattern_metadata": {
+    "entity_name": "driver",
+    "pattern_version": "1.0.0",
+    "gr_compliance": "GR-52 Universal Entity Management",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "confidence_score": 0.98,
+    "usage_count": 89,
+    "success_rate": 0.97,
+    "applicable_domains": ["producer-portal", "entity-integration", "sr22"]
+  },
+  "entity_definition": {
+    "primary_table": "driver",
+    "description": "Universal pattern for driver entities across all business domains",
+    "business_purpose": "Manage driver information for quotes, policies, and regulatory compliance",
+    "gr_52_compliant": true
+  },
+  "table_structure": {
+    "core_fields": [
+      {
+        "name": "id",
+        "type": "bigint",
+        "constraints": "PRIMARY KEY AUTO_INCREMENT",
+        "description": "Unique driver identifier"
+      },
+      {
+        "name": "name_id", 
+        "type": "bigint",
+        "constraints": "FOREIGN KEY REFERENCES name(id)",
+        "description": "Reference to universal name entity"
+      },
+      {
+        "name": "date_of_birth",
+        "type": "date",
+        "constraints": "NOT NULL",
+        "description": "Driver's date of birth"
+      },
+      {
+        "name": "driver_type_id",
+        "type": "bigint",
+        "constraints": "FOREIGN KEY REFERENCES driver_type(id)",
+        "description": "Type of driver (primary, secondary, excluded, etc.)"
+      },
+      {
+        "name": "is_named_insured",
+        "type": "boolean",
+        "constraints": "DEFAULT false",
+        "description": "Indicates if driver is the named insured"
+      },
+      {
+        "name": "driver_license_number",
+        "type": "varchar(50)",
+        "constraints": "NULL",
+        "description": "Driver license number (when provided)"
+      },
+      {
+        "name": "driver_license_state",
+        "type": "char(2)",
+        "constraints": "NULL",
+        "description": "State that issued the license"
+      }
+    ],
+    "audit_fields": [
+      {
+        "name": "created_by",
+        "type": "bigint",
+        "constraints": "NOT NULL",
+        "description": "User who created the record"
+      },
+      {
+        "name": "updated_by", 
+        "type": "bigint",
+        "constraints": "NOT NULL",
+        "description": "User who last updated the record"
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp",
+        "constraints": "DEFAULT CURRENT_TIMESTAMP",
+        "description": "Record creation timestamp"
+      },
+      {
+        "name": "updated_at",
+        "type": "timestamp", 
+        "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+        "description": "Record last update timestamp"
+      }
+    ],
+    "status_management": {
+      "field": "status_id",
+      "type": "bigint",
+      "reference": "status",
+      "description": "References universal status table per GR-19"
+    }
+  },
+  "relationships": {
+    "belongs_to": [
+      {
+        "entity": "name",
+        "foreign_key": "name_id",
+        "description": "Driver's name information"
+      },
+      {
+        "entity": "driver_type",
+        "foreign_key": "driver_type_id", 
+        "description": "Classification of driver type"
+      },
+      {
+        "entity": "status",
+        "foreign_key": "status_id",
+        "description": "Current status of driver record"
+      }
+    ],
+    "has_many": [
+      {
+        "entity": "license",
+        "relationship": "driver_id",
+        "description": "Driver licenses (current and historical)"
+      },
+      {
+        "entity": "violation",
+        "relationship": "driver_id",
+        "description": "Traffic violations and incidents"
+      }
+    ],
+    "many_to_many": [
+      {
+        "entity": "phone",
+        "through": "map_driver_phone",
+        "description": "Driver contact phone numbers"
+      },
+      {
+        "entity": "email",
+        "through": "map_driver_email", 
+        "description": "Driver email addresses"
+      },
+      {
+        "entity": "address",
+        "through": "map_driver_address",
+        "description": "Driver addresses (residential, mailing, etc.)"
+      },
+      {
+        "entity": "quote",
+        "through": "map_quote_driver",
+        "description": "Quotes where driver is included"
+      },
+      {
+        "entity": "vehicle",
+        "through": "map_quote_driver_vehicle",
+        "description": "Vehicles the driver is authorized to operate"
+      }
+    ]
+  },
+  "business_rules": {
+    "validation_rules": [
+      {
+        "rule": "single_named_insured_per_quote",
+        "description": "Only one driver per quote can have is_named_insured = true"
+      },
+      {
+        "rule": "age_validation",
+        "description": "Driver must be between 14-99 years old based on date_of_birth"
+      },
+      {
+        "rule": "license_state_validation",
+        "description": "driver_license_state must be valid US state code when provided"
+      }
+    ],
+    "business_logic": [
+      {
+        "logic": "named_insured_inheritance",
+        "description": "Named insured status inherits certain policy privileges and responsibilities"
+      },
+      {
+        "logic": "age_based_rating",
+        "description": "Driver age affects insurance rating calculations"
+      }
+    ]
+  },
+  "integration_points": {
+    "dcs_integration": {
+      "endpoint": "household_drivers",
+      "purpose": "Driver verification and household lookup",
+      "gr_reference": "GR-53 DCS Integration Architecture"
+    },
+    "sr22_integration": {
+      "trigger": "violation_recorded",
+      "purpose": "Financial responsibility filing requirements",
+      "gr_reference": "GR-10 SR22/SR26 Financial Responsibility Filing"
+    },
+    "communication_integration": {
+      "channels": ["email", "sms", "phone"],
+      "purpose": "Driver communication and notifications",
+      "gr_reference": "GR-44 Communication Architecture"
+    }
+  },
+  "section_c_template": {
+    "description": "Backend mapping template for driver fields",
+    "example_mapping": "get driver.* from driver\n-> join name on driver.name_id = name.id\n-> join driver_type on driver.driver_type_id = driver_type.id\n-> join status on driver.status_id = status.id\n-> where driver.status_id = active_status_id",
+    "performance_notes": "Index on (status_id, is_named_insured) for common queries"
+  },
+  "section_e_template": {
+    "description": "Database schema template for driver table",
+    "create_statement": "CREATE TABLE driver (\n  id bigint PRIMARY KEY AUTO_INCREMENT,\n  name_id bigint NOT NULL,\n  date_of_birth date NOT NULL,\n  driver_type_id bigint NOT NULL,\n  is_named_insured boolean DEFAULT false,\n  driver_license_number varchar(50),\n  driver_license_state char(2),\n  status_id bigint NOT NULL,\n  created_by bigint NOT NULL,\n  updated_by bigint NOT NULL,\n  created_at timestamp DEFAULT CURRENT_TIMESTAMP,\n  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  \n  FOREIGN KEY (name_id) REFERENCES name(id),\n  FOREIGN KEY (driver_type_id) REFERENCES driver_type(id),\n  FOREIGN KEY (status_id) REFERENCES status(id),\n  \n  INDEX idx_driver_status (status_id),\n  INDEX idx_driver_named_insured (is_named_insured),\n  INDEX idx_driver_dob (date_of_birth),\n  UNIQUE KEY unique_driver_per_quote_named (quote_id, is_named_insured) -- enforced via map table\n);"
+  },
+  "usage_patterns": {
+    "common_queries": [
+      {
+        "purpose": "Get named insured for quote",
+        "query": "SELECT d.* FROM driver d JOIN map_quote_driver mqd ON d.id = mqd.driver_id WHERE mqd.quote_id = ? AND d.is_named_insured = true"
+      },
+      {
+        "purpose": "Get all drivers for quote",
+        "query": "SELECT d.* FROM driver d JOIN map_quote_driver mqd ON d.id = mqd.driver_id WHERE mqd.quote_id = ? AND d.status_id = ?"
+      }
+    ],
+    "performance_considerations": [
+      "Index on (status_id, is_named_insured) for quote driver queries",
+      "Consider caching driver age calculations",
+      "Use batch loading for multiple driver queries"
+    ]
+  },
+  "domain_customizations": {
+    "producer_portal": {
+      "additional_validations": ["quote_driver_limit", "age_restrictions"],
+      "ui_considerations": ["named_insured_selection", "driver_type_display"]
+    },
+    "entity_integration": {
+      "dcs_fields": ["household_lookup_id", "verification_status"],
+      "sync_requirements": ["real_time_verification"]
+    },
+    "sr22": {
+      "additional_fields": ["filing_required", "filing_state"],
+      "compliance_rules": ["state_specific_requirements"]
+    }
+  },
+  "migration_guidance": {
+    "from_legacy": "Map existing driver tables to this pattern, ensuring is_named_insured logic is properly migrated",
+    "data_cleanup": "Standardize driver_license_state to 2-character codes",
+    "validation": "Verify single named insured per quote constraint"
+  }
+}

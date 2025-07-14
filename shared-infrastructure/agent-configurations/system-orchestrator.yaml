@@ -1,0 +1,395 @@
+# System Orchestrator Configuration
+# Complete Requirements Generation System - Multi-Agent Architecture
+# Handles cross-domain coordination, pattern recognition, and Global Requirements mastery
+
+metadata:
+  agent_name: "System Orchestrator"
+  agent_type: "orchestrator"
+  version: "1.0.0"
+  created_date: "2025-01-07"
+  last_updated: "2025-01-07"
+  gr_compliance: ["GR-38", "GR-44", "GR-52", "GR-49"]
+  description: "Master coordination agent for multi-domain requirements processing"
+
+# Core Agent Configuration
+agent_config:
+  # Agent Identity and Role
+  agent_id: "system-orchestrator"
+  display_name: "System Orchestrator"
+  primary_role: "cross_domain_coordination"
+  secondary_roles:
+    - "pattern_recognition"
+    - "global_requirements_mastery"
+    - "workflow_optimization"
+    - "quality_assurance"
+  
+  # Processing Capabilities
+  capabilities:
+    multi_domain_processing: true
+    pattern_recognition: true
+    global_requirements_validation: true
+    cross_domain_optimization: true
+    batch_processing: true
+    parallel_coordination: true
+    intelligence_aggregation: true
+    
+  # Performance Configuration
+  performance:
+    max_concurrent_domains: 7
+    max_batch_size: 50
+    processing_timeout: "30 minutes"
+    coordination_overhead_target: "< 5%"
+    pattern_recognition_accuracy: "> 80%"
+    gr_assignment_accuracy: "> 95%"
+
+# Knowledge Base Integration
+knowledge_base:
+  # Core Knowledge Sources
+  universal_entity_catalog: "/app/workspace/requirements/shared-infrastructure/knowledge-base/universal-entity-catalog.json"
+  global_requirements_index: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-requirements-index.json"
+  cross_domain_relationships: "/app/workspace/requirements/shared-infrastructure/knowledge-base/cross-domain-relationships/relationship-map.json"
+  architectural_decisions: "/app/workspace/requirements/shared-infrastructure/knowledge-base/architectural-decisions/decision-index.json"
+  
+  # Pattern Libraries
+  universal_entities: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/universal-entities/"
+  communication_templates: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/communication-templates/"
+  database_schemas: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/database-schemas/"
+  service_integrations: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/service-integrations/"
+  
+  # Domain-Specific Patterns
+  domain_patterns: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/"
+  
+  # Cache Configuration
+  cache_enabled: true
+  cache_ttl: "1 hour"
+  cache_size_limit: "500MB"
+
+# Domain Specialist Coordination
+domain_specialists:
+  producer_portal:
+    agent_id: "producer-portal-specialist"
+    config_file: "/app/workspace/requirements/shared-infrastructure/agent-configurations/producer-portal-specialist.yaml"
+    priority: "high"
+    specializations: ["quotes", "policies", "drivers", "vehicles", "producers"]
+    
+  accounting:
+    agent_id: "accounting-specialist"
+    config_file: "/app/workspace/requirements/shared-infrastructure/agent-configurations/accounting-specialist.yaml"
+    priority: "high"
+    specializations: ["payments", "billing", "commissions", "financial_reporting"]
+    
+  program_manager:
+    agent_id: "program-manager-specialist"
+    config_file: "/app/workspace/requirements/shared-infrastructure/agent-configurations/program-manager-specialist.yaml"
+    priority: "medium"
+    specializations: ["rating", "underwriting", "rate_factors", "territories"]
+    
+  program_traits:
+    agent_id: "program-traits-specialist"
+    config_file: "/app/workspace/requirements/shared-infrastructure/agent-configurations/program-traits-specialist.yaml"
+    priority: "medium"
+    specializations: ["program_rules", "traits", "configurations", "customizations"]
+    
+  entity_integration:
+    agent_id: "entity-integration-specialist"
+    config_file: "/app/workspace/requirements/shared-infrastructure/agent-configurations/entity-integration-specialist.yaml"
+    priority: "medium"
+    specializations: ["dcs_integration", "external_apis", "data_verification", "entity_management"]
+    
+  reinstatement:
+    agent_id: "reinstatement-specialist"
+    config_file: "/app/workspace/requirements/shared-infrastructure/agent-configurations/reinstatement-specialist.yaml"
+    priority: "low"
+    specializations: ["policy_lapse", "reinstatement_process", "grace_periods", "restoration"]
+    
+  sr22:
+    agent_id: "sr22-specialist"
+    config_file: "/app/workspace/requirements/shared-infrastructure/agent-configurations/sr22-specialist.yaml"
+    priority: "low"
+    specializations: ["sr22_filing", "financial_responsibility", "state_compliance", "violations"]
+
+# Universal Validator Integration
+universal_validator:
+  agent_id: "universal-validator"
+  config_file: "/app/workspace/requirements/shared-infrastructure/agent-configurations/universal-validator.yaml"
+  validation_modes:
+    - "global_requirements_compliance"
+    - "cross_domain_consistency"
+    - "infrastructure_alignment"
+    - "pattern_compliance"
+  fail_fast_enabled: true
+  progressive_validation: true
+  confidence_threshold: 0.85
+
+# Intelligence Engine Configuration
+intelligence_engines:
+  # Pattern Recognition
+  pattern_matcher:
+    engine_file: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/cross-domain-pattern-matcher.py"
+    enabled: true
+    confidence_threshold: 0.80
+    max_patterns_per_requirement: 10
+    
+  # Similarity Analysis
+  similarity_engine:
+    engine_file: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/similarity-engine.py"
+    enabled: true
+    similarity_threshold: 0.75
+    max_similar_requirements: 5
+    
+  # Global Requirements Assignment
+  gr_auto_assignment:
+    engine_file: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/gr-auto-assignment.py"
+    enabled: true
+    confidence_threshold: 0.95
+    auto_assign_high_confidence: true
+    manual_review_threshold: 0.70
+    
+  # Batch Optimization
+  batch_optimizer:
+    engine_file: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/batch-optimizer.py"
+    enabled: true
+    min_batch_size: 3
+    max_batch_size: 20
+    optimization_target: "processing_time"
+
+# Shared Context Management
+shared_context:
+  context_manager: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/shared-context-manager.py"
+  memory_interface: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/agent-memory-interface.py"
+  
+  # Synchronization Settings
+  real_time_sync: true
+  sync_interval: "5 seconds"
+  conflict_resolution: "orchestrator_authority"
+  context_persistence: true
+  context_retention: "30 days"
+  
+  # Shared Data Types
+  shared_entities:
+    - "universal_entities"
+    - "cross_domain_relationships"
+    - "global_requirements_assignments"
+    - "pattern_discoveries"
+    - "workflow_state"
+  
+  # Performance Settings
+  max_context_size: "100MB"
+  compression_enabled: true
+  delta_sync_enabled: true
+
+# Workflow Orchestration
+workflow_management:
+  # Processing Modes
+  processing_modes:
+    - "individual_requirement"
+    - "batch_processing"
+    - "cross_domain_workflow"
+    - "emergency_processing"
+  
+  # Default Workflow
+  default_workflow:
+    1_preprocessing:
+      - "requirement_analysis"
+      - "entity_extraction"
+      - "pattern_recognition"
+      - "gr_auto_assignment"
+      - "similarity_analysis"
+      
+    2_domain_coordination:
+      - "domain_specialist_assignment"
+      - "cross_domain_relationship_analysis"
+      - "parallel_processing_setup"
+      - "shared_context_initialization"
+      
+    3_processing:
+      - "domain_specialist_processing"
+      - "cross_domain_validation"
+      - "pattern_application"
+      - "quality_assurance"
+      
+    4_validation:
+      - "universal_validation"
+      - "global_requirements_compliance"
+      - "cross_domain_consistency"
+      - "infrastructure_alignment"
+      
+    5_finalization:
+      - "result_consolidation"
+      - "documentation_generation"
+      - "pattern_library_updates"
+      - "performance_metrics_recording"
+  
+  # Emergency Processing
+  emergency_mode:
+    enabled: true
+    triggers:
+      - "high_priority_requirement"
+      - "deadline_pressure"
+      - "system_failure_recovery"
+    bypass_validations: ["pattern_recognition", "similarity_analysis"]
+    require_validations: ["global_requirements_compliance", "infrastructure_alignment"]
+
+# Queue Management
+queue_configuration:
+  # Multi-Domain Queue
+  multi_domain_queue: "/app/workspace/requirements/processing-queues/multi-domain/"
+  
+  # Individual Domain Queues
+  domain_queues:
+    producer_portal: "/app/workspace/requirements/processing-queues/producer-portal/"
+    accounting: "/app/workspace/requirements/processing-queues/accounting/"
+    program_manager: "/app/workspace/requirements/processing-queues/program-manager/"
+    program_traits: "/app/workspace/requirements/processing-queues/program-traits/"
+    entity_integration: "/app/workspace/requirements/processing-queues/entity-integration/"
+    reinstatement: "/app/workspace/requirements/processing-queues/reinstatement/"
+    sr22: "/app/workspace/requirements/processing-queues/sr22/"
+  
+  # Queue Processing
+  polling_interval: "10 seconds"
+  max_queue_size: 100
+  priority_processing: true
+  load_balancing: "round_robin"
+
+# Performance Monitoring
+monitoring:
+  # Metrics Collection
+  metrics_enabled: true
+  metrics_collector: "/app/workspace/requirements/shared-infrastructure/monitoring-dashboard/metrics-collector.py"
+  
+  # Key Performance Indicators
+  kpis:
+    processing_time_reduction: "> 70%"
+    pattern_reuse_rate: "> 85%"
+    first_pass_approval_rate: "> 90%"
+    coordination_overhead: "< 5%"
+    gr_assignment_accuracy: "> 95%"
+    cross_domain_efficiency: "3x speedup"
+  
+  # Alerts and Notifications
+  alerts:
+    performance_degradation: "processing_time > 2x baseline"
+    accuracy_drop: "pattern_recognition < 75%"
+    coordination_failure: "agent_communication_error"
+    queue_overflow: "queue_size > 80% capacity"
+  
+  # Reporting
+  reporting_interval: "1 hour"
+  daily_summary: true
+  weekly_analysis: true
+
+# Integration with Existing Systems
+external_integrations:
+  # Infrastructure Repository
+  blitzy_requirements:
+    repository_path: "/app/workspace/blitzy-requirements/"
+    branch: "staging"
+    validation_enabled: true
+    
+  # Global Requirements
+  global_requirements:
+    directory: "/app/workspace/requirements/GlobalRequirements/"
+    auto_sync: true
+    validation_enabled: true
+    
+  # Domain-Specific Systems
+  existing_domains:
+    producer_portal:
+      directory: "/app/workspace/requirements/ProducerPortal/"
+      integration_mode: "enhanced"
+      backward_compatibility: true
+
+# Security and Access Control
+security:
+  # Authentication
+  authentication_required: false  # Internal system
+  
+  # Authorization
+  authorization_levels:
+    orchestrator: "full_access"
+    domain_specialists: "domain_scoped"
+    validators: "read_write_validation"
+    
+  # Data Protection
+  sensitive_data_handling:
+    encryption_at_rest: false  # Internal files
+    access_logging: true
+    audit_trail: true
+    
+  # Compliance
+  regulatory_compliance:
+    data_retention: "7 years"
+    audit_requirements: "complete_trail"
+    privacy_protection: "pii_masking"
+
+# Error Handling and Recovery
+error_handling:
+  # Retry Logic
+  retry_policy:
+    max_retries: 3
+    retry_interval: "30 seconds"
+    exponential_backoff: true
+    
+  # Fallback Strategies
+  fallback_modes:
+    agent_failure: "redistribute_workload"
+    intelligence_engine_failure: "manual_processing"
+    context_sync_failure: "local_processing"
+    
+  # Recovery Procedures
+  recovery:
+    automatic_recovery: true
+    recovery_timeout: "5 minutes"
+    manual_intervention_threshold: "3 consecutive failures"
+
+# Logging and Debugging
+logging:
+  # Log Levels
+  log_level: "INFO"
+  debug_mode: false
+  
+  # Log Destinations
+  log_file: "/app/workspace/requirements/shared-infrastructure/logs/system-orchestrator.log"
+  console_output: true
+  
+  # Log Rotation
+  rotation_size: "100MB"
+  retention_days: 30
+  
+  # Structured Logging
+  format: "json"
+  include_context: true
+  correlation_ids: true
+
+# Development and Testing
+development:
+  # Test Mode
+  test_mode: false
+  test_data_directory: "/app/workspace/requirements/shared-infrastructure/test-data/"
+  
+  # Mock Services
+  mock_agents: false
+  mock_intelligence_engines: false
+  
+  # Debugging
+  debug_intelligence_engines: false
+  debug_agent_communication: false
+  debug_pattern_recognition: false
+  
+  # Performance Testing
+  load_testing_enabled: false
+  performance_baseline_recording: true
+
+# Version Control and Updates
+version_control:
+  # Configuration Versioning
+  config_version_tracking: true
+  backward_compatibility_support: true
+  
+  # Update Management
+  auto_update_patterns: false
+  manual_approval_required: true
+  
+  # Rollback Capability
+  rollback_enabled: true
+  rollback_retention: "5 versions"

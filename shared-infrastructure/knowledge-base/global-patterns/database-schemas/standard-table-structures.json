@@ -1,0 +1,904 @@
+{
+  "schema_metadata": {
+    "schema_category": "standard_table_structures",
+    "schema_version": "1.0.0",
+    "gr_compliance": "GR-41 Database Schema Requirements",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "total_structures": 8,
+    "applicable_domains": ["all_domains"],
+    "confidence_score": 0.98,
+    "usage_count": 445,
+    "success_rate": 0.99
+  },
+  "core_table_patterns": {
+    "primary_entity_table": {
+      "pattern_name": "Primary Business Entity",
+      "description": "Standard structure for main business entities like driver, vehicle, policy, quote",
+      "required_fields": [
+        {
+          "field_name": "id",
+          "data_type": "bigint",
+          "constraints": "PRIMARY KEY AUTO_INCREMENT",
+          "description": "Unique identifier for the entity",
+          "required": true
+        },
+        {
+          "field_name": "status_id",
+          "data_type": "bigint",
+          "constraints": "FOREIGN KEY REFERENCES status(id)",
+          "description": "Reference to universal status table (GR-19)",
+          "required": true
+        },
+        {
+          "field_name": "created_by",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "User who created the record",
+          "required": true
+        },
+        {
+          "field_name": "updated_by",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "User who last updated the record",
+          "required": true
+        },
+        {
+          "field_name": "created_at",
+          "data_type": "timestamp",
+          "constraints": "DEFAULT CURRENT_TIMESTAMP",
+          "description": "Record creation timestamp",
+          "required": true
+        },
+        {
+          "field_name": "updated_at",
+          "data_type": "timestamp",
+          "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+          "description": "Record last update timestamp",
+          "required": true
+        }
+      ],
+      "optional_patterns": [
+        {
+          "pattern": "boolean_indicators",
+          "fields": ["is_primary", "is_active", "is_verified"],
+          "usage": "Entity-specific boolean flags"
+        },
+        {
+          "pattern": "reference_fields",
+          "fields": ["{entity}_type_id", "{related_entity}_id"],
+          "usage": "Foreign key relationships to other entities"
+        }
+      ],
+      "standard_indexes": [
+        {
+          "index_name": "idx_{table}_status",
+          "fields": ["status_id"],
+          "type": "btree"
+        },
+        {
+          "index_name": "idx_{table}_created_at",
+          "fields": ["created_at"],
+          "type": "btree"
+        }
+      ],
+      "example_usage": "driver, vehicle, policy, quote, producer, payment"
+    },
+    "reference_table": {
+      "pattern_name": "Reference/Lookup Table",
+      "description": "Standard structure for lookup tables ending with _type suffix",
+      "required_fields": [
+        {
+          "field_name": "id",
+          "data_type": "bigint",
+          "constraints": "PRIMARY KEY AUTO_INCREMENT",
+          "description": "Unique identifier for the reference value",
+          "required": true
+        },
+        {
+          "field_name": "name",
+          "data_type": "varchar(50)",
+          "constraints": "NOT NULL",
+          "description": "Human-readable name for the reference value",
+          "required": true
+        },
+        {
+          "field_name": "description",
+          "data_type": "text",
+          "constraints": "NULL",
+          "description": "Detailed description of the reference value",
+          "required": false
+        },
+        {
+          "field_name": "sort_order",
+          "data_type": "int",
+          "constraints": "DEFAULT 0",
+          "description": "Display order for UI purposes",
+          "required": false
+        },
+        {
+          "field_name": "is_active",
+          "data_type": "boolean",
+          "constraints": "DEFAULT true",
+          "description": "Whether this reference value is currently active",
+          "required": true
+        },
+        {
+          "field_name": "created_by",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "User who created the record",
+          "required": true
+        },
+        {
+          "field_name": "updated_by",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "User who last updated the record",
+          "required": true
+        },
+        {
+          "field_name": "created_at",
+          "data_type": "timestamp",
+          "constraints": "DEFAULT CURRENT_TIMESTAMP",
+          "description": "Record creation timestamp",
+          "required": true
+        },
+        {
+          "field_name": "updated_at",
+          "data_type": "timestamp",
+          "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+          "description": "Record last update timestamp",
+          "required": true
+        }
+      ],
+      "optional_patterns": [
+        {
+          "pattern": "code_field",
+          "fields": ["code"],
+          "usage": "Short code for API/system integration"
+        },
+        {
+          "pattern": "metadata_field",
+          "fields": ["metadata"],
+          "usage": "JSON metadata for GR-52 universal entity management"
+        }
+      ],
+      "standard_indexes": [
+        {
+          "index_name": "unique_{table}_name",
+          "fields": ["name"],
+          "type": "unique"
+        },
+        {
+          "index_name": "idx_{table}_active",
+          "fields": ["is_active"],
+          "type": "btree"
+        }
+      ],
+      "example_usage": "driver_type, vehicle_type, payment_type, address_type"
+    },
+    "relationship_table": {
+      "pattern_name": "Many-to-Many Relationship Table",
+      "description": "Standard structure for relationship tables with map_ prefix",
+      "required_fields": [
+        {
+          "field_name": "id",
+          "data_type": "bigint",
+          "constraints": "PRIMARY KEY AUTO_INCREMENT",
+          "description": "Unique identifier for the relationship",
+          "required": true
+        },
+        {
+          "field_name": "{entity1}_id",
+          "data_type": "bigint",
+          "constraints": "FOREIGN KEY REFERENCES {entity1}(id)",
+          "description": "Foreign key to first entity in relationship",
+          "required": true
+        },
+        {
+          "field_name": "{entity2}_id",
+          "data_type": "bigint",
+          "constraints": "FOREIGN KEY REFERENCES {entity2}(id)",
+          "description": "Foreign key to second entity in relationship",
+          "required": true
+        },
+        {
+          "field_name": "created_by",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "User who created the relationship",
+          "required": true
+        },
+        {
+          "field_name": "updated_by",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "User who last updated the relationship",
+          "required": true
+        },
+        {
+          "field_name": "created_at",
+          "data_type": "timestamp",
+          "constraints": "DEFAULT CURRENT_TIMESTAMP",
+          "description": "Relationship creation timestamp",
+          "required": true
+        },
+        {
+          "field_name": "updated_at",
+          "data_type": "timestamp",
+          "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+          "description": "Relationship last update timestamp",
+          "required": true
+        }
+      ],
+      "optional_patterns": [
+        {
+          "pattern": "relationship_metadata",
+          "fields": ["effective_date", "expiration_date", "sort_order"],
+          "usage": "Additional relationship context"
+        },
+        {
+          "pattern": "relationship_status",
+          "fields": ["status_id"],
+          "usage": "Status tracking for the relationship"
+        }
+      ],
+      "standard_indexes": [
+        {
+          "index_name": "idx_map_{entity1}_{entity2}_{entity1}",
+          "fields": ["{entity1}_id"],
+          "type": "btree"
+        },
+        {
+          "index_name": "idx_map_{entity1}_{entity2}_{entity2}",
+          "fields": ["{entity2}_id"],
+          "type": "btree"
+        },
+        {
+          "index_name": "unique_map_{entity1}_{entity2}",
+          "fields": ["{entity1}_id", "{entity2}_id"],
+          "type": "unique"
+        }
+      ],
+      "example_usage": "map_quote_driver, map_driver_vehicle, map_policy_address"
+    },
+    "universal_status_table": {
+      "pattern_name": "Universal Status Table (GR-19)",
+      "description": "Centralized status management across all entities",
+      "required_fields": [
+        {
+          "field_name": "id",
+          "data_type": "bigint",
+          "constraints": "PRIMARY KEY AUTO_INCREMENT",
+          "description": "Unique identifier for the status",
+          "required": true
+        },
+        {
+          "field_name": "entity_type",
+          "data_type": "varchar(50)",
+          "constraints": "NOT NULL",
+          "description": "Type of entity this status applies to",
+          "required": true
+        },
+        {
+          "field_name": "name",
+          "data_type": "varchar(50)",
+          "constraints": "NOT NULL",
+          "description": "Human-readable status name",
+          "required": true
+        },
+        {
+          "field_name": "code",
+          "data_type": "varchar(20)",
+          "constraints": "NOT NULL",
+          "description": "System code for the status",
+          "required": true
+        },
+        {
+          "field_name": "description",
+          "data_type": "text",
+          "constraints": "NULL",
+          "description": "Detailed description of the status",
+          "required": false
+        },
+        {
+          "field_name": "is_active",
+          "data_type": "boolean",
+          "constraints": "DEFAULT true",
+          "description": "Whether this status is currently active",
+          "required": true
+        },
+        {
+          "field_name": "is_default",
+          "data_type": "boolean",
+          "constraints": "DEFAULT false",
+          "description": "Whether this is the default status for the entity type",
+          "required": true
+        },
+        {
+          "field_name": "sort_order",
+          "data_type": "int",
+          "constraints": "DEFAULT 0",
+          "description": "Display order for UI purposes",
+          "required": false
+        },
+        {
+          "field_name": "created_by",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "User who created the status",
+          "required": true
+        },
+        {
+          "field_name": "updated_by",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "User who last updated the status",
+          "required": true
+        },
+        {
+          "field_name": "created_at",
+          "data_type": "timestamp",
+          "constraints": "DEFAULT CURRENT_TIMESTAMP",
+          "description": "Status creation timestamp",
+          "required": true
+        },
+        {
+          "field_name": "updated_at",
+          "data_type": "timestamp",
+          "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+          "description": "Status last update timestamp",
+          "required": true
+        }
+      ],
+      "standard_indexes": [
+        {
+          "index_name": "idx_status_entity_type",
+          "fields": ["entity_type"],
+          "type": "btree"
+        },
+        {
+          "index_name": "idx_status_active",
+          "fields": ["is_active"],
+          "type": "btree"
+        },
+        {
+          "index_name": "unique_status_entity_code",
+          "fields": ["entity_type", "code"],
+          "type": "unique"
+        }
+      ],
+      "example_statuses": {
+        "driver": ["active", "inactive", "excluded", "pending_verification"],
+        "vehicle": ["active", "inactive", "totaled", "pending_inspection"],
+        "policy": ["active", "pending", "cancelled", "expired"],
+        "quote": ["draft", "rated", "bound", "expired", "declined"]
+      }
+    },
+    "audit_log_table": {
+      "pattern_name": "Audit Trail Table",
+      "description": "Standard structure for tracking changes to entities",
+      "required_fields": [
+        {
+          "field_name": "id",
+          "data_type": "bigint",
+          "constraints": "PRIMARY KEY AUTO_INCREMENT",
+          "description": "Unique identifier for the audit record",
+          "required": true
+        },
+        {
+          "field_name": "entity_type",
+          "data_type": "varchar(50)",
+          "constraints": "NOT NULL",
+          "description": "Type of entity that was changed",
+          "required": true
+        },
+        {
+          "field_name": "entity_id",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "ID of the entity that was changed",
+          "required": true
+        },
+        {
+          "field_name": "action",
+          "data_type": "enum('CREATE', 'UPDATE', 'DELETE')",
+          "constraints": "NOT NULL",
+          "description": "Type of action performed",
+          "required": true
+        },
+        {
+          "field_name": "field_name",
+          "data_type": "varchar(100)",
+          "constraints": "NULL",
+          "description": "Name of the field that was changed (for UPDATE actions)",
+          "required": false
+        },
+        {
+          "field_name": "old_value",
+          "data_type": "text",
+          "constraints": "NULL",
+          "description": "Previous value before the change",
+          "required": false
+        },
+        {
+          "field_name": "new_value",
+          "data_type": "text",
+          "constraints": "NULL",
+          "description": "New value after the change",
+          "required": false
+        },
+        {
+          "field_name": "changed_by",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "User who made the change",
+          "required": true
+        },
+        {
+          "field_name": "changed_at",
+          "data_type": "timestamp",
+          "constraints": "DEFAULT CURRENT_TIMESTAMP",
+          "description": "When the change occurred",
+          "required": true
+        },
+        {
+          "field_name": "ip_address",
+          "data_type": "varchar(45)",
+          "constraints": "NULL",
+          "description": "IP address of the user making the change",
+          "required": false
+        },
+        {
+          "field_name": "user_agent",
+          "data_type": "text",
+          "constraints": "NULL",
+          "description": "User agent of the client making the change",
+          "required": false
+        }
+      ],
+      "standard_indexes": [
+        {
+          "index_name": "idx_audit_entity",
+          "fields": ["entity_type", "entity_id"],
+          "type": "btree"
+        },
+        {
+          "index_name": "idx_audit_changed_by",
+          "fields": ["changed_by"],
+          "type": "btree"
+        },
+        {
+          "index_name": "idx_audit_changed_at",
+          "fields": ["changed_at"],
+          "type": "btree"
+        }
+      ],
+      "retention_policy": "7_years_regulatory_compliance"
+    },
+    "communication_log_table": {
+      "pattern_name": "Communication Tracking Table",
+      "description": "Standard structure for tracking communications (GR-44)",
+      "required_fields": [
+        {
+          "field_name": "id",
+          "data_type": "bigint",
+          "constraints": "PRIMARY KEY AUTO_INCREMENT",
+          "description": "Unique identifier for the communication record",
+          "required": true
+        },
+        {
+          "field_name": "communication_type",
+          "data_type": "enum('email', 'sms', 'voice', 'document')",
+          "constraints": "NOT NULL",
+          "description": "Type of communication",
+          "required": true
+        },
+        {
+          "field_name": "entity_type",
+          "data_type": "varchar(50)",
+          "constraints": "NOT NULL",
+          "description": "Type of entity being communicated with",
+          "required": true
+        },
+        {
+          "field_name": "entity_id",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "ID of the entity being communicated with",
+          "required": true
+        },
+        {
+          "field_name": "template_id",
+          "data_type": "varchar(100)",
+          "constraints": "NULL",
+          "description": "Template used for the communication",
+          "required": false
+        },
+        {
+          "field_name": "correlation_id",
+          "data_type": "varchar(100)",
+          "constraints": "NOT NULL",
+          "description": "Unique correlation ID for tracking",
+          "required": true
+        },
+        {
+          "field_name": "recipient_address",
+          "data_type": "varchar(255)",
+          "constraints": "NOT NULL",
+          "description": "Email address, phone number, or mailing address",
+          "required": true
+        },
+        {
+          "field_name": "subject_line",
+          "data_type": "varchar(255)",
+          "constraints": "NULL",
+          "description": "Subject line for emails or SMS preview",
+          "required": false
+        },
+        {
+          "field_name": "content_preview",
+          "data_type": "text",
+          "constraints": "NULL",
+          "description": "First 500 characters of the communication content",
+          "required": false
+        },
+        {
+          "field_name": "delivery_status",
+          "data_type": "enum('pending', 'sent', 'delivered', 'failed', 'bounced')",
+          "constraints": "DEFAULT 'pending'",
+          "description": "Current delivery status",
+          "required": true
+        },
+        {
+          "field_name": "delivery_timestamp",
+          "data_type": "timestamp",
+          "constraints": "NULL",
+          "description": "When the communication was delivered",
+          "required": false
+        },
+        {
+          "field_name": "error_message",
+          "data_type": "text",
+          "constraints": "NULL",
+          "description": "Error message if delivery failed",
+          "required": false
+        },
+        {
+          "field_name": "external_message_id",
+          "data_type": "varchar(255)",
+          "constraints": "NULL",
+          "description": "Message ID from external service provider",
+          "required": false
+        },
+        {
+          "field_name": "initiated_by",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "User who initiated the communication",
+          "required": true
+        },
+        {
+          "field_name": "created_at",
+          "data_type": "timestamp",
+          "constraints": "DEFAULT CURRENT_TIMESTAMP",
+          "description": "When the communication was initiated",
+          "required": true
+        }
+      ],
+      "standard_indexes": [
+        {
+          "index_name": "idx_comm_log_entity",
+          "fields": ["entity_type", "entity_id"],
+          "type": "btree"
+        },
+        {
+          "index_name": "idx_comm_log_correlation",
+          "fields": ["correlation_id"],
+          "type": "btree"
+        },
+        {
+          "index_name": "idx_comm_log_status",
+          "fields": ["delivery_status"],
+          "type": "btree"
+        },
+        {
+          "index_name": "idx_comm_log_created",
+          "fields": ["created_at"],
+          "type": "btree"
+        }
+      ]
+    },
+    "external_entity_table": {
+      "pattern_name": "Universal External Entity Table (GR-52)",
+      "description": "Standard structure for managing external entities",
+      "required_fields": [
+        {
+          "field_name": "id",
+          "data_type": "bigint",
+          "constraints": "PRIMARY KEY AUTO_INCREMENT",
+          "description": "Unique identifier for the external entity",
+          "required": true
+        },
+        {
+          "field_name": "external_entity_type_id",
+          "data_type": "bigint",
+          "constraints": "FOREIGN KEY REFERENCES external_entity_type(id)",
+          "description": "Type of external entity (API, attorney, body shop, vendor)",
+          "required": true
+        },
+        {
+          "field_name": "name",
+          "data_type": "varchar(255)",
+          "constraints": "NOT NULL",
+          "description": "Name of the external entity",
+          "required": true
+        },
+        {
+          "field_name": "code",
+          "data_type": "varchar(50)",
+          "constraints": "NULL",
+          "description": "Short code for system integration",
+          "required": false
+        },
+        {
+          "field_name": "description",
+          "data_type": "text",
+          "constraints": "NULL",
+          "description": "Detailed description of the external entity",
+          "required": false
+        },
+        {
+          "field_name": "metadata",
+          "data_type": "json",
+          "constraints": "NULL",
+          "description": "JSON metadata for flexible entity definitions",
+          "required": false
+        },
+        {
+          "field_name": "configuration",
+          "data_type": "json",
+          "constraints": "NULL",
+          "description": "Configuration settings for the external entity",
+          "required": false
+        },
+        {
+          "field_name": "is_active",
+          "data_type": "boolean",
+          "constraints": "DEFAULT true",
+          "description": "Whether this external entity is currently active",
+          "required": true
+        },
+        {
+          "field_name": "status_id",
+          "data_type": "bigint",
+          "constraints": "FOREIGN KEY REFERENCES status(id)",
+          "description": "Reference to universal status table",
+          "required": true
+        },
+        {
+          "field_name": "created_by",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "User who created the external entity",
+          "required": true
+        },
+        {
+          "field_name": "updated_by",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "User who last updated the external entity",
+          "required": true
+        },
+        {
+          "field_name": "created_at",
+          "data_type": "timestamp",
+          "constraints": "DEFAULT CURRENT_TIMESTAMP",
+          "description": "External entity creation timestamp",
+          "required": true
+        },
+        {
+          "field_name": "updated_at",
+          "data_type": "timestamp",
+          "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+          "description": "External entity last update timestamp",
+          "required": true
+        }
+      ],
+      "standard_indexes": [
+        {
+          "index_name": "idx_external_entity_type",
+          "fields": ["external_entity_type_id"],
+          "type": "btree"
+        },
+        {
+          "index_name": "idx_external_entity_active",
+          "fields": ["is_active"],
+          "type": "btree"
+        },
+        {
+          "index_name": "idx_external_entity_status",
+          "fields": ["status_id"],
+          "type": "btree"
+        },
+        {
+          "index_name": "unique_external_entity_code",
+          "fields": ["code"],
+          "type": "unique"
+        }
+      ],
+      "supported_entity_types": ["api_endpoint", "attorney", "body_shop", "vendor", "repair_facility", "medical_provider"]
+    },
+    "configuration_table": {
+      "pattern_name": "System Configuration Table",
+      "description": "Standard structure for storing system configuration values",
+      "required_fields": [
+        {
+          "field_name": "id",
+          "data_type": "bigint",
+          "constraints": "PRIMARY KEY AUTO_INCREMENT",
+          "description": "Unique identifier for the configuration setting",
+          "required": true
+        },
+        {
+          "field_name": "category",
+          "data_type": "varchar(100)",
+          "constraints": "NOT NULL",
+          "description": "Category of the configuration setting",
+          "required": true
+        },
+        {
+          "field_name": "key_name",
+          "data_type": "varchar(255)",
+          "constraints": "NOT NULL",
+          "description": "Unique key name for the configuration setting",
+          "required": true
+        },
+        {
+          "field_name": "value",
+          "data_type": "text",
+          "constraints": "NOT NULL",
+          "description": "Configuration value (can be JSON for complex values)",
+          "required": true
+        },
+        {
+          "field_name": "data_type",
+          "data_type": "enum('string', 'integer', 'boolean', 'json', 'decimal')",
+          "constraints": "DEFAULT 'string'",
+          "description": "Data type of the configuration value",
+          "required": true
+        },
+        {
+          "field_name": "description",
+          "data_type": "text",
+          "constraints": "NULL",
+          "description": "Description of what this configuration controls",
+          "required": false
+        },
+        {
+          "field_name": "is_encrypted",
+          "data_type": "boolean",
+          "constraints": "DEFAULT false",
+          "description": "Whether the value is encrypted at rest",
+          "required": true
+        },
+        {
+          "field_name": "is_system",
+          "data_type": "boolean",
+          "constraints": "DEFAULT false",
+          "description": "Whether this is a system setting (not user modifiable)",
+          "required": true
+        },
+        {
+          "field_name": "environment",
+          "data_type": "varchar(20)",
+          "constraints": "DEFAULT 'all'",
+          "description": "Environment this setting applies to (dev, staging, prod, all)",
+          "required": true
+        },
+        {
+          "field_name": "created_by",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "User who created the configuration",
+          "required": true
+        },
+        {
+          "field_name": "updated_by",
+          "data_type": "bigint",
+          "constraints": "NOT NULL",
+          "description": "User who last updated the configuration",
+          "required": true
+        },
+        {
+          "field_name": "created_at",
+          "data_type": "timestamp",
+          "constraints": "DEFAULT CURRENT_TIMESTAMP",
+          "description": "Configuration creation timestamp",
+          "required": true
+        },
+        {
+          "field_name": "updated_at",
+          "data_type": "timestamp",
+          "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+          "description": "Configuration last update timestamp",
+          "required": true
+        }
+      ],
+      "standard_indexes": [
+        {
+          "index_name": "unique_config_key",
+          "fields": ["category", "key_name", "environment"],
+          "type": "unique"
+        },
+        {
+          "index_name": "idx_config_category",
+          "fields": ["category"],
+          "type": "btree"
+        },
+        {
+          "index_name": "idx_config_environment",
+          "fields": ["environment"],
+          "type": "btree"
+        }
+      ]
+    }
+  },
+  "implementation_guidelines": {
+    "field_validation": {
+      "required_field_validation": "All tables must include audit fields (created_by, updated_by, created_at, updated_at)",
+      "foreign_key_validation": "All foreign keys must follow {table}_id naming convention",
+      "index_validation": "All foreign keys must have corresponding indexes"
+    },
+    "constraint_patterns": {
+      "check_constraints": "Use CHECK constraints for business rule validation",
+      "unique_constraints": "Apply unique constraints for natural keys",
+      "foreign_key_constraints": "All relationships must have proper foreign key constraints"
+    },
+    "performance_optimization": {
+      "index_strategy": "Create indexes based on common query patterns",
+      "partitioning": "Consider partitioning for large audit and log tables",
+      "archival": "Implement archival strategies for historical data"
+    }
+  },
+  "domain_specific_adaptations": {
+    "producer_portal": {
+      "additional_patterns": ["quote_specific_fields", "producer_relationship_tracking"],
+      "performance_considerations": ["quote_expiration_indexes", "producer_activity_indexes"]
+    },
+    "accounting": {
+      "additional_patterns": ["financial_amount_fields", "payment_reconciliation_tracking"],
+      "compliance_requirements": ["audit_trail_completeness", "financial_data_retention"]
+    },
+    "universal_entities": {
+      "metadata_driven": "Use JSON metadata fields for flexible entity definitions",
+      "polymorphic_relationships": "Support for multiple entity types through map tables"
+    }
+  },
+  "migration_support": {
+    "schema_evolution": {
+      "version_tracking": "Track schema versions in database",
+      "migration_scripts": "Standardized migration script format",
+      "rollback_support": "All migrations must include rollback scripts"
+    },
+    "data_migration": {
+      "audit_preservation": "Preserve audit trails during migrations",
+      "foreign_key_mapping": "Maintain referential integrity during data migration",
+      "validation_rules": "Apply validation rules during migration"
+    }
+  },
+  "compliance_requirements": {
+    "regulatory_compliance": {
+      "data_retention": "7-year retention for insurance data",
+      "audit_requirements": "Complete audit trail for all data changes",
+      "data_privacy": "Support for data masking and anonymization"
+    },
+    "security_requirements": {
+      "encryption_at_rest": "Sensitive data encryption support",
+      "access_logging": "User access logging for sensitive tables",
+      "field_level_security": "Row-level security where applicable"
+    }
+  }
+}

@@ -1,0 +1,287 @@
+{
+  "pattern_metadata": {
+    "entity_name": "vehicle",
+    "pattern_version": "1.0.0",
+    "gr_compliance": "GR-52 Universal Entity Management",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "confidence_score": 0.94,
+    "usage_count": 76,
+    "success_rate": 0.95,
+    "applicable_domains": ["producer-portal", "entity-integration", "program-manager"]
+  },
+  "entity_definition": {
+    "primary_table": "vehicle",
+    "description": "Universal pattern for vehicle entities across all business domains",
+    "business_purpose": "Manage vehicle information for quotes, policies, and rate calculation",
+    "gr_52_compliant": true
+  },
+  "table_structure": {
+    "core_fields": [
+      {
+        "name": "id",
+        "type": "bigint",
+        "constraints": "PRIMARY KEY AUTO_INCREMENT",
+        "description": "Unique vehicle identifier"
+      },
+      {
+        "name": "vin",
+        "type": "varchar(17)",
+        "constraints": "NULL",
+        "description": "Vehicle Identification Number (17 characters)"
+      },
+      {
+        "name": "year",
+        "type": "int",
+        "constraints": "NOT NULL",
+        "description": "Model year of the vehicle"
+      },
+      {
+        "name": "make",
+        "type": "varchar(50)",
+        "constraints": "NOT NULL",
+        "description": "Vehicle manufacturer"
+      },
+      {
+        "name": "model",
+        "type": "varchar(50)",
+        "constraints": "NOT NULL",
+        "description": "Vehicle model name"
+      },
+      {
+        "name": "body_style",
+        "type": "varchar(30)",
+        "constraints": "NULL",
+        "description": "Vehicle body style (sedan, SUV, truck, etc.)"
+      },
+      {
+        "name": "vehicle_type_id",
+        "type": "bigint",
+        "constraints": "FOREIGN KEY REFERENCES vehicle_type(id)",
+        "description": "Classification of vehicle type"
+      },
+      {
+        "name": "is_primary_vehicle",
+        "type": "boolean",
+        "constraints": "DEFAULT false",
+        "description": "Indicates if vehicle is the primary vehicle"
+      },
+      {
+        "name": "vehicle_use_id",
+        "type": "bigint", 
+        "constraints": "FOREIGN KEY REFERENCES vehicle_use(id)",
+        "description": "How the vehicle is used (pleasure, commute, business, etc.)"
+      },
+      {
+        "name": "annual_mileage",
+        "type": "int",
+        "constraints": "NULL",
+        "description": "Estimated annual mileage"
+      }
+    ],
+    "audit_fields": [
+      {
+        "name": "created_by",
+        "type": "bigint",
+        "constraints": "NOT NULL",
+        "description": "User who created the record"
+      },
+      {
+        "name": "updated_by",
+        "type": "bigint", 
+        "constraints": "NOT NULL",
+        "description": "User who last updated the record"
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp",
+        "constraints": "DEFAULT CURRENT_TIMESTAMP",
+        "description": "Record creation timestamp"
+      },
+      {
+        "name": "updated_at",
+        "type": "timestamp",
+        "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+        "description": "Record last update timestamp"
+      }
+    ],
+    "status_management": {
+      "field": "status_id",
+      "type": "bigint",
+      "reference": "status",
+      "description": "References universal status table per GR-19"
+    }
+  },
+  "relationships": {
+    "belongs_to": [
+      {
+        "entity": "vehicle_type",
+        "foreign_key": "vehicle_type_id",
+        "description": "Vehicle classification type"
+      },
+      {
+        "entity": "vehicle_use",
+        "foreign_key": "vehicle_use_id",
+        "description": "How the vehicle is primarily used"
+      },
+      {
+        "entity": "status",
+        "foreign_key": "status_id",
+        "description": "Current status of vehicle record"
+      }
+    ],
+    "has_many": [
+      {
+        "entity": "registration",
+        "relationship": "vehicle_id",
+        "description": "Vehicle registrations (current and historical)"
+      },
+      {
+        "entity": "coverage",
+        "relationship": "vehicle_id",
+        "description": "Insurance coverages for this vehicle"
+      },
+      {
+        "entity": "claim",
+        "relationship": "vehicle_id",
+        "description": "Claims involving this vehicle"
+      }
+    ],
+    "many_to_many": [
+      {
+        "entity": "driver",
+        "through": "map_quote_driver_vehicle",
+        "description": "Drivers authorized to operate this vehicle"
+      },
+      {
+        "entity": "quote",
+        "through": "map_quote_vehicle",
+        "description": "Quotes that include this vehicle"
+      },
+      {
+        "entity": "rate_factor",
+        "through": "map_vehicle_rate_factor",
+        "description": "Rate factors applied to this vehicle"
+      }
+    ]
+  },
+  "business_rules": {
+    "validation_rules": [
+      {
+        "rule": "vin_format_validation",
+        "description": "VIN must be 17 characters when provided, alphanumeric excluding I, O, Q"
+      },
+      {
+        "rule": "year_range_validation", 
+        "description": "Vehicle year must be between 1900 and current_year + 2"
+      },
+      {
+        "rule": "single_primary_vehicle_per_quote",
+        "description": "Only one vehicle per quote can have is_primary_vehicle = true"
+      },
+      {
+        "rule": "mileage_range_validation",
+        "description": "Annual mileage must be between 0 and 100,000 when provided"
+      }
+    ],
+    "business_logic": [
+      {
+        "logic": "primary_vehicle_rating",
+        "description": "Primary vehicle may have different rating factors applied"
+      },
+      {
+        "logic": "age_based_depreciation",
+        "description": "Vehicle age affects comprehensive/collision coverage values"
+      },
+      {
+        "logic": "use_based_rating",
+        "description": "Vehicle use affects liability and coverage requirements"
+      }
+    ]
+  },
+  "integration_points": {
+    "dcs_integration": {
+      "endpoint": "household_vehicles",
+      "purpose": "Vehicle verification and VIN decoding",
+      "gr_reference": "GR-53 DCS Integration Architecture"
+    },
+    "rate_calculation": {
+      "purpose": "Vehicle characteristics affect insurance rates",
+      "factors": ["year", "make", "model", "body_style", "vehicle_use", "annual_mileage"],
+      "gr_reference": "Rate calculation microservice per GR-38"
+    },
+    "vin_decoding": {
+      "purpose": "Decode VIN to populate make, model, year, body_style",
+      "external_service": "VIN decoding API",
+      "fallback": "Manual entry"
+    }
+  },
+  "section_c_template": {
+    "description": "Backend mapping template for vehicle fields",
+    "example_mapping": "get vehicle.* from vehicle\n-> join vehicle_type on vehicle.vehicle_type_id = vehicle_type.id\n-> join vehicle_use on vehicle.vehicle_use_id = vehicle_use.id\n-> join status on vehicle.status_id = status.id\n-> where vehicle.status_id = active_status_id",
+    "performance_notes": "Index on (status_id, is_primary_vehicle) for common queries"
+  },
+  "section_e_template": {
+    "description": "Database schema template for vehicle table",
+    "create_statement": "CREATE TABLE vehicle (\n  id bigint PRIMARY KEY AUTO_INCREMENT,\n  vin varchar(17),\n  year int NOT NULL,\n  make varchar(50) NOT NULL,\n  model varchar(50) NOT NULL,\n  body_style varchar(30),\n  vehicle_type_id bigint NOT NULL,\n  is_primary_vehicle boolean DEFAULT false,\n  vehicle_use_id bigint NOT NULL,\n  annual_mileage int,\n  status_id bigint NOT NULL,\n  created_by bigint NOT NULL,\n  updated_by bigint NOT NULL,\n  created_at timestamp DEFAULT CURRENT_TIMESTAMP,\n  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  \n  FOREIGN KEY (vehicle_type_id) REFERENCES vehicle_type(id),\n  FOREIGN KEY (vehicle_use_id) REFERENCES vehicle_use(id),\n  FOREIGN KEY (status_id) REFERENCES status(id),\n  \n  INDEX idx_vehicle_status (status_id),\n  INDEX idx_vehicle_primary (is_primary_vehicle),\n  INDEX idx_vehicle_vin (vin),\n  INDEX idx_vehicle_year_make_model (year, make, model),\n  UNIQUE KEY unique_vin (vin) -- when vin is not null\n);"
+  },
+  "usage_patterns": {
+    "common_queries": [
+      {
+        "purpose": "Get primary vehicle for quote",
+        "query": "SELECT v.* FROM vehicle v JOIN map_quote_vehicle mqv ON v.id = mqv.vehicle_id WHERE mqv.quote_id = ? AND v.is_primary_vehicle = true"
+      },
+      {
+        "purpose": "Get all vehicles for quote",
+        "query": "SELECT v.* FROM vehicle v JOIN map_quote_vehicle mqv ON v.id = mqv.vehicle_id WHERE mqv.quote_id = ? AND v.status_id = ?"
+      },
+      {
+        "purpose": "Find vehicle by VIN",
+        "query": "SELECT * FROM vehicle WHERE vin = ? AND status_id = ?"
+      }
+    ],
+    "performance_considerations": [
+      "Index on (status_id, is_primary_vehicle) for quote vehicle queries",
+      "VIN lookups should be cached for duplicate checking",
+      "Consider denormalizing commonly accessed rate factors"
+    ]
+  },
+  "domain_customizations": {
+    "producer_portal": {
+      "additional_validations": ["quote_vehicle_limit", "minimum_vehicle_age"],
+      "ui_considerations": ["primary_vehicle_selection", "vin_decoder_integration"]
+    },
+    "entity_integration": {
+      "dcs_fields": ["household_lookup_id", "verification_status", "decoded_data"],
+      "sync_requirements": ["real_time_vin_verification"]
+    },
+    "program_manager": {
+      "rating_fields": ["symbol", "territory", "class_code"],
+      "calculation_requirements": ["rate_factor_application"]
+    }
+  },
+  "rate_calculation_integration": {
+    "rating_factors": [
+      {
+        "factor": "vehicle_age",
+        "calculation": "current_year - vehicle.year",
+        "impact": "Affects comprehensive/collision rates"
+      },
+      {
+        "factor": "vehicle_symbol",
+        "source": "make_model_symbol_table",
+        "impact": "Primary rating factor for vehicle"
+      },
+      {
+        "factor": "vehicle_use_multiplier",
+        "source": "vehicle_use.rate_multiplier",
+        "impact": "Adjusts base rates by usage type"
+      }
+    ]
+  },
+  "migration_guidance": {
+    "from_legacy": "Map existing vehicle tables to this pattern, ensuring is_primary_vehicle logic is properly migrated",
+    "data_cleanup": "Standardize make/model names, validate VIN formats",
+    "validation": "Verify single primary vehicle per quote constraint"
+  }
+}

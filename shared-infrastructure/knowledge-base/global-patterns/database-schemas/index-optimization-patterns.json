@@ -1,0 +1,528 @@
+{
+  "index_metadata": {
+    "pattern_category": "database_index_optimization",
+    "pattern_version": "1.0.0",
+    "gr_compliance": "GR-41 Database Schema Requirements, GR-33 Data Services & Caching",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "total_patterns": 12,
+    "applicable_domains": ["all_domains"],
+    "confidence_score": 0.97,
+    "usage_count": 267,
+    "success_rate": 0.98
+  },
+  "core_index_patterns": {
+    "primary_key_pattern": {
+      "pattern_name": "Primary Key Index",
+      "description": "Automatically created clustered index on primary key",
+      "index_type": "clustered",
+      "fields": ["id"],
+      "naming_convention": "AUTO (database managed)",
+      "performance_characteristics": {
+        "read_performance": "excellent",
+        "write_performance": "good",
+        "storage_overhead": "minimal"
+      },
+      "usage_scenarios": ["unique_record_lookup", "join_operations", "foreign_key_relationships"],
+      "implementation_notes": "Created automatically with PRIMARY KEY constraint"
+    },
+    "foreign_key_pattern": {
+      "pattern_name": "Foreign Key Index",
+      "description": "Index on foreign key fields for join optimization",
+      "index_type": "btree",
+      "fields": ["{referenced_table}_id"],
+      "naming_convention": "idx_{table}_{referenced_table}_id",
+      "performance_characteristics": {
+        "read_performance": "excellent",
+        "write_performance": "good",
+        "storage_overhead": "low"
+      },
+      "usage_scenarios": ["join_operations", "foreign_key_lookups", "referential_integrity"],
+      "examples": [
+        {
+          "table": "driver",
+          "field": "status_id",
+          "index_name": "idx_driver_status_id"
+        },
+        {
+          "table": "quote",
+          "field": "producer_id", 
+          "index_name": "idx_quote_producer_id"
+        },
+        {
+          "table": "payment",
+          "field": "policy_id",
+          "index_name": "idx_payment_policy_id"
+        }
+      ],
+      "implementation_sql": "CREATE INDEX idx_{table}_{referenced_table}_id ON {table} ({referenced_table}_id)"
+    },
+    "status_index_pattern": {
+      "pattern_name": "Status Field Index",
+      "description": "Index on status_id for filtering active/inactive records",
+      "index_type": "btree",
+      "fields": ["status_id"],
+      "naming_convention": "idx_{table}_status",
+      "performance_characteristics": {
+        "read_performance": "excellent",
+        "write_performance": "good",
+        "storage_overhead": "low"
+      },
+      "usage_scenarios": ["active_record_filtering", "status_based_queries", "dashboard_queries"],
+      "query_patterns": [
+        "WHERE status_id = active_status_id",
+        "WHERE status_id IN (active_status_ids)",
+        "GROUP BY status_id"
+      ],
+      "selectivity_notes": "High selectivity when filtering for active records",
+      "implementation_sql": "CREATE INDEX idx_{table}_status ON {table} (status_id)"
+    },
+    "composite_search_pattern": {
+      "pattern_name": "Composite Search Index",
+      "description": "Multi-column index for common search combinations",
+      "index_type": "btree",
+      "fields": ["field1", "field2", "field3"],
+      "naming_convention": "idx_{table}_{field1}_{field2}_{field3}",
+      "performance_characteristics": {
+        "read_performance": "excellent_for_covered_queries",
+        "write_performance": "moderate",
+        "storage_overhead": "moderate"
+      },
+      "field_ordering_rules": [
+        "Most selective field first",
+        "Equality conditions before range conditions",
+        "Most frequently queried fields first"
+      ],
+      "examples": [
+        {
+          "table": "driver",
+          "fields": ["status_id", "is_named_insured"],
+          "index_name": "idx_driver_status_named_insured",
+          "use_case": "Get named insured drivers for active quotes"
+        },
+        {
+          "table": "payment",
+          "fields": ["policy_id", "status_id", "transaction_date"],
+          "index_name": "idx_payment_policy_status_date",
+          "use_case": "Payment history for specific policy"
+        },
+        {
+          "table": "quote",
+          "fields": ["producer_id", "status_id", "effective_date"],
+          "index_name": "idx_quote_producer_status_date",
+          "use_case": "Producer quote listings"
+        }
+      ]
+    },
+    "unique_constraint_pattern": {
+      "pattern_name": "Unique Constraint Index",
+      "description": "Unique index for natural keys and business constraints",
+      "index_type": "unique_btree",
+      "fields": ["unique_field_or_combination"],
+      "naming_convention": "unique_{table}_{field}" or "unique_{table}_{field1}_{field2}",
+      "performance_characteristics": {
+        "read_performance": "excellent",
+        "write_performance": "good_with_uniqueness_check",
+        "storage_overhead": "low"
+      },
+      "usage_scenarios": ["natural_key_lookups", "duplicate_prevention", "business_rule_enforcement"],
+      "examples": [
+        {
+          "table": "driver",
+          "fields": ["driver_license_number", "driver_license_state"],
+          "index_name": "unique_driver_license",
+          "use_case": "Prevent duplicate driver licenses"
+        },
+        {
+          "table": "vehicle",
+          "fields": ["vin"],
+          "index_name": "unique_vehicle_vin",
+          "use_case": "Prevent duplicate VINs"
+        },
+        {
+          "table": "quote",
+          "fields": ["quote_number"],
+          "index_name": "unique_quote_number",
+          "use_case": "Ensure unique quote numbers"
+        }
+      ]
+    },
+    "date_range_pattern": {
+      "pattern_name": "Date Range Index",
+      "description": "Index optimized for date range queries",
+      "index_type": "btree",
+      "fields": ["date_field"],
+      "naming_convention": "idx_{table}_{date_field}",
+      "performance_characteristics": {
+        "read_performance": "excellent_for_ranges",
+        "write_performance": "good",
+        "storage_overhead": "low"
+      },
+      "usage_scenarios": ["date_range_filtering", "temporal_queries", "reporting"],
+      "query_patterns": [
+        "WHERE effective_date BETWEEN ? AND ?",
+        "WHERE created_at >= ?",
+        "ORDER BY transaction_date DESC"
+      ],
+      "examples": [
+        {
+          "table": "policy",
+          "field": "effective_date",
+          "index_name": "idx_policy_effective_date"
+        },
+        {
+          "table": "payment",
+          "field": "transaction_date",
+          "index_name": "idx_payment_transaction_date"
+        },
+        {
+          "table": "quote",
+          "field": "expiration_date",
+          "index_name": "idx_quote_expiration_date"
+        }
+      ]
+    },
+    "boolean_flag_pattern": {
+      "pattern_name": "Boolean Flag Index",
+      "description": "Index on boolean fields for filtering",
+      "index_type": "btree",
+      "fields": ["boolean_field"],
+      "naming_convention": "idx_{table}_{boolean_field}",
+      "performance_characteristics": {
+        "read_performance": "good_for_selective_values",
+        "write_performance": "good",
+        "storage_overhead": "very_low"
+      },
+      "selectivity_considerations": "Only useful when filtering for less common value (typically true)",
+      "usage_scenarios": ["primary_record_filtering", "verification_status", "feature_flags"],
+      "examples": [
+        {
+          "table": "driver",
+          "field": "is_named_insured",
+          "index_name": "idx_driver_named_insured",
+          "use_case": "Find named insured driver for quote"
+        },
+        {
+          "table": "vehicle",
+          "field": "is_primary_vehicle",
+          "index_name": "idx_vehicle_primary",
+          "use_case": "Find primary vehicle for quote"
+        },
+        {
+          "table": "email",
+          "field": "is_verified",
+          "index_name": "idx_email_verified",
+          "use_case": "Find verified email addresses"
+        }
+      ]
+    },
+    "text_search_pattern": {
+      "pattern_name": "Text Search Index",
+      "description": "Index for text-based searches and lookups",
+      "index_type": "btree_or_fulltext",
+      "fields": ["text_field"],
+      "naming_convention": "idx_{table}_{text_field}",
+      "performance_characteristics": {
+        "read_performance": "good_for_prefix_searches",
+        "write_performance": "moderate",
+        "storage_overhead": "moderate"
+      },
+      "usage_scenarios": ["name_searches", "autocomplete", "lookup_fields"],
+      "search_patterns": [
+        "WHERE name LIKE 'prefix%'",
+        "WHERE email_address = ?",
+        "WHERE phone_number = ?"
+      ],
+      "examples": [
+        {
+          "table": "producer",
+          "field": "name",
+          "index_name": "idx_producer_name"
+        },
+        {
+          "table": "email",
+          "field": "email_address",
+          "index_name": "idx_email_address"
+        },
+        {
+          "table": "phone",
+          "field": "digits_only",
+          "index_name": "idx_phone_digits_only"
+        }
+      ]
+    },
+    "covering_index_pattern": {
+      "pattern_name": "Covering Index",
+      "description": "Index that includes all columns needed for a query",
+      "index_type": "btree_with_included_columns",
+      "fields": ["search_fields", "included_fields"],
+      "naming_convention": "idx_{table}_{search_fields}_covering",
+      "performance_characteristics": {
+        "read_performance": "excellent_no_table_lookup",
+        "write_performance": "slower_due_to_size",
+        "storage_overhead": "high"
+      },
+      "usage_scenarios": ["frequently_accessed_combinations", "report_queries", "dashboard_data"],
+      "design_considerations": [
+        "Include frequently accessed columns",
+        "Balance between performance and storage",
+        "Monitor index usage statistics"
+      ],
+      "examples": [
+        {
+          "table": "driver",
+          "search_fields": ["quote_id", "status_id"],
+          "included_fields": ["name_id", "is_named_insured", "date_of_birth"],
+          "index_name": "idx_driver_quote_status_covering",
+          "use_case": "Quote driver listing without table lookup"
+        }
+      ]
+    },
+    "relationship_table_pattern": {
+      "pattern_name": "Relationship Table Index",
+      "description": "Specialized indexes for many-to-many relationship tables",
+      "index_type": "btree",
+      "required_indexes": [
+        {
+          "fields": ["{entity1}_id"],
+          "naming_convention": "idx_map_{entity1}_{entity2}_{entity1}"
+        },
+        {
+          "fields": ["{entity2}_id"],
+          "naming_convention": "idx_map_{entity1}_{entity2}_{entity2}"
+        },
+        {
+          "fields": ["{entity1}_id", "{entity2}_id"],
+          "naming_convention": "unique_map_{entity1}_{entity2}",
+          "type": "unique"
+        }
+      ],
+      "performance_characteristics": {
+        "read_performance": "excellent_for_both_directions",
+        "write_performance": "good",
+        "storage_overhead": "moderate"
+      },
+      "examples": [
+        {
+          "table": "map_quote_driver",
+          "indexes": [
+            "idx_map_quote_driver_quote (quote_id)",
+            "idx_map_quote_driver_driver (driver_id)",
+            "unique_map_quote_driver (quote_id, driver_id)"
+          ]
+        },
+        {
+          "table": "map_driver_vehicle",
+          "indexes": [
+            "idx_map_driver_vehicle_driver (driver_id)",
+            "idx_map_driver_vehicle_vehicle (vehicle_id)",
+            "unique_map_driver_vehicle (driver_id, vehicle_id)"
+          ]
+        }
+      ]
+    },
+    "audit_table_pattern": {
+      "pattern_name": "Audit Table Index",
+      "description": "Specialized indexes for audit and logging tables",
+      "index_type": "btree",
+      "required_indexes": [
+        {
+          "fields": ["entity_type", "entity_id"],
+          "naming_convention": "idx_audit_entity"
+        },
+        {
+          "fields": ["changed_at"],
+          "naming_convention": "idx_audit_changed_at"
+        },
+        {
+          "fields": ["changed_by"],
+          "naming_convention": "idx_audit_changed_by"
+        }
+      ],
+      "performance_characteristics": {
+        "read_performance": "good_for_entity_history",
+        "write_performance": "optimized_for_inserts",
+        "storage_overhead": "moderate"
+      },
+      "partitioning_strategy": "Consider partitioning by date for large volumes",
+      "archival_strategy": "Move old audit records to archive tables"
+    },
+    "communication_log_pattern": {
+      "pattern_name": "Communication Log Index",
+      "description": "Indexes for communication tracking (GR-44)",
+      "index_type": "btree",
+      "required_indexes": [
+        {
+          "fields": ["entity_type", "entity_id"],
+          "naming_convention": "idx_comm_log_entity"
+        },
+        {
+          "fields": ["correlation_id"],
+          "naming_convention": "idx_comm_log_correlation"
+        },
+        {
+          "fields": ["delivery_status"],
+          "naming_convention": "idx_comm_log_status"
+        },
+        {
+          "fields": ["created_at"],
+          "naming_convention": "idx_comm_log_created"
+        }
+      ],
+      "performance_characteristics": {
+        "read_performance": "excellent_for_tracking",
+        "write_performance": "optimized_for_high_volume",
+        "storage_overhead": "moderate"
+      }
+    }
+  },
+  "index_optimization_strategies": {
+    "query_pattern_analysis": {
+      "common_patterns": [
+        "Single entity lookup by ID",
+        "Related entity lookup via foreign key",
+        "Status-based filtering",
+        "Date range queries",
+        "Text-based searches"
+      ],
+      "optimization_approach": "Create indexes based on actual query patterns, not theoretical needs",
+      "monitoring_tools": ["Query execution plans", "Index usage statistics", "Slow query logs"]
+    },
+    "field_selectivity_analysis": {
+      "high_selectivity": {
+        "characteristics": "Few distinct values relative to total rows",
+        "examples": ["status_id", "is_active", "entity_type"],
+        "index_effectiveness": "Very effective for filtering"
+      },
+      "low_selectivity": {
+        "characteristics": "Many distinct values relative to total rows",
+        "examples": ["id", "email_address", "vin"],
+        "index_effectiveness": "Excellent for equality searches"
+      },
+      "composite_selectivity": {
+        "strategy": "Combine low and high selectivity fields",
+        "example": "policy_id (low) + status_id (high) = effective composite"
+      }
+    },
+    "write_performance_considerations": {
+      "index_maintenance_cost": "Each additional index slows INSERT/UPDATE/DELETE operations",
+      "balancing_strategy": "Only create indexes that provide measurable query performance benefit",
+      "monitoring_approach": "Track write operation performance when adding indexes"
+    }
+  },
+  "domain_specific_patterns": {
+    "producer_portal": {
+      "quote_management": [
+        {
+          "index": "idx_quote_producer_status_date",
+          "use_case": "Producer quote dashboard"
+        },
+        {
+          "index": "idx_quote_expiration_date",
+          "use_case": "Expiring quotes processing"
+        }
+      ],
+      "driver_vehicle_lookups": [
+        {
+          "index": "idx_driver_quote_status",
+          "use_case": "Quote driver listings"
+        },
+        {
+          "index": "idx_vehicle_quote_primary",
+          "use_case": "Primary vehicle identification"
+        }
+      ]
+    },
+    "accounting": {
+      "payment_processing": [
+        {
+          "index": "idx_payment_policy_status_date",
+          "use_case": "Payment history queries"
+        },
+        {
+          "index": "idx_payment_due_date_status",
+          "use_case": "Overdue payment processing"
+        }
+      ],
+      "billing_cycles": [
+        {
+          "index": "idx_billing_cycle_policy_date",
+          "use_case": "Policy billing history"
+        }
+      ]
+    },
+    "universal_entities": {
+      "external_entity_management": [
+        {
+          "index": "idx_external_entity_type_active",
+          "use_case": "Active entities by type"
+        },
+        {
+          "index": "idx_external_entity_code",
+          "use_case": "System integration lookups"
+        }
+      ]
+    }
+  },
+  "performance_monitoring": {
+    "key_metrics": [
+      {
+        "metric": "Query execution time",
+        "target": "< 100ms for single entity lookups",
+        "monitoring": "Application performance monitoring"
+      },
+      {
+        "metric": "Index usage ratio",
+        "target": "> 80% of indexes actively used",
+        "monitoring": "Database index statistics"
+      },
+      {
+        "metric": "Write operation impact",
+        "target": "< 10% performance degradation from indexes",
+        "monitoring": "Write operation timing"
+      }
+    ],
+    "optimization_cycle": {
+      "frequency": "Monthly index usage review",
+      "process": [
+        "Analyze slow query logs",
+        "Review index usage statistics", 
+        "Identify unused indexes",
+        "Evaluate new index opportunities",
+        "Test performance impact"
+      ]
+    }
+  },
+  "maintenance_procedures": {
+    "index_maintenance": {
+      "rebuild_schedule": "Quarterly for high-activity tables",
+      "statistics_update": "Weekly for dynamic tables",
+      "fragmentation_monitoring": "Monitor fill factor and fragmentation"
+    },
+    "capacity_planning": {
+      "storage_estimation": "Plan for 20-30% storage overhead from indexes",
+      "growth_projection": "Account for index growth with data volume",
+      "performance_scaling": "Monitor index effectiveness as data grows"
+    }
+  },
+  "implementation_guidelines": {
+    "index_creation_order": [
+      "Primary key (automatic)",
+      "Foreign key indexes",
+      "Status field indexes", 
+      "Unique constraint indexes",
+      "Composite search indexes",
+      "Specialized indexes (covering, text search)"
+    ],
+    "testing_approach": {
+      "performance_baseline": "Measure query performance before index creation",
+      "load_testing": "Test with realistic data volumes",
+      "regression_testing": "Ensure new indexes don't negatively impact existing queries"
+    },
+    "rollback_strategy": {
+      "index_removal": "Plan for easy index removal if performance degrades",
+      "monitoring_period": "Monitor new indexes for 30 days before considering permanent",
+      "documentation": "Document the business case for each index"
+    }
+  }
+}

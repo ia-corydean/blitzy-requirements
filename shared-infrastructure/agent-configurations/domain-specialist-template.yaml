@@ -1,0 +1,411 @@
+# Domain Specialist Agent Template Configuration
+# Complete Requirements Generation System - Multi-Agent Architecture
+# Template for configuring individual domain specialist agents
+
+metadata:
+  template_name: "Domain Specialist Template"
+  template_version: "1.0.0"
+  created_date: "2025-01-07"
+  last_updated: "2025-01-07"
+  gr_compliance: ["GR-38", "GR-44", "GR-52", "GR-49"]
+  description: "Template configuration for domain specialist agents"
+
+# Agent Configuration Template
+agent_config:
+  # Agent Identity (to be customized per domain)
+  agent_id: "{domain}-specialist"  # e.g., "producer-portal-specialist"
+  display_name: "{Domain} Specialist"  # e.g., "Producer Portal Specialist"
+  domain: "{domain}"  # e.g., "producer_portal"
+  agent_type: "domain_specialist"
+  
+  # Core Capabilities (standard across all specialists)
+  capabilities:
+    domain_expertise: true
+    pattern_recognition: true
+    requirement_processing: true
+    cross_domain_coordination: true
+    global_requirements_validation: true
+    entity_management: true
+    
+  # Domain-Specific Capabilities (to be customized)
+  domain_capabilities:
+    specializations: []  # e.g., ["quotes", "policies", "drivers", "vehicles"]
+    primary_entities: []  # e.g., ["quote", "driver", "vehicle", "producer"]
+    secondary_entities: []  # e.g., ["payment", "address", "phone", "email"]
+    workflow_expertise: []  # e.g., ["quote_creation", "binding", "rating"]
+    integration_points: []  # e.g., ["dcs_integration", "payment_processing"]
+    
+  # Processing Configuration
+  processing:
+    max_concurrent_requirements: 5
+    processing_timeout: "20 minutes"
+    pattern_confidence_threshold: 0.75
+    auto_validation_threshold: 0.85
+    coordination_timeout: "5 minutes"
+
+# Knowledge Base Integration
+knowledge_base:
+  # Domain-Specific Knowledge
+  domain_patterns: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/{domain}/"
+  domain_entities: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/{domain}/entities.json"
+  domain_workflows: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/{domain}/workflows.json"
+  domain_integrations: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/{domain}/integrations.json"
+  
+  # Shared Knowledge (all specialists access these)
+  universal_entities: "/app/workspace/requirements/shared-infrastructure/knowledge-base/universal-entity-catalog.json"
+  global_requirements: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-requirements-index.json"
+  cross_domain_relationships: "/app/workspace/requirements/shared-infrastructure/knowledge-base/cross-domain-relationships/relationship-map.json"
+  communication_templates: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/communication-templates/"
+  service_integrations: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/service-integrations/"
+  
+  # Caching Configuration
+  cache_enabled: true
+  cache_ttl: "2 hours"
+  cache_size_limit: "100MB"
+
+# System Orchestrator Integration
+orchestrator_integration:
+  orchestrator_agent_id: "system-orchestrator"
+  coordination_mode: "collaborative"  # collaborative, hierarchical, autonomous
+  shared_context_participation: true
+  cross_domain_coordination: true
+  
+  # Communication Patterns
+  reporting_frequency: "real_time"  # real_time, batched, on_demand
+  status_updates: true
+  performance_metrics_sharing: true
+  error_escalation: "automatic"
+
+# Universal Validator Integration
+validator_integration:
+  validator_agent_id: "universal-validator"
+  validation_stages:
+    - "pre_processing"
+    - "post_processing"
+    - "cross_domain_consistency"
+  
+  # Validation Configuration
+  fail_fast_enabled: true
+  progressive_validation: true
+  confidence_threshold: 0.85
+  auto_fix_enabled: false  # Let specialist handle fixes
+
+# Pattern Recognition Configuration
+pattern_recognition:
+  # Pattern Matching
+  similarity_threshold: 0.70
+  max_patterns_per_requirement: 8
+  domain_pattern_weight: 0.6  # Prefer domain patterns over universal
+  universal_pattern_weight: 0.4
+  
+  # Pattern Learning
+  pattern_learning_enabled: true
+  success_pattern_tracking: true
+  failure_pattern_avoidance: true
+  confidence_improvement_tracking: true
+  
+  # Pattern Application
+  auto_apply_high_confidence: true  # >90% confidence
+  suggest_medium_confidence: true   # 70-90% confidence
+  manual_review_low_confidence: true  # <70% confidence
+
+# Workflow Processing
+workflow_processing:
+  # Processing Modes
+  supported_modes:
+    - "individual_requirement"
+    - "batch_processing"
+    - "cross_domain_coordination"
+    - "emergency_processing"
+  
+  # Default Workflow
+  default_workflow:
+    1_analysis:
+      - "requirement_validation"
+      - "entity_extraction"
+      - "pattern_matching"
+      - "complexity_assessment"
+      
+    2_processing:
+      - "domain_expertise_application"
+      - "pattern_application"
+      - "entity_resolution"
+      - "workflow_design"
+      
+    3_validation:
+      - "domain_validation"
+      - "cross_domain_check"
+      - "global_requirements_compliance"
+      - "quality_assurance"
+      
+    4_finalization:
+      - "artifact_generation"
+      - "documentation_creation"
+      - "pattern_library_update"
+      - "metrics_recording"
+  
+  # Quality Gates
+  quality_gates:
+    entity_completeness: ">90%"
+    pattern_coverage: ">80%"
+    gr_compliance: ">95%"
+    cross_domain_consistency: ">85%"
+
+# Entity Management
+entity_management:
+  # Entity Recognition
+  entity_extraction_enabled: true
+  universal_entity_reuse: true
+  domain_entity_specialization: true
+  entity_validation: "strict"
+  
+  # Entity Relationships
+  relationship_tracking: true
+  cross_domain_relationship_detection: true
+  entity_dependency_analysis: true
+  
+  # Entity Standards (GR-52)
+  compliance_standards:
+    - "GR-52 Universal Entity Management"
+    - "GR-41 Database Design Standards"
+    - "GR-19 Table Relationships"
+    - "GR-02 Audit Field Standards"
+
+# Communication & Coordination
+communication:
+  # Shared Context Participation
+  shared_context_manager: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/shared-context-manager.py"
+  memory_interface: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/agent-memory-interface.py"
+  
+  # Communication Patterns
+  sync_mode: "real_time"  # real_time, periodic, on_demand
+  sync_interval: "10 seconds"  # when sync_mode is periodic
+  conflict_resolution: "orchestrator_mediated"
+  
+  # Message Types
+  supported_messages:
+    - "requirement_assignment"
+    - "cross_domain_coordination_request"
+    - "pattern_sharing"
+    - "entity_discovery"
+    - "validation_request"
+    - "status_update"
+    - "error_notification"
+
+# Performance & Monitoring
+performance:
+  # Performance Targets
+  targets:
+    processing_time: "< 15 minutes per requirement"
+    pattern_recognition_accuracy: "> 80%"
+    entity_extraction_accuracy: "> 90%"
+    gr_compliance_accuracy: "> 95%"
+    coordination_overhead: "< 10%"
+  
+  # Metrics Collection
+  metrics:
+    processing_time_tracking: true
+    pattern_success_tracking: true
+    entity_accuracy_tracking: true
+    error_rate_tracking: true
+    coordination_efficiency_tracking: true
+  
+  # Performance Optimization
+  optimization:
+    caching_enabled: true
+    pattern_indexing: true
+    entity_caching: true
+    batch_processing_optimization: true
+
+# Queue Management
+queue_management:
+  # Queue Configuration
+  input_queue: "/app/workspace/requirements/processing-queues/{domain}/pending/"
+  processing_queue: "/app/workspace/requirements/processing-queues/{domain}/in-progress/"
+  completed_queue: "/app/workspace/requirements/processing-queues/{domain}/completed/"
+  intelligence_queue: "/app/workspace/requirements/processing-queues/{domain}/intelligence/"
+  
+  # Processing Configuration
+  polling_interval: "30 seconds"
+  max_queue_size: 50
+  priority_processing: true
+  load_balancing: "fifo"  # fifo, priority, balanced
+  
+  # Queue Monitoring
+  queue_monitoring: true
+  alert_thresholds:
+    queue_size_warning: 30
+    queue_size_critical: 45
+    processing_time_warning: "10 minutes"
+    processing_time_critical: "15 minutes"
+
+# Error Handling & Recovery
+error_handling:
+  # Error Management
+  error_tracking: true
+  error_categorization: true
+  automatic_retry: true
+  escalation_enabled: true
+  
+  # Retry Configuration
+  retry_policy:
+    max_retries: 3
+    retry_intervals: ["30s", "2m", "5m"]
+    backoff_strategy: "exponential"
+    retry_conditions: ["temporary_failure", "timeout", "external_service_error"]
+  
+  # Escalation Rules
+  escalation:
+    escalate_to: "system-orchestrator"
+    escalation_triggers:
+      - "3_consecutive_failures"
+      - "critical_error"
+      - "timeout_exceeded"
+      - "validation_failure"
+    escalation_timeout: "5 minutes"
+  
+  # Recovery Procedures
+  recovery:
+    automatic_recovery: true
+    recovery_timeout: "3 minutes"
+    fallback_modes: ["simplified_processing", "manual_intervention"]
+
+# Security & Access Control
+security:
+  # Authentication (inherit from system)
+  authentication_required: false  # Internal system
+  
+  # Authorization
+  authorization_scope: "domain_scoped"
+  access_controls:
+    domain_data: "full_access"
+    shared_data: "read_write"
+    other_domain_data: "read_only"
+    global_patterns: "read_write"
+  
+  # Data Protection
+  data_protection:
+    sensitive_data_handling: "mask_pii"
+    audit_logging: true
+    access_logging: true
+    change_tracking: true
+
+# Integration Patterns
+integration_patterns:
+  # External System Integration (domain-specific)
+  external_systems: []  # To be filled per domain, e.g., ["dcs", "payment_processor"]
+  
+  # API Integration Patterns
+  api_patterns:
+    rest_api_support: true
+    graphql_support: false
+    webhook_support: true
+    event_driven_support: true
+  
+  # Service Integration
+  service_integration:
+    microservice_support: true
+    monolith_support: true
+    hybrid_support: true
+    container_ready: true
+
+# Testing & Quality Assurance
+testing:
+  # Test Configuration
+  test_mode: false
+  test_data_enabled: false
+  mock_external_services: false
+  
+  # Test Coverage
+  test_coverage:
+    unit_tests: true
+    integration_tests: true
+    performance_tests: true
+    load_tests: false  # Enable for production
+  
+  # Quality Metrics
+  quality_metrics:
+    pattern_accuracy_testing: true
+    entity_extraction_testing: true
+    cross_domain_coordination_testing: true
+    performance_regression_testing: true
+
+# Development & Debugging
+development:
+  # Debug Configuration
+  debug_mode: false
+  verbose_logging: false
+  trace_enabled: false
+  
+  # Development Tools
+  development_tools:
+    pattern_debugging: false
+    entity_analysis_tools: false
+    performance_profiling: false
+    coordination_visualization: false
+  
+  # Hot Reload
+  hot_reload: false
+  config_reload_enabled: true
+  pattern_reload_enabled: true
+
+# Compliance & Audit
+compliance:
+  # Regulatory Compliance
+  regulatory_requirements:
+    data_retention: "7 years"
+    audit_trail: "complete"
+    privacy_protection: "gdpr_compliant"
+    security_standards: "iso27001"
+  
+  # Audit Configuration
+  audit:
+    audit_enabled: true
+    audit_level: "full"  # minimal, standard, full
+    audit_retention: "7 years"
+    audit_format: "structured_json"
+  
+  # Compliance Validation
+  compliance_validation:
+    global_requirements_compliance: true
+    domain_standards_compliance: true
+    security_compliance: true
+    performance_compliance: true
+
+# Version Control & Updates
+version_control:
+  # Configuration Versioning
+  config_version: "1.0.0"
+  config_versioning: true
+  backward_compatibility: true
+  
+  # Update Management
+  auto_updates: false
+  manual_approval_required: true
+  rollback_capability: true
+  
+  # Version Tracking
+  version_tracking:
+    pattern_versions: true
+    entity_versions: true
+    configuration_versions: true
+    dependency_versions: true
+
+# Custom Domain Configuration Placeholders
+# These sections should be customized for each domain specialist
+
+domain_customization:
+  # Business Logic Customization
+  business_rules: {}  # Domain-specific business rules
+  validation_rules: {}  # Domain-specific validation
+  transformation_rules: {}  # Domain-specific transformations
+  
+  # Integration Customization
+  external_integrations: {}  # Domain-specific external systems
+  api_customizations: {}  # Domain-specific API patterns
+  workflow_customizations: {}  # Domain-specific workflows
+  
+  # UI/UX Customization
+  ui_patterns: {}  # Domain-specific UI patterns
+  user_experience: {}  # Domain-specific UX patterns
+  communication_preferences: {}  # Domain-specific communication patterns

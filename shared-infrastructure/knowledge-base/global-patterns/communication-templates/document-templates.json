@@ -1,0 +1,392 @@
+{
+  "template_metadata": {
+    "template_category": "document_templates",
+    "template_version": "1.0.0",
+    "gr_compliance": "GR-44 Communication Architecture",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "total_templates": 15,
+    "supported_domains": ["producer-portal", "accounting", "reinstatement", "sr22"],
+    "confidence_score": 0.96,
+    "usage_count": 267,
+    "success_rate": 0.98
+  },
+  "template_structure": {
+    "document_components": {
+      "header": {
+        "company_logo": "{{company.logo_base64}}",
+        "company_information": "{{company.name}}, {{company.address}}, {{company.phone}}",
+        "document_title": "template_specific_title",
+        "document_date": "{{generation_date}}"
+      },
+      "content": {
+        "body_sections": "template_specific_sections",
+        "data_tables": "formatted_data_presentation",
+        "legal_disclaimers": "insurance_specific_legal_text"
+      },
+      "footer": {
+        "page_numbers": "page_x_of_y_format",
+        "generation_timestamp": "{{generation_timestamp}}",
+        "digital_signature": "electronic_signature_block"
+      }
+    },
+    "variable_substitution": {
+      "policy_variables": [
+        "{{policy.number}}",
+        "{{policy.effective_date}}",
+        "{{policy.expiration_date}}",
+        "{{policy.total_premium}}",
+        "{{policy.coverages}}"
+      ],
+      "customer_variables": [
+        "{{customer.full_name}}",
+        "{{customer.address}}",
+        "{{customer.phone}}",
+        "{{customer.email}}"
+      ],
+      "producer_variables": [
+        "{{producer.name}}",
+        "{{producer.license_number}}",
+        "{{producer.phone}}",
+        "{{producer.email}}",
+        "{{producer.address}}"
+      ],
+      "vehicle_variables": [
+        "{{vehicle.year}}",
+        "{{vehicle.make}}",
+        "{{vehicle.model}}",
+        "{{vehicle.vin}}"
+      ],
+      "driver_variables": [
+        "{{driver.name}}",
+        "{{driver.license_number}}",
+        "{{driver.date_of_birth}}"
+      ]
+    }
+  },
+  "document_templates": {
+    "policy_documents": {
+      "policy_declarations": {
+        "template_id": "doc_policy_declarations",
+        "document_type": "PDF",
+        "page_layout": "portrait_letter_size",
+        "sections": [
+          {
+            "section": "policy_summary",
+            "content": "Policy Number: {{policy.number}}\nEffective Date: {{policy.effective_date}}\nExpiration Date: {{policy.expiration_date}}\nNamed Insured: {{customer.full_name}}\nProducer: {{producer.name}}"
+          },
+          {
+            "section": "coverage_summary",
+            "content": "Coverage Summary:\n{{#policy.coverages}}\n- {{coverage.name}}: {{coverage.limit}} - ${{coverage.premium}}\n{{/policy.coverages}}\nTotal Premium: ${{policy.total_premium}}"
+          },
+          {
+            "section": "vehicle_information",
+            "content": "Covered Vehicles:\n{{#policy.vehicles}}\n{{vehicle.year}} {{vehicle.make}} {{vehicle.model}}\nVIN: {{vehicle.vin}}\n{{/policy.vehicles}}"
+          },
+          {
+            "section": "driver_information",
+            "content": "Listed Drivers:\n{{#policy.drivers}}\n{{driver.name}} - DL: {{driver.license_number}}\nDOB: {{driver.date_of_birth}}\n{{/policy.drivers}}"
+          },
+          {
+            "section": "legal_disclaimers",
+            "content": "This document serves as evidence of insurance coverage. Please read your complete policy for terms, conditions, and exclusions."
+          }
+        ],
+        "trigger_conditions": ["policy_binding_completed"],
+        "generation_timing": "immediate",
+        "applicable_domains": ["producer-portal"],
+        "regulatory_requirements": ["state_insurance_department_format"]
+      },
+      "certificate_of_insurance": {
+        "template_id": "doc_certificate_insurance",
+        "document_type": "PDF",
+        "page_layout": "portrait_letter_size",
+        "sections": [
+          {
+            "section": "certificate_header",
+            "content": "CERTIFICATE OF LIABILITY INSURANCE\nThis certificate is issued as a matter of information only and confers no rights upon the certificate holder."
+          },
+          {
+            "section": "insurer_information",
+            "content": "Insurer: {{company.name}}\nNAIC #: {{company.naic_number}}\nRating: {{company.am_best_rating}}"
+          },
+          {
+            "section": "insured_information",
+            "content": "Insured: {{customer.full_name}}\nAddress: {{customer.address}}\nPolicy Number: {{policy.number}}\nEffective Date: {{policy.effective_date}}\nExpiration Date: {{policy.expiration_date}}"
+          },
+          {
+            "section": "coverage_details",
+            "content": "Coverage Information:\n{{#policy.liability_coverages}}\n{{coverage.type}}: {{coverage.limits}}\n{{/policy.liability_coverages}}"
+          },
+          {
+            "section": "certificate_holder",
+            "content": "Certificate Holder:\n{{certificate.holder_name}}\n{{certificate.holder_address}}"
+          }
+        ],
+        "trigger_conditions": ["certificate_request_approved"],
+        "generation_timing": "on_demand",
+        "applicable_domains": ["producer-portal"],
+        "regulatory_requirements": ["acord_format_compliance"]
+      }
+    },
+    "billing_documents": {
+      "billing_statement": {
+        "template_id": "doc_billing_statement",
+        "document_type": "PDF",
+        "page_layout": "portrait_letter_size",
+        "sections": [
+          {
+            "section": "statement_header",
+            "content": "BILLING STATEMENT\nStatement Date: {{statement.date}}\nAccount Number: {{account.number}}\nPolicy Number: {{policy.number}}"
+          },
+          {
+            "section": "customer_information",
+            "content": "Insured: {{customer.full_name}}\nAddress: {{customer.billing_address}}\nPhone: {{customer.phone}}"
+          },
+          {
+            "section": "payment_summary",
+            "content": "Current Balance: ${{billing.current_balance}}\nAmount Due: ${{billing.amount_due}}\nDue Date: {{billing.due_date}}\nNext Payment: ${{billing.next_payment}} due {{billing.next_due_date}}"
+          },
+          {
+            "section": "payment_history",
+            "content": "Recent Payments:\n{{#billing.recent_payments}}\n{{payment.date}} - ${{payment.amount}} - {{payment.method}}\n{{/billing.recent_payments}}"
+          },
+          {
+            "section": "payment_options",
+            "content": "Payment Options:\n- Online: {{company.payment_website}}\n- Phone: {{company.payment_phone}}\n- Mail: {{company.payment_address}}"
+          }
+        ],
+        "trigger_conditions": ["billing_cycle_generated"],
+        "generation_timing": "monthly",
+        "applicable_domains": ["accounting"],
+        "delivery_method": ["email_attachment", "postal_mail"]
+      },
+      "invoice": {
+        "template_id": "doc_invoice",
+        "document_type": "PDF",
+        "page_layout": "portrait_letter_size",
+        "sections": [
+          {
+            "section": "invoice_header",
+            "content": "INVOICE\nInvoice Number: {{invoice.number}}\nInvoice Date: {{invoice.date}}\nDue Date: {{invoice.due_date}}"
+          },
+          {
+            "section": "billing_information",
+            "content": "Bill To:\n{{customer.full_name}}\n{{customer.billing_address}}\nPolicy Number: {{policy.number}}"
+          },
+          {
+            "section": "charges_breakdown",
+            "content": "Charges:\n{{#invoice.line_items}}\n{{item.description}} - ${{item.amount}}\n{{/invoice.line_items}}\nSubtotal: ${{invoice.subtotal}}\nTaxes: ${{invoice.taxes}}\nTotal Amount Due: ${{invoice.total}}"
+          },
+          {
+            "section": "payment_instructions",
+            "content": "Please remit payment by {{invoice.due_date}} to avoid late fees.\nReference Invoice #{{invoice.number}} with your payment."
+          }
+        ],
+        "trigger_conditions": ["invoice_generation_requested"],
+        "generation_timing": "on_demand",
+        "applicable_domains": ["accounting"],
+        "regulatory_requirements": ["tax_compliance"]
+      }
+    },
+    "reinstatement_documents": {
+      "reinstatement_notice": {
+        "template_id": "doc_reinstatement_notice",
+        "document_type": "PDF",
+        "page_layout": "portrait_letter_size",
+        "sections": [
+          {
+            "section": "notice_header",
+            "content": "POLICY REINSTATEMENT NOTICE\nNotice Date: {{notice.date}}\nPolicy Number: {{policy.number}}"
+          },
+          {
+            "section": "lapse_information",
+            "content": "Your policy lapsed on {{policy.lapse_date}} due to non-payment.\nLast payment received: ${{payment.last_amount}} on {{payment.last_date}}"
+          },
+          {
+            "section": "reinstatement_details",
+            "content": "Reinstatement Information:\nOutstanding Balance: ${{reinstatement.outstanding_balance}}\nLate Fees: ${{reinstatement.late_fees}}\nTotal Amount Due: ${{reinstatement.total_amount_due}}\nReinstatement Deadline: {{reinstatement.deadline}}"
+          },
+          {
+            "section": "consequences",
+            "content": "Important: Failure to reinstate by {{reinstatement.deadline}} will result in policy cancellation and may affect your ability to obtain future coverage."
+          },
+          {
+            "section": "payment_instructions",
+            "content": "To reinstate your policy:\n1. Pay the total amount due: ${{reinstatement.total_amount_due}}\n2. Contact your producer: {{producer.name}} at {{producer.phone}}\n3. Online payment: {{company.payment_website}}"
+          }
+        ],
+        "trigger_conditions": ["policy_lapse_reinstatement_available"],
+        "generation_timing": "immediate_after_lapse",
+        "applicable_domains": ["reinstatement"],
+        "delivery_method": ["email_attachment", "postal_mail"]
+      }
+    },
+    "sr22_documents": {
+      "sr22_certificate": {
+        "template_id": "doc_sr22_certificate",
+        "document_type": "PDF",
+        "page_layout": "portrait_letter_size",
+        "sections": [
+          {
+            "section": "sr22_header",
+            "content": "SR-22 CERTIFICATE OF FINANCIAL RESPONSIBILITY\nFiling State: {{sr22.state}}\nFiling Date: {{sr22.filing_date}}\nForm Number: {{sr22.form_number}}"
+          },
+          {
+            "section": "driver_information",
+            "content": "Driver Information:\nName: {{driver.full_name}}\nDate of Birth: {{driver.date_of_birth}}\nDriver License Number: {{driver.license_number}}\nLicense State: {{driver.license_state}}"
+          },
+          {
+            "section": "policy_information",
+            "content": "Policy Information:\nPolicy Number: {{policy.number}}\nEffective Date: {{policy.effective_date}}\nExpiration Date: {{policy.expiration_date}}\nInsurance Company: {{company.name}}\nNAIC Code: {{company.naic_code}}"
+          },
+          {
+            "section": "coverage_certification",
+            "content": "This certifies that the above-named individual has the required financial responsibility coverage as mandated by the state of {{sr22.state}}."
+          },
+          {
+            "section": "important_notice",
+            "content": "IMPORTANT: This filing will remain in effect until cancelled by the insurance company or the state. Any lapse in coverage will be reported to the state."
+          }
+        ],
+        "trigger_conditions": ["sr22_filing_approved"],
+        "generation_timing": "immediate",
+        "applicable_domains": ["sr22"],
+        "regulatory_requirements": ["state_sr22_format_compliance"]
+      }
+    },
+    "quote_documents": {
+      "quote_proposal": {
+        "template_id": "doc_quote_proposal",
+        "document_type": "PDF",
+        "page_layout": "portrait_letter_size",
+        "sections": [
+          {
+            "section": "quote_header",
+            "content": "INSURANCE QUOTE PROPOSAL\nQuote Number: {{quote.number}}\nQuote Date: {{quote.date}}\nExpiration Date: {{quote.expiration_date}}"
+          },
+          {
+            "section": "prospect_information",
+            "content": "Prospect Information:\nName: {{prospect.full_name}}\nAddress: {{prospect.address}}\nPhone: {{prospect.phone}}\nEmail: {{prospect.email}}"
+          },
+          {
+            "section": "coverage_proposal",
+            "content": "Proposed Coverage:\n{{#quote.coverages}}\n{{coverage.name}}: {{coverage.limit}} - ${{coverage.premium}}\n{{/quote.coverages}}\nTotal Annual Premium: ${{quote.total_premium}}"
+          },
+          {
+            "section": "vehicles_and_drivers",
+            "content": "Vehicles to be Insured:\n{{#quote.vehicles}}\n{{vehicle.year}} {{vehicle.make}} {{vehicle.model}}\n{{/quote.vehicles}}\n\nDrivers to be Insured:\n{{#quote.drivers}}\n{{driver.name}} - Age {{driver.age}}\n{{/quote.drivers}}"
+          },
+          {
+            "section": "next_steps",
+            "content": "To bind this coverage:\n1. Review and accept the terms\n2. Provide payment information\n3. Complete any required inspections\n4. Sign policy documents\n\nContact your producer {{producer.name}} at {{producer.phone}} with any questions."
+          }
+        ],
+        "trigger_conditions": ["quote_generation_completed"],
+        "generation_timing": "immediate",
+        "applicable_domains": ["producer-portal"],
+        "delivery_method": ["email_attachment"]
+      }
+    }
+  },
+  "template_configuration": {
+    "document_generation_engine": {
+      "template_engine": "Apache_FOP_or_iText",
+      "variable_processor": "Freemarker_or_Velocity",
+      "pdf_optimization": "compressed_fonts_and_images"
+    },
+    "styling_framework": {
+      "css_support": "limited_pdf_css_support",
+      "font_management": "embedded_company_fonts",
+      "image_handling": "base64_embedded_images"
+    },
+    "security_features": {
+      "pdf_protection": "password_protection_optional",
+      "digital_signatures": "electronic_signature_support",
+      "watermarking": "draft_watermarks_for_quotes"
+    }
+  },
+  "regulatory_compliance": {
+    "state_requirements": {
+      "format_compliance": "state_specific_document_formats",
+      "content_requirements": "mandatory_disclosure_language",
+      "filing_requirements": "electronic_filing_support"
+    },
+    "industry_standards": {
+      "acord_forms": "standard_insurance_form_compliance",
+      "iso_standards": "industry_standard_policy_language",
+      "naic_guidelines": "regulatory_formatting_compliance"
+    }
+  },
+  "generation_workflow": {
+    "template_processing": {
+      "data_gathering": "collect_all_required_variables",
+      "template_selection": "dynamic_template_based_on_context",
+      "variable_substitution": "replace_all_template_variables",
+      "content_validation": "verify_required_sections_present"
+    },
+    "quality_assurance": {
+      "format_validation": "pdf_generation_error_checking",
+      "content_review": "automated_content_completeness_check",
+      "regulatory_validation": "compliance_rule_checking"
+    },
+    "delivery_preparation": {
+      "file_optimization": "compress_for_email_delivery",
+      "access_control": "set_appropriate_permissions",
+      "delivery_logging": "track_document_generation_and_delivery"
+    }
+  },
+  "integration_specifications": {
+    "document_storage": {
+      "storage_system": "cloud_based_document_repository",
+      "retention_policy": "7_year_regulatory_retention",
+      "access_logging": "audit_trail_for_document_access"
+    },
+    "delivery_integration": {
+      "email_attachment": "automated_email_delivery",
+      "customer_portal": "online_document_access",
+      "postal_service": "print_and_mail_integration"
+    },
+    "signature_integration": {
+      "electronic_signatures": "DocuSign_or_equivalent",
+      "signature_workflow": "automated_signature_request_process",
+      "completion_tracking": "track_signature_completion_status"
+    }
+  },
+  "performance_requirements": {
+    "generation_performance": {
+      "template_processing": "< 2 seconds per document",
+      "pdf_generation": "< 5 seconds for complex documents",
+      "batch_processing": "100 documents per minute"
+    },
+    "quality_standards": {
+      "pdf_quality": "print_ready_300_dpi_quality",
+      "file_size": "< 2MB per document target",
+      "font_rendering": "consistent_cross_platform_rendering"
+    }
+  },
+  "testing_framework": {
+    "template_testing": {
+      "variable_substitution": "test_all_variable_combinations",
+      "formatting_validation": "cross_platform_pdf_rendering",
+      "regulatory_compliance": "validate_against_state_requirements"
+    },
+    "performance_testing": {
+      "load_testing": "high_volume_document_generation",
+      "stress_testing": "concurrent_generation_limits",
+      "memory_usage": "optimize_memory_consumption"
+    }
+  },
+  "maintenance_procedures": {
+    "template_updates": {
+      "version_control": "git_based_template_versioning",
+      "regulatory_updates": "automated_compliance_updates",
+      "testing_workflow": "comprehensive_testing_before_deployment"
+    },
+    "performance_monitoring": {
+      "generation_metrics": "track_generation_times_and_success_rates",
+      "error_monitoring": "automated_error_detection_and_alerting",
+      "compliance_auditing": "periodic_regulatory_compliance_reviews"
+    }
+  }
+}

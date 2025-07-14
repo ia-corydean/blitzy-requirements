@@ -1,0 +1,509 @@
+# SR22 Domain Specialist Configuration
+# Complete Requirements Generation System - Multi-Agent Architecture
+# Specialized agent for SR22 domain requirements processing
+
+metadata:
+  agent_name: "SR22 Specialist"
+  agent_type: "domain_specialist"
+  version: "1.0.0"
+  created_date: "2025-01-07"
+  last_updated: "2025-01-07"
+  gr_compliance: ["GR-38", "GR-44", "GR-52", "GR-49", "GR-19", "GR-41", "GR-10"]
+  description: "Domain specialist for SR22 filing, financial responsibility, state compliance, and violations"
+
+# Core Agent Configuration
+agent_config:
+  # Agent Identity
+  agent_id: "sr22-specialist"
+  display_name: "SR22 Specialist"
+  domain: "sr22"
+  agent_type: "domain_specialist"
+  
+  # Core Capabilities
+  capabilities:
+    domain_expertise: true
+    pattern_recognition: true
+    requirement_processing: true
+    cross_domain_coordination: true
+    global_requirements_validation: true
+    entity_management: true
+    
+  # SR22 Specific Capabilities
+  domain_capabilities:
+    specializations: 
+      - "sr22_filing"
+      - "financial_responsibility"
+      - "state_compliance"
+      - "violations"
+      - "sr26_filing"
+      - "compliance_monitoring"
+      - "filing_management"
+      - "state_reporting"
+      - "violation_tracking"
+      - "regulatory_compliance"
+    
+    primary_entities:
+      - "sr22_filing"
+      - "sr26_filing"
+      - "financial_responsibility"
+      - "violation"
+      - "compliance_status"
+      - "state_requirement"
+      - "filing_status"
+      - "regulatory_filing"
+    
+    secondary_entities:
+      - "policy"
+      - "driver"
+      - "vehicle"
+      - "customer"
+      - "state"
+      - "court_order"
+      - "communication"
+      - "document"
+    
+    workflow_expertise:
+      - "sr22_filing_process"
+      - "sr26_filing_process"
+      - "compliance_monitoring"
+      - "violation_processing"
+      - "state_reporting"
+      - "filing_automation"
+      - "compliance_validation"
+      - "regulatory_communication"
+      - "filing_status_tracking"
+      - "violation_resolution"
+    
+    integration_points:
+      - "state_systems"
+      - "filing_services"
+      - "compliance_systems"
+      - "document_generation"
+      - "communication_services"
+      - "monitoring_systems"
+    
+  # Processing Configuration
+  processing:
+    max_concurrent_requirements: 3
+    processing_timeout: "15 minutes"
+    pattern_confidence_threshold: 0.70
+    auto_validation_threshold: 0.80
+    coordination_timeout: "4 minutes"
+
+# Knowledge Base Integration
+knowledge_base:
+  # SR22 Specific Knowledge
+  domain_patterns: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/sr22/"
+  domain_entities: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/sr22/entities.json"
+  domain_workflows: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/sr22/workflows.json"
+  domain_integrations: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/sr22/integrations.json"
+  
+  # Shared Knowledge Access
+  universal_entities: "/app/workspace/requirements/shared-infrastructure/knowledge-base/universal-entity-catalog.json"
+  global_requirements: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-requirements-index.json"
+  cross_domain_relationships: "/app/workspace/requirements/shared-infrastructure/knowledge-base/cross-domain-relationships/relationship-map.json"
+  communication_templates: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/communication-templates/"
+  service_integrations: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/service-integrations/"
+  
+  # GR-10 Specific Knowledge
+  sr22_sr26_filing: "/app/workspace/requirements/GlobalRequirements/IndividualRequirements/GR-10-sr22-sr26-financial-responsibility-filing.md"
+  
+  # Caching Configuration
+  cache_enabled: true
+  cache_ttl: "4 hours"  # Longer cache for regulatory data
+  cache_size_limit: "60MB"
+
+# System Orchestrator Integration
+orchestrator_integration:
+  orchestrator_agent_id: "system-orchestrator"
+  coordination_mode: "collaborative"
+  shared_context_participation: true
+  cross_domain_coordination: true
+  priority_level: "low"  # Lower priority domain
+  
+  # Communication Patterns
+  reporting_frequency: "real_time"
+  status_updates: true
+  performance_metrics_sharing: true
+  error_escalation: "automatic"
+  sr22_coordination: true
+
+# Universal Validator Integration
+validator_integration:
+  validator_agent_id: "universal-validator"
+  validation_stages:
+    - "pre_processing"
+    - "sr22_validation"
+    - "compliance_validation"
+    - "post_processing"
+    - "cross_domain_consistency"
+  
+  # Validation Configuration
+  fail_fast_enabled: true
+  progressive_validation: true
+  confidence_threshold: 0.80
+  auto_fix_enabled: false  # Manual review for regulatory filings
+
+# Pattern Recognition Configuration
+pattern_recognition:
+  # Pattern Matching (SR22 optimized)
+  similarity_threshold: 0.70
+  max_patterns_per_requirement: 5
+  domain_pattern_weight: 0.9  # Very strong preference for SR22 patterns
+  universal_pattern_weight: 0.1
+  
+  # SR22 Specific Pattern Weights
+  sr22_filing_patterns_weight: 0.98  # Highest weight for SR22 filing patterns
+  compliance_patterns_weight: 0.95  # High weight for compliance patterns
+  violation_patterns_weight: 0.90  # High weight for violation patterns
+  state_reporting_patterns_weight: 0.85
+  
+  # GR-10 Integration
+  gr10_pattern_weight: 0.98  # Highest weight for GR-10 SR22/SR26 patterns
+  
+  # Pattern Learning
+  pattern_learning_enabled: true
+  success_pattern_tracking: true
+  failure_pattern_avoidance: true
+  confidence_improvement_tracking: true
+  
+  # Pattern Application
+  auto_apply_high_confidence: true  # >85% confidence
+  suggest_medium_confidence: true   # 70-85% confidence
+  manual_review_low_confidence: true  # <70% confidence
+
+# Workflow Processing
+workflow_processing:
+  # Processing Modes
+  supported_modes:
+    - "individual_requirement"
+    - "batch_processing"
+    - "cross_domain_coordination"
+    - "emergency_processing"
+    - "sr22_filing_processing"        # SR22 specific
+    - "compliance_monitoring_processing" # SR22 specific
+    - "violation_processing"          # SR22 specific
+  
+  # SR22 Workflow (GR-10 compliant)
+  domain_workflow:
+    1_analysis:
+      - "requirement_validation"
+      - "sr22_context_analysis"
+      - "entity_extraction"
+      - "filing_compliance_pattern_matching"
+      - "gr10_compliance_analysis"
+      - "complexity_assessment"
+      
+    2_processing:
+      - "sr22_expertise_application"
+      - "filing_pattern_application"
+      - "compliance_entity_resolution"
+      - "workflow_design"
+      - "state_system_integration_planning"
+      - "filing_service_integration"
+      
+    3_validation:
+      - "sr22_domain_validation"
+      - "filing_compliance_validation"
+      - "state_requirement_validation"
+      - "cross_domain_sr22_consistency"
+      - "gr10_compliance_validation"
+      - "regulatory_compliance_validation"
+      
+    4_finalization:
+      - "sr22_artifact_generation"
+      - "filing_documentation_creation"
+      - "pattern_library_update"
+      - "sr22_metrics_recording"
+      - "gr10_compliance_documentation"
+  
+  # Quality Gates (SR22 specific)
+  quality_gates:
+    entity_completeness: ">82%"
+    pattern_coverage: ">78%"
+    gr_compliance: ">95%"
+    cross_domain_consistency: ">80%"
+    gr10_compliance: ">98%"  # High standard for GR-10
+    filing_accuracy: ">95%"
+    compliance_coverage: ">92%"
+
+# Entity Management (SR22 specific)
+entity_management:
+  # SR22 Entity Priorities
+  primary_entity_focus:
+    - "sr22_filing"
+    - "sr26_filing"
+    - "financial_responsibility"
+    - "violation"
+    - "compliance_status"
+  
+  # Entity Recognition
+  entity_extraction_enabled: true
+  universal_entity_reuse: true
+  domain_entity_specialization: true
+  entity_validation: "strict"
+  regulatory_entity_validation: "enhanced"
+  
+  # SR22 Entity Relationships
+  critical_relationships:
+    - "sr22_filing_to_policy"
+    - "financial_responsibility_to_driver"
+    - "violation_to_sr22_filing"
+    - "compliance_status_to_state_requirement"
+    - "filing_status_to_regulatory_filing"
+    - "state_requirement_to_compliance_status"
+  
+  # Entity Standards Compliance
+  compliance_standards:
+    - "GR-52 Universal Entity Management"
+    - "GR-10 SR22/SR26 Financial Responsibility Filing"
+    - "GR-41 Database Design Standards"
+    - "GR-19 Table Relationships"
+    - "GR-02 Audit Field Standards"
+    - "Regulatory Filing Standards"
+
+# Communication & Coordination
+communication:
+  # Shared Context Participation
+  shared_context_manager: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/shared-context-manager.py"
+  memory_interface: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/agent-memory-interface.py"
+  
+  # Communication Patterns
+  sync_mode: "real_time"
+  sync_interval: "30 seconds"
+  conflict_resolution: "regulatory_authority"  # SR22 has authority on regulatory matters
+  
+  # SR22 Message Types
+  supported_messages:
+    - "requirement_assignment"
+    - "sr22_filing_coordination"
+    - "compliance_coordination_request"
+    - "violation_coordination_request"
+    - "state_reporting_coordination"
+    - "cross_domain_coordination_request"
+    - "pattern_sharing"
+    - "entity_discovery"
+    - "validation_request"
+    - "status_update"
+    - "error_notification"
+    - "compliance_alert"
+
+# Performance & Monitoring
+performance:
+  # Performance Targets (SR22 specific)
+  targets:
+    processing_time: "< 12 minutes per requirement"
+    pattern_recognition_accuracy: "> 75%"
+    entity_extraction_accuracy: "> 82%"
+    gr_compliance_accuracy: "> 95%"
+    coordination_overhead: "< 6%"
+    gr10_compliance_accuracy: "> 98%"
+    filing_accuracy: "> 95%"
+    compliance_monitoring_accuracy: "> 92%"
+  
+  # Metrics Collection
+  metrics:
+    processing_time_tracking: true
+    pattern_success_tracking: true
+    entity_accuracy_tracking: true
+    error_rate_tracking: true
+    coordination_efficiency_tracking: true
+    filing_workflow_metrics: true
+    compliance_workflow_metrics: true
+    violation_workflow_metrics: true
+  
+  # Performance Optimization
+  optimization:
+    caching_enabled: true
+    pattern_indexing: true
+    entity_caching: true
+    batch_processing_optimization: true
+    filing_pattern_optimization: true
+    compliance_caching: true
+
+# Queue Management
+queue_management:
+  # SR22 Queue Configuration
+  input_queue: "/app/workspace/requirements/processing-queues/sr22/pending/"
+  processing_queue: "/app/workspace/requirements/processing-queues/sr22/in-progress/"
+  completed_queue: "/app/workspace/requirements/processing-queues/sr22/completed/"
+  intelligence_queue: "/app/workspace/requirements/processing-queues/sr22/intelligence/"
+  cross_domain_queue: "/app/workspace/requirements/processing-queues/sr22/cross-domain-batches/"
+  
+  # Processing Configuration
+  polling_interval: "60 seconds"
+  max_queue_size: 20
+  priority_processing: true
+  load_balancing: "balanced"
+  
+  # Queue Monitoring
+  queue_monitoring: true
+  alert_thresholds:
+    queue_size_warning: 14
+    queue_size_critical: 18
+    processing_time_warning: "8 minutes"
+    processing_time_critical: "12 minutes"
+
+# SR22 Specific Configuration
+sr22_config:
+  # Business Rules (GR-10 compliant)
+  business_rules:
+    sr22_filing_rules:
+      filing_requirement_detection: "automated"
+      filing_timeline: "state_specific"
+      filing_validation: "comprehensive"
+      filing_monitoring: "continuous"
+    
+    sr26_filing_rules:
+      sr26_applicability: "state_specific"
+      filing_requirements: "automated_detection"
+      validation_requirements: "strict"
+      monitoring_requirements: "continuous"
+    
+    compliance_rules:
+      compliance_monitoring: "real_time"
+      violation_detection: "automated"
+      compliance_reporting: "scheduled"
+      compliance_validation: "comprehensive"
+  
+  # Integration Specifications
+  external_integrations:
+    state_systems:
+      dmv_systems:
+        integration_pattern: "batch_file"
+        timeout: "300 seconds"
+        retry_policy: "manual_intervention"
+        security: "encrypted"
+        schedule: "daily"
+      
+      court_systems:
+        integration_pattern: "api"
+        timeout: "60 seconds"
+        retry_policy: "2_retries"
+        security: "certificate_based"
+        
+    filing_services:
+      sr22_filing_service:
+        integration_pattern: "api"
+        timeout: "45 seconds"
+        retry_policy: "3_retries_exponential"
+        validation: "pre_submission"
+        
+    compliance_systems:
+      monitoring_service:
+        integration_pattern: "event_driven"
+        timeout: "30 seconds"
+        retry_policy: "2_retries"
+        real_time_alerts: true
+  
+  # Workflow Customizations (GR-10 aligned)
+  workflow_customizations:
+    sr22_filing_workflow:
+      automated_detection: true
+      state_specific_requirements: true
+      validation_comprehensive: true
+      filing_automation: "partial"
+      
+    compliance_monitoring_workflow:
+      real_time_monitoring: true
+      automated_alerts: true
+      violation_detection: "automated"
+      reporting_automation: true
+      
+    violation_workflow:
+      violation_detection: "automated"
+      impact_assessment: "automated"
+      resolution_tracking: true
+      compliance_restoration: "guided"
+
+# Error Handling & Recovery
+error_handling:
+  # SR22 Specific Error Handling
+  domain_error_categories:
+    - "filing_submission_error"
+    - "compliance_validation_error"
+    - "state_system_error"
+    - "violation_processing_error"
+    - "regulatory_compliance_error"
+    - "filing_service_error"
+    - "gr10_compliance_error"
+  
+  # Error Management
+  error_tracking: true
+  error_categorization: true
+  automatic_retry: true
+  escalation_enabled: true
+  
+  # Retry Configuration
+  retry_policy:
+    max_retries: 2  # Conservative for regulatory filings
+    retry_intervals: ["120s", "10m"]
+    backoff_strategy: "linear"
+    retry_conditions: 
+      - "temporary_failure"
+      - "timeout"
+      - "state_system_temporary_error"
+      - "filing_service_error"
+  
+  # Escalation Rules
+  escalation:
+    escalate_to: "system-orchestrator"
+    escalation_triggers:
+      - "2_consecutive_failures"
+      - "filing_deadline_risk"
+      - "compliance_violation"
+      - "gr10_compliance_violation"
+    escalation_timeout: "2 minutes"  # Fast escalation for regulatory issues
+  
+  # Recovery Procedures
+  recovery:
+    automatic_recovery: false  # Manual review for regulatory matters
+    recovery_timeout: "5 minutes"
+    fallback_modes: 
+      - "manual_filing"
+      - "supervisor_intervention"
+      - "regulatory_consultation"
+
+# Compliance & Audit
+compliance:
+  # SR22 Specific Compliance
+  domain_compliance:
+    gr10_compliance: "mandatory"
+    state_regulation_compliance: true
+    federal_compliance: true
+    filing_compliance: true
+    monitoring_compliance: true
+    
+  # Regulatory Compliance
+  regulatory_requirements:
+    data_retention: "7 years"
+    audit_trail: "complete"
+    privacy_protection: "gdpr_compliant"
+    security_standards: "iso27001"
+    regulatory_documentation: "complete"
+  
+  # Audit Configuration
+  audit:
+    audit_enabled: true
+    audit_level: "full"
+    audit_retention: "7 years"
+    audit_format: "structured_json"
+    filing_audit_tracking: true
+    compliance_audit_tracking: true
+    gr10_compliance_tracking: true
+  
+  # GR-10 Compliance Controls
+  gr10_controls:
+    filing_documentation: "mandatory"
+    timeline_tracking: "automated"
+    state_requirement_tracking: "comprehensive"
+    compliance_verification: "required"
+    violation_tracking: "detailed"
+    
+  # Regulatory Controls
+  regulatory_controls:
+    state_filing_compliance: true
+    federal_reporting_compliance: true
+    violation_reporting: "automated"
+    compliance_monitoring: "continuous"
+    regulatory_communication: "documented"

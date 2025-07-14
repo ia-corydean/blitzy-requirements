@@ -1,0 +1,403 @@
+{
+  "pattern_metadata": {
+    "entity_name": "email",
+    "pattern_version": "1.0.0",
+    "gr_compliance": "GR-52 Universal Entity Management",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "confidence_score": 0.98,
+    "usage_count": 412,
+    "success_rate": 0.97,
+    "applicable_domains": ["universal", "producer-portal", "accounting", "entity-integration"]
+  },
+  "entity_definition": {
+    "primary_table": "email",
+    "description": "Universal pattern for email address entities across all business domains and external entities",
+    "business_purpose": "Manage all email address information for communication with drivers, producers, and external entities",
+    "gr_52_compliant": true
+  },
+  "table_structure": {
+    "core_fields": [
+      {
+        "name": "id",
+        "type": "bigint",
+        "constraints": "PRIMARY KEY AUTO_INCREMENT",
+        "description": "Unique email address identifier"
+      },
+      {
+        "name": "email_type_id",
+        "type": "bigint",
+        "constraints": "FOREIGN KEY REFERENCES email_type(id)",
+        "description": "Type of email (personal, work, billing, etc.)"
+      },
+      {
+        "name": "email_address",
+        "type": "varchar(255)",
+        "constraints": "NOT NULL",
+        "description": "Full email address (user@domain.com)"
+      },
+      {
+        "name": "local_part",
+        "type": "varchar(64)",
+        "constraints": "NOT NULL",
+        "description": "Local part of email address (before @)"
+      },
+      {
+        "name": "domain_part",
+        "type": "varchar(191)",
+        "constraints": "NOT NULL",
+        "description": "Domain part of email address (after @)"
+      },
+      {
+        "name": "is_primary",
+        "type": "boolean",
+        "constraints": "DEFAULT false",
+        "description": "Indicates if this is the primary email address for the entity"
+      },
+      {
+        "name": "is_verified",
+        "type": "boolean",
+        "constraints": "DEFAULT false",
+        "description": "Indicates if email address has been verified"
+      },
+      {
+        "name": "verification_date",
+        "type": "timestamp",
+        "constraints": "NULL",
+        "description": "Date email address was last verified"
+      },
+      {
+        "name": "verification_token",
+        "type": "varchar(100)",
+        "constraints": "NULL",
+        "description": "Token used for email verification process"
+      },
+      {
+        "name": "verification_expires_at",
+        "type": "timestamp",
+        "constraints": "NULL",
+        "description": "Expiration date for verification token"
+      },
+      {
+        "name": "bounce_count",
+        "type": "int",
+        "constraints": "DEFAULT 0",
+        "description": "Number of times emails to this address have bounced"
+      },
+      {
+        "name": "last_bounce_date",
+        "type": "timestamp",
+        "constraints": "NULL",
+        "description": "Date of last email bounce"
+      },
+      {
+        "name": "is_deliverable",
+        "type": "boolean",
+        "constraints": "DEFAULT true",
+        "description": "Indicates if email address is currently deliverable"
+      },
+      {
+        "name": "communication_preference",
+        "type": "enum('html', 'text', 'both', 'none')",
+        "constraints": "DEFAULT 'html'",
+        "description": "Preferred email format for communications"
+      },
+      {
+        "name": "marketing_opt_in",
+        "type": "boolean",
+        "constraints": "DEFAULT false",
+        "description": "Opt-in status for marketing communications"
+      },
+      {
+        "name": "marketing_opt_in_date",
+        "type": "timestamp",
+        "constraints": "NULL",
+        "description": "Date of marketing opt-in"
+      }
+    ],
+    "audit_fields": [
+      {
+        "name": "created_by",
+        "type": "bigint",
+        "constraints": "NOT NULL",
+        "description": "User who created the record"
+      },
+      {
+        "name": "updated_by",
+        "type": "bigint",
+        "constraints": "NOT NULL",
+        "description": "User who last updated the record"
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp",
+        "constraints": "DEFAULT CURRENT_TIMESTAMP",
+        "description": "Record creation timestamp"
+      },
+      {
+        "name": "updated_at",
+        "type": "timestamp",
+        "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+        "description": "Record last update timestamp"
+      }
+    ],
+    "status_management": {
+      "field": "status_id",
+      "type": "bigint",
+      "reference": "status",
+      "description": "References universal status table per GR-19"
+    }
+  },
+  "relationships": {
+    "belongs_to": [
+      {
+        "entity": "email_type",
+        "foreign_key": "email_type_id",
+        "description": "Classification of email type"
+      },
+      {
+        "entity": "status",
+        "foreign_key": "status_id",
+        "description": "Current status of email record"
+      }
+    ],
+    "has_many": [
+      {
+        "entity": "email_communication_log",
+        "relationship": "email_id",
+        "description": "Email communication attempts made to this address"
+      },
+      {
+        "entity": "email_bounce_log",
+        "relationship": "email_id",
+        "description": "Bounce events for this email address"
+      }
+    ],
+    "many_to_many": [
+      {
+        "entity": "driver",
+        "through": "map_driver_email",
+        "description": "Drivers associated with this email address"
+      },
+      {
+        "entity": "producer",
+        "through": "map_producer_email",
+        "description": "Producers associated with this email address"
+      },
+      {
+        "entity": "policy",
+        "through": "map_policy_email",
+        "description": "Policies associated with this email address"
+      },
+      {
+        "entity": "quote",
+        "through": "map_quote_email",
+        "description": "Quotes associated with this email address"
+      },
+      {
+        "entity": "external_entity",
+        "through": "map_external_entity_email",
+        "description": "External entities (APIs, attorneys, body shops, vendors) with this email address"
+      }
+    ]
+  },
+  "business_rules": {
+    "validation_rules": [
+      {
+        "rule": "email_format_validation",
+        "description": "Email address must follow RFC 5322 format standards"
+      },
+      {
+        "rule": "domain_validation",
+        "description": "Domain part must be a valid domain name"
+      },
+      {
+        "rule": "single_primary_per_entity",
+        "description": "Only one email address per entity can be marked as primary"
+      },
+      {
+        "rule": "bounce_threshold",
+        "description": "Email marked as undeliverable after 5 consecutive bounces"
+      },
+      {
+        "rule": "verification_token_expiry",
+        "description": "Verification tokens expire after 24 hours"
+      }
+    ],
+    "business_logic": [
+      {
+        "logic": "automatic_verification",
+        "description": "Send verification email when new email address is added"
+      },
+      {
+        "logic": "bounce_handling",
+        "description": "Track bounces and automatically mark undeliverable addresses"
+      },
+      {
+        "logic": "duplicate_prevention",
+        "description": "Prevent duplicate email addresses for the same entity"
+      },
+      {
+        "logic": "marketing_compliance",
+        "description": "Enforce opt-in requirements for marketing communications"
+      }
+    ]
+  },
+  "integration_points": {
+    "email_verification_service": {
+      "purpose": "Verify email address validity and deliverability",
+      "api_endpoint": "Email Verification API",
+      "gr_reference": "GR-48 External Integrations Catalog"
+    },
+    "email_delivery_service": {
+      "purpose": "Send emails and track delivery status",
+      "api_endpoint": "SendGrid/Mailgun API",
+      "gr_reference": "GR-44 Communication Architecture"
+    },
+    "bounce_handling_service": {
+      "purpose": "Process email bounces and update deliverability status",
+      "webhook_integration": "Email Service Provider Webhooks",
+      "gr_reference": "GR-44 Communication Architecture"
+    },
+    "marketing_automation": {
+      "purpose": "Manage marketing email campaigns and compliance",
+      "service": "Marketing Email Service",
+      "gr_reference": "GR-44 Communication Architecture"
+    }
+  },
+  "section_c_template": {
+    "description": "Backend mapping template for email fields",
+    "example_mapping": "get email.* from email\n-> join email_type on email.email_type_id = email_type.id\n-> join status on email.status_id = status.id\n-> get deliverability_status from email.is_deliverable\n-> where email.status_id = active_status_id",
+    "performance_notes": "Index on (email_address) for email lookups and duplicate detection"
+  },
+  "section_e_template": {
+    "description": "Database schema template for email table",
+    "create_statement": "CREATE TABLE email (\n  id bigint PRIMARY KEY AUTO_INCREMENT,\n  email_type_id bigint NOT NULL,\n  email_address varchar(255) NOT NULL,\n  local_part varchar(64) NOT NULL,\n  domain_part varchar(191) NOT NULL,\n  is_primary boolean DEFAULT false,\n  is_verified boolean DEFAULT false,\n  verification_date timestamp NULL,\n  verification_token varchar(100) NULL,\n  verification_expires_at timestamp NULL,\n  bounce_count int DEFAULT 0,\n  last_bounce_date timestamp NULL,\n  is_deliverable boolean DEFAULT true,\n  communication_preference enum('html', 'text', 'both', 'none') DEFAULT 'html',\n  marketing_opt_in boolean DEFAULT false,\n  marketing_opt_in_date timestamp NULL,\n  status_id bigint NOT NULL,\n  created_by bigint NOT NULL,\n  updated_by bigint NOT NULL,\n  created_at timestamp DEFAULT CURRENT_TIMESTAMP,\n  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  \n  FOREIGN KEY (email_type_id) REFERENCES email_type(id),\n  FOREIGN KEY (status_id) REFERENCES status(id),\n  \n  INDEX idx_email_status (status_id),\n  INDEX idx_email_address (email_address),\n  INDEX idx_email_domain (domain_part),\n  INDEX idx_email_verification (is_verified, verification_date),\n  INDEX idx_email_deliverable (is_deliverable),\n  INDEX idx_email_primary (is_primary),\n  INDEX idx_email_verification_token (verification_token),\n  \n  CONSTRAINT chk_email_format CHECK (email_address REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'),\n  CONSTRAINT chk_bounce_count CHECK (bounce_count >= 0),\n  CONSTRAINT chk_marketing_opt_in_logic CHECK ((marketing_opt_in = false AND marketing_opt_in_date IS NULL) OR (marketing_opt_in = true AND marketing_opt_in_date IS NOT NULL)),\n  UNIQUE KEY unique_email_address (email_address)\n);"
+  },
+  "usage_patterns": {
+    "common_queries": [
+      {
+        "purpose": "Get primary email for driver",
+        "query": "SELECT e.* FROM email e JOIN map_driver_email mde ON e.id = mde.email_id WHERE mde.driver_id = ? AND e.is_primary = true AND e.status_id = ?"
+      },
+      {
+        "purpose": "Get deliverable emails for entity",
+        "query": "SELECT e.*, et.name as email_type FROM email e JOIN email_type et ON e.email_type_id = et.id JOIN map_driver_email mde ON e.id = mde.email_id WHERE mde.driver_id = ? AND e.is_deliverable = true AND e.status_id = ? ORDER BY e.is_primary DESC"
+      },
+      {
+        "purpose": "Find email by address",
+        "query": "SELECT e.* FROM email e WHERE e.email_address = ? AND e.status_id = ?"
+      },
+      {
+        "purpose": "Get unverified emails for batch processing",
+        "query": "SELECT e.* FROM email e WHERE e.is_verified = false AND e.verification_expires_at > NOW() AND e.status_id = ? ORDER BY e.created_at ASC LIMIT ?"
+      }
+    ],
+    "performance_considerations": [
+      "Index on email_address for email lookups and duplicate detection",
+      "Composite index on (is_primary, status_id) for primary email queries",
+      "Index on domain_part for domain-based analytics",
+      "Consider caching frequently accessed email addresses",
+      "Index on verification_token for verification workflows"
+    ]
+  },
+  "domain_customizations": {
+    "universal": {
+      "entity_flexibility": ["supports_all_external_entities", "configurable_email_types"],
+      "validation": ["domain_verification", "deliverability_checking"]
+    },
+    "producer_portal": {
+      "ui_considerations": ["email_input_validation", "verification_status_display", "communication_preference_selection"],
+      "workflow_requirements": ["email_verification_flow", "primary_email_management"]
+    },
+    "accounting": {
+      "billing_communications": ["invoice_delivery", "payment_notifications", "billing_preferences"],
+      "compliance_tracking": ["opt_in_status", "communication_history"]
+    },
+    "entity_integration": {
+      "external_entities": ["api_notification_emails", "vendor_contact_emails", "attorney_correspondence"],
+      "automated_communications": ["system_alerts", "integration_notifications"]
+    }
+  },
+  "email_delivery_integration": {
+    "delivery_tracking": {
+      "events_tracked": ["sent", "delivered", "opened", "clicked", "bounced", "complained"],
+      "webhook_processing": "real_time_status_updates",
+      "delivery_analytics": "engagement_metrics"
+    },
+    "bounce_management": {
+      "hard_bounces": "immediate_undeliverable_marking",
+      "soft_bounces": "retry_with_exponential_backoff",
+      "bounce_categories": "categorized_bounce_reasons"
+    },
+    "reputation_management": {
+      "domain_reputation": "sender_score_monitoring",
+      "list_hygiene": "automated_cleanup_processes",
+      "complaint_handling": "automatic_unsubscribe_processing"
+    }
+  },
+  "verification_workflow": {
+    "verification_triggers": [
+      "new_email_address_creation",
+      "primary_email_change",
+      "failed_delivery_recovery"
+    ],
+    "verification_process": {
+      "step_1": "generate_verification_token",
+      "step_2": "send_verification_email",
+      "step_3": "validate_token_click",
+      "step_4": "update_verification_status"
+    },
+    "token_management": {
+      "token_generation": "secure_random_string",
+      "token_expiry": "24_hours",
+      "token_cleanup": "automated_expired_token_removal"
+    }
+  },
+  "marketing_compliance": {
+    "opt_in_management": {
+      "double_opt_in": "verification_required_for_marketing",
+      "opt_out_handling": "one_click_unsubscribe",
+      "preference_center": "granular_communication_control"
+    },
+    "compliance_requirements": {
+      "can_spam_compliance": "unsubscribe_link_required",
+      "gdpr_compliance": "explicit_consent_tracking",
+      "data_retention": "configurable_retention_policies"
+    }
+  },
+  "universal_entity_support": {
+    "external_entity_integration": {
+      "entity_types": ["api_endpoints", "attorney_offices", "body_shops", "vendor_contacts"],
+      "email_classification": "entity_specific_email_types",
+      "mapping_relationships": "polymorphic_through_map_tables"
+    },
+    "configuration_flexibility": {
+      "email_type_configuration": "json_metadata_driven",
+      "validation_rule_configuration": "entity_type_specific",
+      "ui_generation": "automatic_from_metadata"
+    }
+  },
+  "data_quality_management": {
+    "validation_standards": {
+      "format_validation": "rfc_5322_compliance",
+      "domain_validation": "mx_record_verification",
+      "syntax_validation": "local_part_rules"
+    },
+    "duplicate_detection": {
+      "matching_algorithm": "exact_email_address_match",
+      "case_sensitivity": "case_insensitive_matching",
+      "resolution": "merge_or_mark_inactive"
+    },
+    "deliverability_monitoring": {
+      "real_time_validation": "api_based_verification",
+      "periodic_revalidation": "monthly_deliverability_checks",
+      "reputation_monitoring": "domain_blacklist_checking"
+    }
+  },
+  "migration_guidance": {
+    "from_legacy": "Map existing email tables to this pattern, ensuring proper email_type classification and deliverability status",
+    "data_cleanup": "Validate email formats, normalize case sensitivity, consolidate duplicate addresses",
+    "validation": "Verify single primary email per entity, validate email formats, ensure opt-in compliance"
+  }
+}

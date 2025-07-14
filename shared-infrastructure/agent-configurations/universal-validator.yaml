@@ -1,0 +1,545 @@
+# Universal Validator Configuration
+# Complete Requirements Generation System - Multi-Agent Architecture
+# Comprehensive validation agent for Global Requirements and cross-domain consistency
+
+metadata:
+  agent_name: "Universal Validator"
+  agent_type: "validator"
+  version: "1.0.0"
+  created_date: "2025-01-07"
+  last_updated: "2025-01-07"
+  gr_compliance: ["GR-38", "GR-44", "GR-52", "GR-49", "GR-19", "GR-41", "GR-02", "GR-64", "GR-10"]
+  description: "Universal validation agent for comprehensive quality assurance across all domains"
+
+# Core Agent Configuration
+agent_config:
+  # Agent Identity
+  agent_id: "universal-validator"
+  display_name: "Universal Validator"
+  domain: "validation"
+  agent_type: "validator"
+  
+  # Core Capabilities
+  capabilities:
+    global_requirements_validation: true
+    cross_domain_consistency_validation: true
+    infrastructure_alignment_validation: true
+    pattern_compliance_validation: true
+    entity_validation: true
+    workflow_validation: true
+    performance_validation: true
+    security_validation: true
+    
+  # Universal Validator Specific Capabilities
+  validator_capabilities:
+    validation_types:
+      - "global_requirements_compliance"
+      - "cross_domain_consistency"
+      - "infrastructure_alignment"
+      - "pattern_compliance"
+      - "entity_relationship_validation"
+      - "workflow_consistency"
+      - "performance_compliance"
+      - "security_compliance"
+      - "audit_compliance"
+      - "regulatory_compliance"
+    
+    validation_modes:
+      - "pre_processing_validation"
+      - "progressive_validation"
+      - "post_processing_validation"
+      - "cross_domain_validation"
+      - "final_quality_assurance"
+    
+    validation_scopes:
+      - "individual_requirement"
+      - "batch_validation"
+      - "cross_domain_workflow"
+      - "system_wide_validation"
+      - "compliance_audit"
+    
+    quality_gates:
+      - "entity_completeness"
+      - "pattern_coverage"
+      - "gr_compliance"
+      - "cross_domain_consistency"
+      - "infrastructure_alignment"
+      - "performance_standards"
+      - "security_standards"
+      - "audit_standards"
+    
+  # Processing Configuration
+  processing:
+    max_concurrent_validations: 10
+    validation_timeout: "10 minutes"
+    fail_fast_enabled: true
+    progressive_validation: true
+    confidence_threshold: 0.85
+    auto_fix_enabled: false  # Validation only, no auto-fixing
+
+# Knowledge Base Integration
+knowledge_base:
+  # Global Requirements Knowledge
+  global_requirements_index: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-requirements-index.json"
+  gr_validation_rules: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-requirements-validation-rules.json"
+  
+  # Universal Patterns
+  universal_entities: "/app/workspace/requirements/shared-infrastructure/knowledge-base/universal-entity-catalog.json"
+  cross_domain_relationships: "/app/workspace/requirements/shared-infrastructure/knowledge-base/cross-domain-relationships/relationship-map.json"
+  communication_templates: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/communication-templates/"
+  service_integrations: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/service-integrations/"
+  database_schemas: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/database-schemas/"
+  
+  # Domain Patterns (for cross-validation)
+  domain_patterns: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/"
+  
+  # Infrastructure Validation
+  infrastructure_repository: "/app/workspace/blitzy-requirements/"
+  architectural_decisions: "/app/workspace/requirements/shared-infrastructure/knowledge-base/architectural-decisions/decision-index.json"
+  
+  # Caching Configuration
+  cache_enabled: true
+  cache_ttl: "1 hour"
+  cache_size_limit: "200MB"
+
+# System Orchestrator Integration
+orchestrator_integration:
+  orchestrator_agent_id: "system-orchestrator"
+  coordination_mode: "hierarchical"  # Validator reports to orchestrator
+  shared_context_participation: true
+  validation_authority: true  # Final say on validation decisions
+  
+  # Communication Patterns
+  reporting_frequency: "real_time"
+  status_updates: true
+  performance_metrics_sharing: true
+  error_escalation: "immediate"
+  validation_coordination: true
+
+# Domain Specialist Integration
+domain_specialist_integration:
+  # All Domain Specialists Report to Validator
+  producer_portal_specialist: "producer-portal-specialist"
+  accounting_specialist: "accounting-specialist"
+  program_manager_specialist: "program-manager-specialist"
+  program_traits_specialist: "program-traits-specialist"
+  entity_integration_specialist: "entity-integration-specialist"
+  reinstatement_specialist: "reinstatement-specialist"
+  sr22_specialist: "sr22-specialist"
+  
+  # Validation Relationship
+  validation_authority: "final_approval"
+  validation_coordination: "progressive"
+  validation_feedback: "immediate"
+  validation_override: "documented_exceptions_only"
+
+# Validation Configuration
+validation_config:
+  # Global Requirements Validation
+  global_requirements_validation:
+    enabled: true
+    validation_mode: "comprehensive"
+    confidence_threshold: 0.95
+    auto_assignment_validation: true
+    compliance_scoring: true
+    
+    # GR Validation Rules
+    gr_validation_rules:
+      gr_completeness_check: true
+      gr_applicability_validation: true
+      gr_consistency_validation: true
+      gr_compliance_scoring: true
+      gr_cross_reference_validation: true
+    
+    # Specific GR Validations
+    specific_gr_validations:
+      gr_02_audit_fields: "mandatory"
+      gr_10_sr22_filing: "domain_specific"
+      gr_19_table_relationships: "structural"
+      gr_38_microservice_architecture: "architectural"
+      gr_41_database_design: "data_model"
+      gr_44_communication_architecture: "communication"
+      gr_49_event_driven_messaging: "integration"
+      gr_52_universal_entity_management: "entity_focused"
+      gr_64_policy_reinstatement: "workflow_specific"
+  
+  # Cross-Domain Consistency Validation
+  cross_domain_validation:
+    enabled: true
+    validation_scope: "all_domains"
+    consistency_threshold: 0.88
+    
+    # Consistency Checks
+    consistency_checks:
+      entity_definition_consistency: true
+      workflow_integration_consistency: true
+      communication_pattern_consistency: true
+      data_model_consistency: true
+      api_pattern_consistency: true
+      security_pattern_consistency: true
+    
+    # Cross-Domain Relationships
+    relationship_validation:
+      producer_portal_accounting: "payment_workflows"
+      producer_portal_program_manager: "rating_workflows"
+      producer_portal_entity_integration: "dcs_integration"
+      accounting_program_manager: "commission_calculations"
+      accounting_reinstatement: "payment_processing"
+      entity_integration_sr22: "compliance_reporting"
+  
+  # Infrastructure Alignment Validation
+  infrastructure_validation:
+    enabled: true
+    repository_access: "/app/workspace/blitzy-requirements/"
+    validation_scope: "full_alignment"
+    
+    # Infrastructure Checks
+    infrastructure_checks:
+      database_schema_alignment: true
+      api_pattern_alignment: true
+      service_architecture_alignment: true
+      security_pattern_alignment: true
+      deployment_pattern_alignment: true
+      performance_pattern_alignment: true
+    
+    # Specific Validations
+    specific_validations:
+      laravel_model_consistency: true
+      api_endpoint_consistency: true
+      database_migration_consistency: true
+      service_layer_consistency: true
+      authentication_consistency: true
+  
+  # Pattern Compliance Validation
+  pattern_validation:
+    enabled: true
+    validation_scope: "all_patterns"
+    compliance_threshold: 0.85
+    
+    # Pattern Categories
+    pattern_categories:
+      universal_entity_patterns: "GR-52"
+      communication_patterns: "GR-44"
+      database_patterns: "GR-41"
+      service_integration_patterns: "GR-38"
+      event_messaging_patterns: "GR-49"
+    
+    # Pattern Compliance Checks
+    compliance_checks:
+      pattern_structure_compliance: true
+      pattern_naming_compliance: true
+      pattern_relationship_compliance: true
+      pattern_performance_compliance: true
+
+# Validation Workflow
+validation_workflow:
+  # Progressive Validation Stages
+  validation_stages:
+    1_pre_processing:
+      - "requirement_structure_validation"
+      - "initial_gr_applicability_check"
+      - "domain_assignment_validation"
+      - "entity_identification_validation"
+      
+    2_domain_processing:
+      - "domain_specific_validation"
+      - "pattern_application_validation"
+      - "entity_resolution_validation"
+      - "workflow_design_validation"
+      
+    3_cross_domain_validation:
+      - "cross_domain_consistency_check"
+      - "entity_relationship_validation"
+      - "workflow_integration_validation"
+      - "communication_pattern_validation"
+      
+    4_infrastructure_validation:
+      - "infrastructure_alignment_check"
+      - "database_schema_validation"
+      - "api_pattern_validation"
+      - "service_architecture_validation"
+      
+    5_final_validation:
+      - "comprehensive_gr_compliance_check"
+      - "quality_gate_validation"
+      - "performance_standards_validation"
+      - "security_compliance_validation"
+      - "audit_compliance_validation"
+  
+  # Fail-Fast Configuration
+  fail_fast:
+    enabled: true
+    critical_failures:
+      - "gr_compliance_violation"
+      - "security_compliance_violation"
+      - "infrastructure_incompatibility"
+      - "critical_entity_relationship_violation"
+    
+    # Failure Handling
+    failure_actions:
+      immediate_stop: true
+      escalate_to_orchestrator: true
+      notify_domain_specialists: true
+      log_detailed_failure_report: true
+  
+  # Quality Gates
+  quality_gates:
+    entity_completeness:
+      threshold: ">90%"
+      validation: "comprehensive"
+      failure_action: "block_processing"
+    
+    pattern_coverage:
+      threshold: ">85%"
+      validation: "pattern_matching"
+      failure_action: "request_pattern_enhancement"
+    
+    gr_compliance:
+      threshold: ">95%"
+      validation: "strict"
+      failure_action: "block_processing"
+    
+    cross_domain_consistency:
+      threshold: ">88%"
+      validation: "relationship_based"
+      failure_action: "request_consistency_fix"
+    
+    infrastructure_alignment:
+      threshold: ">90%"
+      validation: "repository_comparison"
+      failure_action: "architectural_review"
+
+# Performance & Monitoring
+performance:
+  # Performance Targets
+  targets:
+    validation_time: "< 8 minutes per requirement"
+    validation_accuracy: "> 95%"
+    false_positive_rate: "< 3%"
+    false_negative_rate: "< 1%"
+    validation_throughput: "> 10 validations/hour"
+    
+  # Metrics Collection
+  metrics:
+    validation_time_tracking: true
+    validation_accuracy_tracking: true
+    false_positive_tracking: true
+    false_negative_tracking: true
+    quality_gate_metrics: true
+    gr_compliance_metrics: true
+    cross_domain_consistency_metrics: true
+    infrastructure_alignment_metrics: true
+  
+  # Performance Optimization
+  optimization:
+    validation_caching: true
+    parallel_validation: true
+    smart_validation_ordering: true
+    early_termination: true
+    validation_result_caching: true
+
+# Communication & Coordination
+communication:
+  # Shared Context Participation
+  shared_context_manager: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/shared-context-manager.py"
+  memory_interface: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/agent-memory-interface.py"
+  
+  # Communication Patterns
+  sync_mode: "real_time"
+  sync_interval: "5 seconds"
+  conflict_resolution: "validation_authority"  # Validator has final authority
+  
+  # Validation Message Types
+  supported_messages:
+    - "validation_request"
+    - "validation_result"
+    - "quality_gate_status"
+    - "gr_compliance_report"
+    - "cross_domain_consistency_report"
+    - "infrastructure_alignment_report"
+    - "validation_failure_notification"
+    - "validation_success_confirmation"
+    - "quality_improvement_recommendation"
+    - "pattern_compliance_report"
+
+# Validation Tools Integration
+validation_tools:
+  # GR Compliance Checker
+  gr_compliance_checker:
+    tool_file: "/app/workspace/requirements/shared-infrastructure/validation-tools/gr-compliance-checker.py"
+    enabled: true
+    validation_mode: "comprehensive"
+    confidence_threshold: 0.95
+    
+  # Cross-Domain Validator
+  cross_domain_validator:
+    tool_file: "/app/workspace/requirements/shared-infrastructure/validation-tools/cross-domain-validator.py"
+    enabled: true
+    validation_scope: "all_relationships"
+    consistency_threshold: 0.88
+    
+  # Infrastructure Validator
+  infrastructure_validator:
+    tool_file: "/app/workspace/requirements/shared-infrastructure/validation-tools/infrastructure-validator.py"
+    enabled: true
+    repository_path: "/app/workspace/blitzy-requirements/"
+    alignment_threshold: 0.90
+  
+  # Pattern Validator
+  pattern_validator:
+    enabled: true
+    pattern_libraries: 
+      - "universal_entities"
+      - "communication_templates"
+      - "database_schemas"
+      - "service_integrations"
+    compliance_threshold: 0.85
+
+# Error Handling & Recovery
+error_handling:
+  # Validation Error Categories
+  validation_error_categories:
+    - "gr_compliance_violation"
+    - "cross_domain_consistency_violation"
+    - "infrastructure_alignment_violation"
+    - "pattern_compliance_violation"
+    - "entity_relationship_violation"
+    - "workflow_consistency_violation"
+    - "performance_standards_violation"
+    - "security_compliance_violation"
+  
+  # Error Management
+  error_tracking: true
+  error_categorization: true
+  automatic_retry: false  # No retries for validation failures
+  escalation_enabled: true
+  
+  # Validation Failure Handling
+  failure_handling:
+    detailed_reporting: true
+    failure_categorization: true
+    improvement_recommendations: true
+    escalation_to_orchestrator: true
+    domain_specialist_notification: true
+  
+  # Escalation Rules
+  escalation:
+    escalate_to: "system-orchestrator"
+    escalation_triggers:
+      - "critical_gr_violation"
+      - "security_compliance_failure"
+      - "infrastructure_incompatibility"
+      - "systematic_validation_failures"
+    escalation_timeout: "immediate"
+  
+  # Recovery Procedures
+  recovery:
+    automatic_recovery: false  # Manual intervention required
+    recovery_guidance: true
+    improvement_recommendations: true
+    pattern_suggestions: true
+
+# Compliance & Audit
+compliance:
+  # Universal Validator Compliance
+  validator_compliance:
+    validation_standards_compliance: true
+    quality_assurance_compliance: true
+    audit_trail_compliance: true
+    regulatory_compliance_validation: true
+    
+  # Regulatory Compliance
+  regulatory_requirements:
+    data_retention: "7 years"
+    audit_trail: "complete"
+    privacy_protection: "gdpr_compliant"
+    security_standards: "iso27001"
+    validation_documentation: "comprehensive"
+  
+  # Audit Configuration
+  audit:
+    audit_enabled: true
+    audit_level: "full"
+    audit_retention: "7 years"
+    audit_format: "structured_json"
+    validation_audit_tracking: true
+    quality_gate_audit_tracking: true
+    compliance_audit_tracking: true
+  
+  # Quality Assurance Controls
+  qa_controls:
+    validation_accuracy_monitoring: true
+    false_positive_tracking: true
+    false_negative_tracking: true
+    validation_consistency_monitoring: true
+    quality_improvement_tracking: true
+
+# Reporting & Analytics
+reporting:
+  # Validation Reports
+  validation_reports:
+    individual_requirement_reports: true
+    batch_validation_reports: true
+    cross_domain_consistency_reports: true
+    infrastructure_alignment_reports: true
+    gr_compliance_reports: true
+    quality_gate_reports: true
+  
+  # Analytics
+  validation_analytics:
+    validation_success_rate_analysis: true
+    failure_pattern_analysis: true
+    quality_improvement_trend_analysis: true
+    domain_compliance_comparison: true
+    gr_compliance_trend_analysis: true
+  
+  # Dashboard Integration
+  dashboard_integration:
+    real_time_validation_status: true
+    quality_metrics_dashboard: true
+    compliance_dashboard: true
+    performance_dashboard: true
+    trend_analysis_dashboard: true
+
+# Integration Patterns
+integration_patterns:
+  # Agent Integration
+  agent_integration:
+    orchestrator_integration: "hierarchical_reporting"
+    domain_specialist_integration: "validation_authority"
+    shared_context_integration: "read_write_access"
+    
+  # Tool Integration
+  tool_integration:
+    validation_tool_orchestration: true
+    parallel_validation_execution: true
+    validation_result_aggregation: true
+    failure_analysis_automation: true
+  
+  # External Integration
+  external_integration:
+    infrastructure_repository_integration: true
+    global_requirements_integration: true
+    pattern_library_integration: true
+    compliance_system_integration: true
+
+# Development & Testing
+development:
+  # Test Configuration
+  test_mode: false
+  test_validation_enabled: false
+  mock_validation_tools: false
+  
+  # Validation Testing
+  validation_testing:
+    unit_tests: true
+    integration_tests: true
+    performance_tests: true
+    accuracy_tests: true
+  
+  # Quality Metrics
+  quality_metrics:
+    validation_accuracy_testing: true
+    false_positive_rate_testing: true
+    false_negative_rate_testing: true
+    performance_regression_testing: true

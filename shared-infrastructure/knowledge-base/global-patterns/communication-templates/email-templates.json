@@ -1,0 +1,434 @@
+{
+  "template_metadata": {
+    "template_category": "email_templates",
+    "template_version": "1.0.0",
+    "gr_compliance": "GR-44 Communication Architecture",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "total_templates": 18,
+    "supported_domains": ["producer-portal", "accounting", "reinstatement", "sr22"],
+    "confidence_score": 0.94,
+    "usage_count": 156,
+    "success_rate": 0.96
+  },
+  "template_structure": {
+    "template_components": {
+      "header": {
+        "company_logo": "{{company.logo_url}}",
+        "company_name": "{{company.name}}",
+        "template_branding": "standardized_header_design"
+      },
+      "content": {
+        "subject_line": "dynamic_based_on_template_type",
+        "greeting": "{{recipient.name}}",
+        "body": "template_specific_content",
+        "call_to_action": "template_specific_actions"
+      },
+      "footer": {
+        "contact_information": "{{company.contact_info}}",
+        "unsubscribe_link": "{{unsubscribe_url}}",
+        "legal_disclaimers": "insurance_specific_disclaimers"
+      }
+    },
+    "variable_substitution": {
+      "policy_variables": [
+        "{{policy.number}}",
+        "{{policy.effective_date}}",
+        "{{policy.expiration_date}}",
+        "{{policy.premium_amount}}"
+      ],
+      "customer_variables": [
+        "{{customer.name}}",
+        "{{customer.email}}",
+        "{{customer.phone}}",
+        "{{customer.address}}"
+      ],
+      "producer_variables": [
+        "{{producer.name}}",
+        "{{producer.phone}}",
+        "{{producer.email}}",
+        "{{producer.license_number}}"
+      ],
+      "payment_variables": [
+        "{{payment.amount}}",
+        "{{payment.due_date}}",
+        "{{payment.method}}",
+        "{{payment.confirmation_number}}"
+      ]
+    }
+  },
+  "email_templates": {
+    "quote_related": {
+      "quote_generated": {
+        "template_id": "email_quote_generated",
+        "subject": "Your Insurance Quote #{{quote.number}} is Ready",
+        "content_sections": [
+          {
+            "section": "greeting",
+            "content": "Dear {{customer.name}},"
+          },
+          {
+            "section": "main_content",
+            "content": "Your insurance quote #{{quote.number}} has been generated and is ready for review. Your total premium is ${{quote.total_premium}} for a {{quote.term_months}} month term."
+          },
+          {
+            "section": "quote_details",
+            "content": "Quote Details:\n- Quote Number: {{quote.number}}\n- Effective Date: {{quote.effective_date}}\n- Expiration Date: {{quote.expiration_date}}\n- Total Premium: ${{quote.total_premium}}"
+          },
+          {
+            "section": "call_to_action",
+            "content": "To review and bind your quote, please click the link below or contact your producer {{producer.name}} at {{producer.phone}}."
+          },
+          {
+            "section": "review_link",
+            "content": "[Review Quote Button: {{quote.review_url}}]"
+          }
+        ],
+        "trigger_conditions": ["quote_generation_completed"],
+        "delivery_timing": "immediate",
+        "applicable_domains": ["producer-portal"]
+      },
+      "quote_expiring": {
+        "template_id": "email_quote_expiring",
+        "subject": "Your Insurance Quote #{{quote.number}} Expires Soon",
+        "content_sections": [
+          {
+            "section": "greeting",
+            "content": "Dear {{customer.name}},"
+          },
+          {
+            "section": "main_content",
+            "content": "This is a reminder that your insurance quote #{{quote.number}} will expire on {{quote.expiration_date}}. Don't miss out on your current rate!"
+          },
+          {
+            "section": "urgency_message",
+            "content": "To secure your coverage at the quoted rate of ${{quote.total_premium}}, please bind your quote before it expires."
+          },
+          {
+            "section": "call_to_action",
+            "content": "Contact your producer {{producer.name}} at {{producer.phone}} or click the link below to bind your quote now."
+          },
+          {
+            "section": "bind_link",
+            "content": "[Bind Quote Button: {{quote.bind_url}}]"
+          }
+        ],
+        "trigger_conditions": ["quote_expiration_warning"],
+        "delivery_timing": "7_days_before_expiration",
+        "applicable_domains": ["producer-portal"]
+      }
+    },
+    "payment_related": {
+      "payment_confirmation": {
+        "template_id": "email_payment_confirmation",
+        "subject": "Payment Confirmation - Policy #{{policy.number}}",
+        "content_sections": [
+          {
+            "section": "greeting",
+            "content": "Dear {{customer.name}},"
+          },
+          {
+            "section": "main_content",
+            "content": "We have successfully received your payment of ${{payment.amount}} for policy #{{policy.number}}."
+          },
+          {
+            "section": "payment_details",
+            "content": "Payment Details:\n- Amount: ${{payment.amount}}\n- Payment Method: {{payment.method}}\n- Transaction Date: {{payment.transaction_date}}\n- Confirmation Number: {{payment.confirmation_number}}"
+          },
+          {
+            "section": "next_payment",
+            "content": "Your next payment of ${{next_payment.amount}} is due on {{next_payment.due_date}}."
+          },
+          {
+            "section": "call_to_action",
+            "content": "You can view your payment history and manage automatic payments in your online account."
+          }
+        ],
+        "trigger_conditions": ["payment_processed_successfully"],
+        "delivery_timing": "immediate",
+        "applicable_domains": ["accounting", "producer-portal"]
+      },
+      "payment_reminder": {
+        "template_id": "email_payment_reminder",
+        "subject": "Payment Reminder - Policy #{{policy.number}}",
+        "content_sections": [
+          {
+            "section": "greeting",
+            "content": "Dear {{customer.name}},"
+          },
+          {
+            "section": "main_content",
+            "content": "This is a friendly reminder that your payment of ${{payment.amount}} for policy #{{policy.number}} is due on {{payment.due_date}}."
+          },
+          {
+            "section": "payment_options",
+            "content": "You can make your payment online, by phone, or through automatic bank draft. Choose the option that's most convenient for you."
+          },
+          {
+            "section": "call_to_action",
+            "content": "To avoid any interruption in coverage, please make your payment by the due date."
+          },
+          {
+            "section": "payment_link",
+            "content": "[Make Payment Button: {{payment.online_payment_url}}]"
+          }
+        ],
+        "trigger_conditions": ["payment_due_reminder"],
+        "delivery_timing": "3_days_before_due_date",
+        "applicable_domains": ["accounting", "producer-portal"]
+      },
+      "payment_failed": {
+        "template_id": "email_payment_failed",
+        "subject": "Payment Issue - Policy #{{policy.number}}",
+        "content_sections": [
+          {
+            "section": "greeting",
+            "content": "Dear {{customer.name}},"
+          },
+          {
+            "section": "main_content",
+            "content": "We were unable to process your automatic payment of ${{payment.amount}} for policy #{{policy.number}}. Please update your payment information to avoid a lapse in coverage."
+          },
+          {
+            "section": "urgency_message",
+            "content": "To prevent cancellation, please make your payment within {{grace_period.days}} days."
+          },
+          {
+            "section": "call_to_action",
+            "content": "Contact us at {{company.phone}} or click below to update your payment method and process your payment."
+          },
+          {
+            "section": "payment_link",
+            "content": "[Update Payment Method Button: {{payment.update_payment_url}}]"
+          }
+        ],
+        "trigger_conditions": ["payment_processing_failed"],
+        "delivery_timing": "immediate",
+        "applicable_domains": ["accounting", "producer-portal"]
+      }
+    },
+    "policy_related": {
+      "policy_bound": {
+        "template_id": "email_policy_bound",
+        "subject": "Welcome! Your Policy #{{policy.number}} is Now Active",
+        "content_sections": [
+          {
+            "section": "greeting",
+            "content": "Dear {{customer.name}},"
+          },
+          {
+            "section": "main_content",
+            "content": "Congratulations! Your insurance policy #{{policy.number}} is now active and provides coverage effective {{policy.effective_date}}."
+          },
+          {
+            "section": "policy_details",
+            "content": "Policy Information:\n- Policy Number: {{policy.number}}\n- Effective Date: {{policy.effective_date}}\n- Expiration Date: {{policy.expiration_date}}\n- Total Premium: ${{policy.total_premium}}"
+          },
+          {
+            "section": "documents",
+            "content": "Your policy documents have been generated and are attached to this email. Please review them carefully and keep them in a safe place."
+          },
+          {
+            "section": "contact_info",
+            "content": "If you have any questions, please contact your producer {{producer.name}} at {{producer.phone}} or {{producer.email}}."
+          }
+        ],
+        "trigger_conditions": ["policy_binding_completed"],
+        "delivery_timing": "immediate",
+        "applicable_domains": ["producer-portal"],
+        "attachments": ["policy_documents", "coverage_summary"]
+      },
+      "policy_renewal_notice": {
+        "template_id": "email_policy_renewal",
+        "subject": "Policy Renewal Notice - Policy #{{policy.number}}",
+        "content_sections": [
+          {
+            "section": "greeting",
+            "content": "Dear {{customer.name}},"
+          },
+          {
+            "section": "main_content",
+            "content": "Your insurance policy #{{policy.number}} is scheduled to expire on {{policy.expiration_date}}. We're pleased to offer you a renewal at competitive rates."
+          },
+          {
+            "section": "renewal_details",
+            "content": "Renewal Information:\n- Current Policy: {{policy.number}}\n- Renewal Premium: ${{renewal.total_premium}}\n- New Effective Date: {{renewal.effective_date}}\n- New Expiration Date: {{renewal.expiration_date}}"
+          },
+          {
+            "section": "call_to_action",
+            "content": "To continue your coverage without interruption, please review and accept your renewal terms by {{renewal.acceptance_deadline}}."
+          },
+          {
+            "section": "renewal_link",
+            "content": "[Review Renewal Button: {{renewal.review_url}}]"
+          }
+        ],
+        "trigger_conditions": ["policy_renewal_generated"],
+        "delivery_timing": "45_days_before_expiration",
+        "applicable_domains": ["producer-portal"]
+      }
+    },
+    "reinstatement_related": {
+      "reinstatement_opportunity": {
+        "template_id": "email_reinstatement_opportunity",
+        "subject": "Reinstate Your Policy #{{policy.number}} - Avoid Coverage Gap",
+        "content_sections": [
+          {
+            "section": "greeting",
+            "content": "Dear {{customer.name}},"
+          },
+          {
+            "section": "main_content",
+            "content": "Your policy #{{policy.number}} has lapsed due to non-payment. However, you still have the opportunity to reinstate your coverage and avoid a gap in protection."
+          },
+          {
+            "section": "reinstatement_details",
+            "content": "Reinstatement Information:\n- Outstanding Balance: ${{reinstatement.outstanding_balance}}\n- Late Fees: ${{reinstatement.late_fees}}\n- Total Amount Due: ${{reinstatement.total_amount_due}}\n- Reinstatement Deadline: {{reinstatement.deadline}}"
+          },
+          {
+            "section": "urgency_message",
+            "content": "Act quickly to avoid higher rates and maintain continuous coverage. Late reinstatement may require additional underwriting."
+          },
+          {
+            "section": "call_to_action",
+            "content": "To reinstate your policy, please make the full payment by {{reinstatement.deadline}}."
+          },
+          {
+            "section": "payment_link",
+            "content": "[Reinstate Policy Button: {{reinstatement.payment_url}}]"
+          }
+        ],
+        "trigger_conditions": ["policy_lapse_reinstatement_available"],
+        "delivery_timing": "immediate_after_lapse",
+        "applicable_domains": ["reinstatement", "accounting"]
+      }
+    },
+    "sr22_related": {
+      "sr22_filing_confirmation": {
+        "template_id": "email_sr22_filing_confirmation",
+        "subject": "SR22 Filing Confirmation - Policy #{{policy.number}}",
+        "content_sections": [
+          {
+            "section": "greeting",
+            "content": "Dear {{customer.name}},"
+          },
+          {
+            "section": "main_content",
+            "content": "Your SR22 filing has been successfully submitted to the state of {{sr22.state}} for policy #{{policy.number}}."
+          },
+          {
+            "section": "filing_details",
+            "content": "SR22 Filing Information:\n- Filing State: {{sr22.state}}\n- Filing Date: {{sr22.filing_date}}\n- Filing Number: {{sr22.filing_number}}\n- Effective Date: {{sr22.effective_date}}"
+          },
+          {
+            "section": "important_note",
+            "content": "Important: Maintain continuous coverage to avoid license suspension. Any lapse in coverage will be reported to the state."
+          },
+          {
+            "section": "contact_info",
+            "content": "If you have questions about your SR22 requirements, please contact your producer {{producer.name}} at {{producer.phone}}."
+          }
+        ],
+        "trigger_conditions": ["sr22_filing_completed"],
+        "delivery_timing": "immediate",
+        "applicable_domains": ["sr22", "producer-portal"]
+      }
+    }
+  },
+  "template_configuration": {
+    "delivery_settings": {
+      "from_address": "{{company.noreply_email}}",
+      "reply_to": "{{producer.email}}",
+      "send_time_optimization": "recipient_timezone_aware",
+      "retry_logic": "exponential_backoff_3_attempts"
+    },
+    "personalization_engine": {
+      "dynamic_content": "based_on_policy_characteristics",
+      "a_b_testing": "subject_line_optimization",
+      "engagement_tracking": "open_click_bounce_rates"
+    },
+    "compliance_requirements": {
+      "unsubscribe_handling": "one_click_unsubscribe",
+      "data_retention": "7_year_retention_policy",
+      "privacy_compliance": "gdpr_can_spam_compliant"
+    }
+  },
+  "template_inheritance": {
+    "base_template": {
+      "header_standardization": "company_branding_consistent",
+      "footer_standardization": "legal_disclaimers_included",
+      "responsive_design": "mobile_optimized"
+    },
+    "domain_customizations": {
+      "producer_portal": {
+        "producer_signature": "automatic_producer_contact_info",
+        "quote_tools": "integrated_quote_actions"
+      },
+      "accounting": {
+        "payment_options": "multiple_payment_methods",
+        "billing_details": "detailed_payment_history"
+      },
+      "reinstatement": {
+        "urgency_indicators": "visual_urgency_cues",
+        "payment_deadlines": "countdown_timers"
+      },
+      "sr22": {
+        "compliance_notices": "state_specific_requirements",
+        "legal_language": "sr22_specific_disclaimers"
+      }
+    }
+  },
+  "integration_specifications": {
+    "email_service_integration": {
+      "service_provider": "SendGrid/Mailgun",
+      "api_endpoints": "template_management_and_delivery",
+      "webhook_handling": "delivery_status_updates"
+    },
+    "template_engine": {
+      "rendering_engine": "Mustache/Handlebars",
+      "variable_substitution": "real_time_data_injection",
+      "conditional_logic": "if_else_template_blocks"
+    },
+    "analytics_integration": {
+      "tracking_pixels": "email_open_tracking",
+      "link_tracking": "click_through_analysis",
+      "engagement_metrics": "recipient_behavior_analysis"
+    }
+  },
+  "performance_requirements": {
+    "template_rendering": {
+      "render_time": "< 100ms per template",
+      "variable_substitution": "< 50ms per template",
+      "template_caching": "redis_based_template_cache"
+    },
+    "delivery_performance": {
+      "queue_processing": "< 30 seconds average",
+      "delivery_rate": "> 99% successful delivery",
+      "bounce_rate": "< 2% target bounce rate"
+    }
+  },
+  "testing_framework": {
+    "template_testing": {
+      "rendering_validation": "automated_variable_substitution_tests",
+      "responsive_testing": "multi_device_compatibility",
+      "link_validation": "automated_link_checking"
+    },
+    "a_b_testing": {
+      "subject_line_testing": "statistical_significance_tracking",
+      "content_testing": "engagement_optimization",
+      "send_time_testing": "optimal_delivery_timing"
+    }
+  },
+  "maintenance_procedures": {
+    "template_updates": {
+      "version_control": "git_based_template_versioning",
+      "approval_workflow": "multi_stage_review_process",
+      "rollback_capability": "instant_template_rollback"
+    },
+    "performance_monitoring": {
+      "delivery_monitoring": "real_time_delivery_metrics",
+      "engagement_analysis": "weekly_performance_reports",
+      "compliance_auditing": "quarterly_compliance_reviews"
+    }
+  }
+}

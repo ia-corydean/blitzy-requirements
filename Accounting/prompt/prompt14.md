@@ -1,0 +1,53 @@
+This is in response to Aime/workspace/requirements/processing-queues/accounting/pending/accounting-global-requirements-generation-v9.md
+- please put all revisions in a -v10 file
+- Insufficient Payment Handling
+  - Where was this referenced?
+  - This seems to conflict with Full Payment Requirement
+- Ensure reinstatement information matches Aime/workspace/requirements/Reinstatement/Documentation/Reinstatement with Lapse Process .docx.md
+- Ensure endorsements information matches Aime/workspace/requirements/ProgramTraits/Documentation
+- Check printing capabilities (single checks only)
+  - Please explain?
+- External System Integration 
+  - General ledger system interfaces 
+    - not for now, but our own internal system should be able to support this when we are ready.
+  - Commission payment systems
+    - not for now, but our own internal system should be able to support this when we are ready.
+  - Document management integration
+    - We have our own outlined in requirements
+  - Communication system for notices
+    - we have our own outliend in requirements.
+  - Regulatory reporting interfaces
+    - own internal system should be able to support this when we are ready.
+- 7-year retention for financial transactions
+  - this should be historically.
+- Small Refund Threshold: What dollar amount is considered a "small refund" that should be prevented through cancellation date adjustment?
+  - This should be configurable in the program manager
+- Date Adjustment Limits: How many days can the cancellation date be adjusted to prevent refunds?
+  - Explain?
+- Customer Communication: Should customers be notified when cancellation dates are adjusted to prevent refunds?
+  - Explain?
+- Override Structure: Should the system support override commissions where agency principals earn a percentage of their agents' commissions?
+  - Explain?
+- How many levels of agency hierarchy need commission support?
+  - Suggestion?
+  - See if the individual global requirements help answer this.
+- Override Rates: Are override commission rates program-specific or agency-specific?
+  - Technically, both.
+  - Program level defines the commission rates available for producers, including special.
+  - Agent can then be assigned the default or special commission available on the program they can write.
+- Multiple Gateways: Should the system support multiple payment gateways simultaneously?
+  - Yes. The gateway should be set on the program and technically different prgrams can have different gateways.
+  - Each program should be able to support a main gateway and a fallback gateway.
+- Gateway Failover: Is automatic failover between gateways required?
+  - It should be a configuration in the prgram manager.
+- Alternative Payment Methods: Which specific alternative payment methods should be gateway-supported?
+  - Explain?
+- Matching Thresholds: What variance amounts are acceptable for automated reconciliation?
+  - Explain?
+- Exception Workflows: Who approves reconciliation exceptions?
+  - Explain?
+- Timing Differences: How many days of timing difference are acceptable between payment and clearance?
+  - Explain?
+- if their are additional questions from you that you may need providing a full accounting gameplan, please also include those
+- the main tables for accounting should be transaction and transaction_line
+- ensure that we are not over-complicating the accounting foundation.

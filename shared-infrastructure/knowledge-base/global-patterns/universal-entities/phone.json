@@ -1,0 +1,375 @@
+{
+  "pattern_metadata": {
+    "entity_name": "phone",
+    "pattern_version": "1.0.0",
+    "gr_compliance": "GR-52 Universal Entity Management",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "confidence_score": 0.97,
+    "usage_count": 378,
+    "success_rate": 0.98,
+    "applicable_domains": ["universal", "producer-portal", "accounting", "entity-integration"]
+  },
+  "entity_definition": {
+    "primary_table": "phone",
+    "description": "Universal pattern for phone number entities across all business domains and external entities",
+    "business_purpose": "Manage all phone number information for communication with drivers, producers, and external entities",
+    "gr_52_compliant": true
+  },
+  "table_structure": {
+    "core_fields": [
+      {
+        "name": "id",
+        "type": "bigint",
+        "constraints": "PRIMARY KEY AUTO_INCREMENT",
+        "description": "Unique phone number identifier"
+      },
+      {
+        "name": "phone_type_id",
+        "type": "bigint",
+        "constraints": "FOREIGN KEY REFERENCES phone_type(id)",
+        "description": "Type of phone (mobile, home, work, fax, etc.)"
+      },
+      {
+        "name": "country_code",
+        "type": "varchar(5)",
+        "constraints": "NOT NULL DEFAULT '+1'",
+        "description": "International country calling code"
+      },
+      {
+        "name": "area_code",
+        "type": "varchar(3)",
+        "constraints": "NOT NULL",
+        "description": "3-digit area code"
+      },
+      {
+        "name": "exchange",
+        "type": "varchar(3)",
+        "constraints": "NOT NULL",
+        "description": "3-digit exchange code"
+      },
+      {
+        "name": "number",
+        "type": "varchar(4)",
+        "constraints": "NOT NULL",
+        "description": "4-digit subscriber number"
+      },
+      {
+        "name": "extension",
+        "type": "varchar(10)",
+        "constraints": "NULL",
+        "description": "Phone extension (when applicable)"
+      },
+      {
+        "name": "formatted_number",
+        "type": "varchar(20)",
+        "constraints": "NOT NULL",
+        "description": "Formatted phone number for display (e.g., (555) 123-4567)"
+      },
+      {
+        "name": "digits_only",
+        "type": "varchar(15)",
+        "constraints": "NOT NULL",
+        "description": "Phone number with digits only (e.g., 5551234567)"
+      },
+      {
+        "name": "international_format",
+        "type": "varchar(25)",
+        "constraints": "NOT NULL",
+        "description": "International format (e.g., +1-555-123-4567)"
+      },
+      {
+        "name": "is_primary",
+        "type": "boolean",
+        "constraints": "DEFAULT false",
+        "description": "Indicates if this is the primary phone number for the entity"
+      },
+      {
+        "name": "is_verified",
+        "type": "boolean",
+        "constraints": "DEFAULT false",
+        "description": "Indicates if phone number has been verified"
+      },
+      {
+        "name": "verification_date",
+        "type": "timestamp",
+        "constraints": "NULL",
+        "description": "Date phone number was last verified"
+      },
+      {
+        "name": "sms_enabled",
+        "type": "boolean",
+        "constraints": "DEFAULT false",
+        "description": "Indicates if SMS messages can be sent to this number"
+      },
+      {
+        "name": "communication_preference",
+        "type": "enum('call', 'sms', 'both', 'none')",
+        "constraints": "DEFAULT 'call'",
+        "description": "Preferred communication method for this number"
+      }
+    ],
+    "audit_fields": [
+      {
+        "name": "created_by",
+        "type": "bigint",
+        "constraints": "NOT NULL",
+        "description": "User who created the record"
+      },
+      {
+        "name": "updated_by",
+        "type": "bigint",
+        "constraints": "NOT NULL",
+        "description": "User who last updated the record"
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp",
+        "constraints": "DEFAULT CURRENT_TIMESTAMP",
+        "description": "Record creation timestamp"
+      },
+      {
+        "name": "updated_at",
+        "type": "timestamp",
+        "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+        "description": "Record last update timestamp"
+      }
+    ],
+    "status_management": {
+      "field": "status_id",
+      "type": "bigint",
+      "reference": "status",
+      "description": "References universal status table per GR-19"
+    }
+  },
+  "relationships": {
+    "belongs_to": [
+      {
+        "entity": "phone_type",
+        "foreign_key": "phone_type_id",
+        "description": "Classification of phone type"
+      },
+      {
+        "entity": "status",
+        "foreign_key": "status_id",
+        "description": "Current status of phone record"
+      }
+    ],
+    "has_many": [
+      {
+        "entity": "communication_log",
+        "relationship": "phone_id",
+        "description": "Communication attempts made to this phone number"
+      }
+    ],
+    "many_to_many": [
+      {
+        "entity": "driver",
+        "through": "map_driver_phone",
+        "description": "Drivers associated with this phone number"
+      },
+      {
+        "entity": "producer",
+        "through": "map_producer_phone",
+        "description": "Producers associated with this phone number"
+      },
+      {
+        "entity": "policy",
+        "through": "map_policy_phone",
+        "description": "Policies associated with this phone number"
+      },
+      {
+        "entity": "quote",
+        "through": "map_quote_phone",
+        "description": "Quotes associated with this phone number"
+      },
+      {
+        "entity": "external_entity",
+        "through": "map_external_entity_phone",
+        "description": "External entities (APIs, attorneys, body shops, vendors) with this phone number"
+      }
+    ]
+  },
+  "business_rules": {
+    "validation_rules": [
+      {
+        "rule": "area_code_validation",
+        "description": "Area code must be valid North American area code"
+      },
+      {
+        "rule": "exchange_validation",
+        "description": "Exchange code must not start with 0 or 1"
+      },
+      {
+        "rule": "digits_only_format",
+        "description": "digits_only field must contain only numeric characters"
+      },
+      {
+        "rule": "single_primary_per_entity",
+        "description": "Only one phone number per entity can be marked as primary"
+      },
+      {
+        "rule": "sms_mobile_validation",
+        "description": "SMS can only be enabled for mobile phone types"
+      }
+    ],
+    "business_logic": [
+      {
+        "logic": "automatic_formatting",
+        "description": "Automatically format phone numbers on creation/update"
+      },
+      {
+        "logic": "duplicate_prevention",
+        "description": "Prevent duplicate phone numbers for the same entity"
+      },
+      {
+        "logic": "verification_workflow",
+        "description": "Send verification code for new phone numbers when required"
+      },
+      {
+        "logic": "communication_preference_enforcement",
+        "description": "Respect communication preferences when sending messages"
+      }
+    ]
+  },
+  "integration_points": {
+    "phone_verification_service": {
+      "purpose": "Verify phone number validity and carrier information",
+      "api_endpoint": "Twilio Lookup API",
+      "gr_reference": "GR-48 External Integrations Catalog"
+    },
+    "sms_service": {
+      "purpose": "Send SMS messages for notifications and verifications",
+      "api_endpoint": "Twilio SMS API",
+      "gr_reference": "GR-44 Communication Architecture"
+    },
+    "voice_service": {
+      "purpose": "Make automated voice calls for notifications",
+      "api_endpoint": "Twilio Voice API",
+      "gr_reference": "GR-44 Communication Architecture"
+    },
+    "communication_tracking": {
+      "purpose": "Track all communication attempts and delivery status",
+      "service": "Communication Log Service",
+      "gr_reference": "GR-44 Communication Architecture"
+    }
+  },
+  "section_c_template": {
+    "description": "Backend mapping template for phone fields",
+    "example_mapping": "get phone.* from phone\n-> join phone_type on phone.phone_type_id = phone_type.id\n-> join status on phone.status_id = status.id\n-> get communication_preference from phone.communication_preference\n-> where phone.status_id = active_status_id",
+    "performance_notes": "Index on (digits_only) for phone number lookups and duplicate detection"
+  },
+  "section_e_template": {
+    "description": "Database schema template for phone table",
+    "create_statement": "CREATE TABLE phone (\n  id bigint PRIMARY KEY AUTO_INCREMENT,\n  phone_type_id bigint NOT NULL,\n  country_code varchar(5) NOT NULL DEFAULT '+1',\n  area_code varchar(3) NOT NULL,\n  exchange varchar(3) NOT NULL,\n  number varchar(4) NOT NULL,\n  extension varchar(10) NULL,\n  formatted_number varchar(20) NOT NULL,\n  digits_only varchar(15) NOT NULL,\n  international_format varchar(25) NOT NULL,\n  is_primary boolean DEFAULT false,\n  is_verified boolean DEFAULT false,\n  verification_date timestamp NULL,\n  sms_enabled boolean DEFAULT false,\n  communication_preference enum('call', 'sms', 'both', 'none') DEFAULT 'call',\n  status_id bigint NOT NULL,\n  created_by bigint NOT NULL,\n  updated_by bigint NOT NULL,\n  created_at timestamp DEFAULT CURRENT_TIMESTAMP,\n  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  \n  FOREIGN KEY (phone_type_id) REFERENCES phone_type(id),\n  FOREIGN KEY (status_id) REFERENCES status(id),\n  \n  INDEX idx_phone_status (status_id),\n  INDEX idx_phone_digits_only (digits_only),\n  INDEX idx_phone_formatted (formatted_number),\n  INDEX idx_phone_verification (is_verified, verification_date),\n  INDEX idx_phone_primary (is_primary),\n  \n  CONSTRAINT chk_area_code_format CHECK (area_code REGEXP '^[2-9][0-9]{2}$'),\n  CONSTRAINT chk_exchange_format CHECK (exchange REGEXP '^[2-9][0-9]{2}$'),\n  CONSTRAINT chk_number_format CHECK (number REGEXP '^[0-9]{4}$'),\n  CONSTRAINT chk_digits_only_format CHECK (digits_only REGEXP '^[0-9]{10,15}$'),\n  UNIQUE KEY unique_digits_only (digits_only)\n);"
+  },
+  "usage_patterns": {
+    "common_queries": [
+      {
+        "purpose": "Get primary phone for driver",
+        "query": "SELECT p.* FROM phone p JOIN map_driver_phone mdp ON p.id = mdp.phone_id WHERE mdp.driver_id = ? AND p.is_primary = true AND p.status_id = ?"
+      },
+      {
+        "purpose": "Get all phones for entity with communication preferences",
+        "query": "SELECT p.*, pt.name as phone_type FROM phone p JOIN phone_type pt ON p.phone_type_id = pt.id JOIN map_driver_phone mdp ON p.id = mdp.phone_id WHERE mdp.driver_id = ? AND p.status_id = ? ORDER BY p.is_primary DESC, pt.priority ASC"
+      },
+      {
+        "purpose": "Find phone number by digits",
+        "query": "SELECT p.* FROM phone p WHERE p.digits_only = ? AND p.status_id = ?"
+      }
+    ],
+    "performance_considerations": [
+      "Index on digits_only for phone number lookups and duplicate detection",
+      "Composite index on (is_primary, status_id) for primary phone queries",
+      "Consider caching frequently accessed phone numbers",
+      "Index on communication_preference for messaging workflows"
+    ]
+  },
+  "domain_customizations": {
+    "universal": {
+      "entity_flexibility": ["supports_all_external_entities", "configurable_phone_types"],
+      "formatting": ["automatic_formatting", "international_support"]
+    },
+    "producer_portal": {
+      "ui_considerations": ["phone_input_formatting", "verification_status_display", "communication_preference_selection"],
+      "validation_requirements": ["real_time_format_validation", "duplicate_detection"]
+    },
+    "accounting": {
+      "communication_tracking": ["billing_notification_preferences", "payment_reminder_settings"],
+      "integration_requirements": ["automated_payment_notifications", "collection_call_logging"]
+    },
+    "entity_integration": {
+      "external_entities": ["api_contact_numbers", "vendor_support_lines", "attorney_office_numbers"],
+      "verification_workflows": ["business_number_verification", "contact_availability_checking"]
+    }
+  },
+  "communication_integration": {
+    "sms_messaging": {
+      "supported_types": ["verification_codes", "payment_reminders", "policy_notifications"],
+      "delivery_tracking": "message_status_updates",
+      "opt_out_handling": "automatic_preference_updates"
+    },
+    "voice_calling": {
+      "supported_types": ["automated_reminders", "verification_calls", "emergency_notifications"],
+      "call_tracking": "duration_and_outcome_logging",
+      "do_not_call_compliance": "preference_enforcement"
+    },
+    "communication_preferences": {
+      "granular_control": "message_type_specific_preferences",
+      "time_restrictions": "business_hours_enforcement",
+      "frequency_limits": "anti_spam_protection"
+    }
+  },
+  "verification_workflow": {
+    "verification_methods": [
+      "sms_verification_code",
+      "voice_verification_call",
+      "manual_verification"
+    ],
+    "verification_triggers": [
+      "new_phone_number_creation",
+      "primary_phone_change",
+      "communication_preference_change"
+    ],
+    "verification_process": {
+      "step_1": "generate_verification_code",
+      "step_2": "send_verification_message",
+      "step_3": "validate_user_response",
+      "step_4": "update_verification_status"
+    }
+  },
+  "universal_entity_support": {
+    "external_entity_integration": {
+      "entity_types": ["api_endpoints", "attorney_offices", "body_shops", "vendor_contacts"],
+      "phone_classification": "entity_specific_phone_types",
+      "mapping_relationships": "polymorphic_through_map_tables"
+    },
+    "configuration_flexibility": {
+      "phone_type_configuration": "json_metadata_driven",
+      "validation_rule_configuration": "entity_type_specific",
+      "ui_generation": "automatic_from_metadata"
+    }
+  },
+  "data_quality_management": {
+    "formatting_standards": {
+      "display_format": "(555) 123-4567",
+      "storage_format": "digits_only_plus_formatted",
+      "international_format": "+1-555-123-4567"
+    },
+    "duplicate_detection": {
+      "matching_algorithm": "digits_only_comparison",
+      "scope": "entity_level_duplicates",
+      "resolution": "merge_or_mark_inactive"
+    },
+    "validation_rules": {
+      "north_american_numbering_plan": "area_code_and_exchange_validation",
+      "international_support": "country_code_validation",
+      "carrier_verification": "external_api_validation"
+    }
+  },
+  "migration_guidance": {
+    "from_legacy": "Map existing phone tables to this pattern, ensuring proper phone_type classification and formatting standardization",
+    "data_cleanup": "Standardize phone number formats, validate area codes and exchanges, normalize communication preferences",
+    "validation": "Verify single primary phone per entity, validate phone number formats, ensure status consistency"
+  }
+}

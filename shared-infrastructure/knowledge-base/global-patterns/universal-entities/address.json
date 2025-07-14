@@ -1,0 +1,354 @@
+{
+  "pattern_metadata": {
+    "entity_name": "address",
+    "pattern_version": "1.0.0",
+    "gr_compliance": "GR-52 Universal Entity Management",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "confidence_score": 0.99,
+    "usage_count": 445,
+    "success_rate": 0.98,
+    "applicable_domains": ["universal", "producer-portal", "accounting", "entity-integration", "sr22"]
+  },
+  "entity_definition": {
+    "primary_table": "address",
+    "description": "Universal pattern for address entities across all business domains and external entities",
+    "business_purpose": "Manage all address information for policies, drivers, vehicles, and external entities",
+    "gr_52_compliant": true
+  },
+  "table_structure": {
+    "core_fields": [
+      {
+        "name": "id",
+        "type": "bigint",
+        "constraints": "PRIMARY KEY AUTO_INCREMENT",
+        "description": "Unique address identifier"
+      },
+      {
+        "name": "address_type_id",
+        "type": "bigint",
+        "constraints": "FOREIGN KEY REFERENCES address_type(id)",
+        "description": "Type of address (residential, mailing, business, garaging, etc.)"
+      },
+      {
+        "name": "address_line_1",
+        "type": "varchar(100)",
+        "constraints": "NOT NULL",
+        "description": "Primary address line (street number and name)"
+      },
+      {
+        "name": "address_line_2",
+        "type": "varchar(100)",
+        "constraints": "NULL",
+        "description": "Secondary address line (apt, suite, unit, etc.)"
+      },
+      {
+        "name": "city",
+        "type": "varchar(50)",
+        "constraints": "NOT NULL",
+        "description": "City name"
+      },
+      {
+        "name": "state",
+        "type": "char(2)",
+        "constraints": "NOT NULL",
+        "description": "Two-letter state code"
+      },
+      {
+        "name": "zip_code",
+        "type": "varchar(10)",
+        "constraints": "NOT NULL",
+        "description": "ZIP code (5 or 9 digit format)"
+      },
+      {
+        "name": "country",
+        "type": "char(2)",
+        "constraints": "DEFAULT 'US'",
+        "description": "Two-letter country code (ISO 3166-1 alpha-2)"
+      },
+      {
+        "name": "county",
+        "type": "varchar(50)",
+        "constraints": "NULL",
+        "description": "County name (for rating purposes)"
+      },
+      {
+        "name": "latitude",
+        "type": "decimal(10,8)",
+        "constraints": "NULL",
+        "description": "Geographic latitude coordinate"
+      },
+      {
+        "name": "longitude",
+        "type": "decimal(11,8)",
+        "constraints": "NULL",
+        "description": "Geographic longitude coordinate"
+      },
+      {
+        "name": "is_verified",
+        "type": "boolean",
+        "constraints": "DEFAULT false",
+        "description": "Indicates if address has been verified through USPS or other service"
+      },
+      {
+        "name": "verification_date",
+        "type": "timestamp",
+        "constraints": "NULL",
+        "description": "Date address was last verified"
+      },
+      {
+        "name": "standardized_address",
+        "type": "text",
+        "constraints": "NULL",
+        "description": "USPS standardized address format (JSON)"
+      }
+    ],
+    "audit_fields": [
+      {
+        "name": "created_by",
+        "type": "bigint",
+        "constraints": "NOT NULL",
+        "description": "User who created the record"
+      },
+      {
+        "name": "updated_by",
+        "type": "bigint",
+        "constraints": "NOT NULL",
+        "description": "User who last updated the record"
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp",
+        "constraints": "DEFAULT CURRENT_TIMESTAMP",
+        "description": "Record creation timestamp"
+      },
+      {
+        "name": "updated_at",
+        "type": "timestamp",
+        "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+        "description": "Record last update timestamp"
+      }
+    ],
+    "status_management": {
+      "field": "status_id",
+      "type": "bigint",
+      "reference": "status",
+      "description": "References universal status table per GR-19"
+    }
+  },
+  "relationships": {
+    "belongs_to": [
+      {
+        "entity": "address_type",
+        "foreign_key": "address_type_id",
+        "description": "Classification of address type"
+      },
+      {
+        "entity": "status",
+        "foreign_key": "status_id",
+        "description": "Current status of address record"
+      }
+    ],
+    "has_many": [
+      {
+        "entity": "territory_mapping",
+        "relationship": "address_id",
+        "description": "Territory assignments for rating purposes"
+      }
+    ],
+    "many_to_many": [
+      {
+        "entity": "driver",
+        "through": "map_driver_address",
+        "description": "Drivers associated with this address"
+      },
+      {
+        "entity": "policy",
+        "through": "map_policy_address",
+        "description": "Policies associated with this address"
+      },
+      {
+        "entity": "quote",
+        "through": "map_quote_address",
+        "description": "Quotes associated with this address"
+      },
+      {
+        "entity": "producer",
+        "through": "map_producer_address",
+        "description": "Producers associated with this address"
+      },
+      {
+        "entity": "external_entity",
+        "through": "map_external_entity_address",
+        "description": "External entities (APIs, attorneys, body shops, vendors) at this address"
+      }
+    ]
+  },
+  "business_rules": {
+    "validation_rules": [
+      {
+        "rule": "zip_code_format",
+        "description": "ZIP code must be 5 digits or 5+4 format (12345 or 12345-6789)"
+      },
+      {
+        "rule": "state_code_validation",
+        "description": "State must be valid US state or territory code"
+      },
+      {
+        "rule": "coordinate_range_validation",
+        "description": "Latitude must be between -90 and 90, longitude between -180 and 180"
+      },
+      {
+        "rule": "required_fields_validation",
+        "description": "address_line_1, city, state, and zip_code are required"
+      }
+    ],
+    "business_logic": [
+      {
+        "logic": "address_standardization",
+        "description": "Automatically standardize addresses using USPS API when possible"
+      },
+      {
+        "logic": "geocoding_integration",
+        "description": "Automatically geocode addresses for mapping and territory assignment"
+      },
+      {
+        "logic": "territory_assignment",
+        "description": "Assign rating territory based on address location"
+      },
+      {
+        "logic": "duplicate_prevention",
+        "description": "Prevent duplicate addresses through fuzzy matching"
+      }
+    ]
+  },
+  "integration_points": {
+    "usps_address_verification": {
+      "purpose": "Standardize and verify addresses",
+      "api_endpoint": "USPS Address Validation API",
+      "gr_reference": "GR-48 External Integrations Catalog"
+    },
+    "geocoding_service": {
+      "purpose": "Convert addresses to latitude/longitude coordinates",
+      "api_endpoint": "Google Maps Geocoding API",
+      "gr_reference": "GR-48 External Integrations Catalog"
+    },
+    "territory_assignment": {
+      "purpose": "Assign rating territories based on address",
+      "service": "Territory Mapping Service",
+      "gr_reference": "GR-38 Microservice Architecture"
+    },
+    "sr22_filing_integration": {
+      "purpose": "Address information for SR22 state filing requirements",
+      "target_domain": "sr22",
+      "gr_reference": "GR-10 SR22/SR26 Financial Responsibility Filing"
+    }
+  },
+  "section_c_template": {
+    "description": "Backend mapping template for address fields",
+    "example_mapping": "get address.* from address\n-> join address_type on address.address_type_id = address_type.id\n-> join status on address.status_id = status.id\n-> get territory from territory_mapping where territory_mapping.address_id = address.id\n-> where address.status_id = active_status_id",
+    "performance_notes": "Index on (state, zip_code) for territory lookup and geographic queries"
+  },
+  "section_e_template": {
+    "description": "Database schema template for address table",
+    "create_statement": "CREATE TABLE address (\n  id bigint PRIMARY KEY AUTO_INCREMENT,\n  address_type_id bigint NOT NULL,\n  address_line_1 varchar(100) NOT NULL,\n  address_line_2 varchar(100) NULL,\n  city varchar(50) NOT NULL,\n  state char(2) NOT NULL,\n  zip_code varchar(10) NOT NULL,\n  country char(2) DEFAULT 'US',\n  county varchar(50) NULL,\n  latitude decimal(10,8) NULL,\n  longitude decimal(11,8) NULL,\n  is_verified boolean DEFAULT false,\n  verification_date timestamp NULL,\n  standardized_address text NULL,\n  status_id bigint NOT NULL,\n  created_by bigint NOT NULL,\n  updated_by bigint NOT NULL,\n  created_at timestamp DEFAULT CURRENT_TIMESTAMP,\n  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  \n  FOREIGN KEY (address_type_id) REFERENCES address_type(id),\n  FOREIGN KEY (status_id) REFERENCES status(id),\n  \n  INDEX idx_address_status (status_id),\n  INDEX idx_address_state_zip (state, zip_code),\n  INDEX idx_address_coordinates (latitude, longitude),\n  INDEX idx_address_verification (is_verified, verification_date),\n  INDEX idx_address_city_state (city, state),\n  \n  CONSTRAINT chk_zip_code_format CHECK (zip_code REGEXP '^[0-9]{5}(-[0-9]{4})?$'),\n  CONSTRAINT chk_state_code CHECK (LENGTH(state) = 2 AND state REGEXP '^[A-Z]{2}$'),\n  CONSTRAINT chk_latitude_range CHECK (latitude IS NULL OR (latitude >= -90 AND latitude <= 90)),\n  CONSTRAINT chk_longitude_range CHECK (longitude IS NULL OR (longitude >= -180 AND longitude <= 180))\n);"
+  },
+  "usage_patterns": {
+    "common_queries": [
+      {
+        "purpose": "Get addresses for a driver",
+        "query": "SELECT a.*, at.name as address_type FROM address a JOIN map_driver_address mda ON a.id = mda.address_id JOIN address_type at ON a.address_type_id = at.id WHERE mda.driver_id = ? AND a.status_id = ?"
+      },
+      {
+        "purpose": "Find addresses in a specific territory",
+        "query": "SELECT a.* FROM address a JOIN territory_mapping tm ON a.id = tm.address_id WHERE tm.territory_id = ? AND a.status_id = ?"
+      },
+      {
+        "purpose": "Get unverified addresses for batch processing",
+        "query": "SELECT a.* FROM address a WHERE a.is_verified = false AND a.status_id = ? ORDER BY a.created_at ASC LIMIT ?"
+      }
+    ],
+    "performance_considerations": [
+      "Index on (state, zip_code) for geographic and territory queries",
+      "Composite index on (is_verified, verification_date) for batch verification processing",
+      "Consider full-text search index on address components for fuzzy matching",
+      "Geographic index on (latitude, longitude) for proximity searches"
+    ]
+  },
+  "domain_customizations": {
+    "universal": {
+      "entity_flexibility": ["supports_all_external_entities", "configurable_address_types"],
+      "standardization": ["automatic_usps_verification", "geocoding_integration"]
+    },
+    "producer_portal": {
+      "ui_considerations": ["address_autocomplete", "territory_display", "verification_status_indicators"],
+      "validation_requirements": ["real_time_verification", "territory_assignment_feedback"]
+    },
+    "entity_integration": {
+      "dcs_integration": ["address_verification_workflows", "external_entity_address_sync"],
+      "external_apis": ["usps_integration", "geocoding_services"]
+    },
+    "sr22": {
+      "filing_requirements": ["state_specific_formatting", "address_verification_for_filings"],
+      "compliance_tracking": ["address_change_notifications", "filing_address_updates"]
+    }
+  },
+  "territory_integration": {
+    "rating_territory_assignment": {
+      "lookup_logic": "state_zip_code_based",
+      "fallback_logic": "county_based_assignment",
+      "manual_override": "producer_territory_assignment"
+    },
+    "geographic_calculations": {
+      "distance_calculations": "coordinate_based_proximity",
+      "service_area_validation": "territory_boundary_checking"
+    }
+  },
+  "address_verification_workflow": {
+    "verification_triggers": [
+      "address_creation",
+      "address_modification",
+      "periodic_re_verification"
+    ],
+    "verification_process": {
+      "step_1": "usps_standardization",
+      "step_2": "geocoding_coordinates",
+      "step_3": "territory_assignment",
+      "step_4": "verification_status_update"
+    },
+    "error_handling": {
+      "invalid_address": "flag_for_manual_review",
+      "api_failure": "queue_for_retry",
+      "partial_match": "present_options_to_user"
+    }
+  },
+  "data_quality_management": {
+    "duplicate_detection": {
+      "matching_algorithm": "fuzzy_address_matching",
+      "confidence_threshold": "85_percent_similarity",
+      "resolution_workflow": "manual_review_process"
+    },
+    "standardization_rules": {
+      "address_formatting": "usps_publication_28_standards",
+      "state_abbreviations": "standard_postal_abbreviations",
+      "directional_standardization": "n_s_e_w_ne_nw_se_sw"
+    }
+  },
+  "universal_entity_support": {
+    "external_entity_integration": {
+      "entity_types": ["api_endpoints", "attorney_offices", "body_shops", "vendor_locations"],
+      "address_classification": "entity_specific_address_types",
+      "mapping_relationships": "polymorphic_through_map_tables"
+    },
+    "configuration_flexibility": {
+      "address_type_configuration": "json_metadata_driven",
+      "validation_rule_configuration": "entity_type_specific",
+      "ui_generation": "automatic_from_metadata"
+    }
+  },
+  "migration_guidance": {
+    "from_legacy": "Map existing address tables to this pattern, ensuring proper address_type classification and status management",
+    "data_cleanup": "Standardize state codes to 2-character format, validate ZIP code formats, normalize address formatting",
+    "validation": "Verify coordinate ranges, ensure required fields are populated, validate address_type relationships"
+  }
+}

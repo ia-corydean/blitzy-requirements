@@ -1,0 +1,538 @@
+{
+  "messaging_metadata": {
+    "pattern_category": "event_driven_messaging",
+    "pattern_version": "1.0.0",
+    "gr_compliance": "GR-38 Microservice Architecture, GR-44 Communication Architecture, GR-49 Event-Driven Messaging",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "total_patterns": 6,
+    "applicable_domains": ["all_domains"],
+    "confidence_score": 0.94,
+    "usage_count": 156,
+    "success_rate": 0.96
+  },
+  "messaging_principles": {
+    "event_sourcing": {
+      "definition": "Store state changes as immutable events",
+      "benefits": ["Complete audit trail", "Replay capability", "Temporal queries"],
+      "implementation": "Events stored in append-only event store"
+    },
+    "eventual_consistency": {
+      "definition": "System eventually reaches consistent state across services",
+      "acceptable_delay": "< 30 seconds for most business operations",
+      "compensation": "Saga pattern for distributed transactions"
+    },
+    "message_ordering": {
+      "strategy": "Per-entity ordering using partition keys",
+      "partition_key": "Entity ID (policy_id, quote_id, customer_id)",
+      "global_ordering": "Not required - per-entity ordering sufficient"
+    },
+    "delivery_guarantees": {
+      "standard": "At-least-once delivery",
+      "idempotency": "All consumers must be idempotent",
+      "duplicate_handling": "Use message deduplication or idempotent operations"
+    }
+  },
+  "message_broker_configuration": {
+    "primary_broker": "Apache Kafka",
+    "topic_organization": {
+      "naming_convention": "{domain}.{entity}.{event_type}",
+      "examples": [
+        "producer-portal.quote.created",
+        "accounting.payment.processed",
+        "universal.communication.sent"
+      ]
+    },
+    "partitioning_strategy": {
+      "partition_key": "Entity ID for ordering",
+      "partition_count": "Multiple of consumer instances",
+      "replication_factor": "3 for production"
+    },
+    "retention_policy": {
+      "default_retention": "7 days for operational events",
+      "audit_retention": "7 years for compliance events",
+      "compaction": "Log compaction for entity state snapshots"
+    }
+  },
+  "core_event_patterns": {
+    "domain_event_pattern": {
+      "pattern_name": "Domain Business Events",
+      "description": "Events representing significant business state changes",
+      "event_structure": {
+        "metadata": {
+          "event_id": "UUID - Unique event identifier",
+          "event_type": "String - Type of event (quote.created)",
+          "event_version": "String - Event schema version",
+          "correlation_id": "UUID - Request correlation ID",
+          "causation_id": "UUID - ID of event that caused this event",
+          "timestamp": "ISO8601 - Event occurrence timestamp",
+          "source": "String - Service that produced the event"
+        },
+        "data": {
+          "entity_id": "ID of affected entity",
+          "entity_type": "Type of entity",
+          "previous_state": "Previous entity state (for updates)",
+          "current_state": "Current entity state",
+          "changed_fields": "Array of changed field names"
+        }
+      },
+      "examples": [
+        {
+          "event_type": "quote.created",
+          "description": "New quote created",
+          "data": {
+            "quote_id": "123456",
+            "producer_id": "789",
+            "effective_date": "2025-01-15",
+            "total_premium": 1250.00,
+            "status": "draft"
+          }
+        },
+        {
+          "event_type": "policy.bound",
+          "description": "Quote bound to policy",
+          "data": {
+            "policy_id": "987654",
+            "quote_id": "123456",
+            "binding_date": "2025-01-07T10:30:00Z",
+            "bound_by": "user123"
+          }
+        },
+        {
+          "event_type": "payment.received",
+          "description": "Payment processed successfully",
+          "data": {
+            "payment_id": "456789",
+            "policy_id": "987654",
+            "amount": 312.50,
+            "payment_method": "credit_card",
+            "transaction_date": "2025-01-07"
+          }
+        }
+      ]
+    },
+    "integration_event_pattern": {
+      "pattern_name": "Cross-Domain Integration Events",
+      "description": "Events for coordinating workflows across multiple domains",
+      "event_structure": {
+        "workflow_context": {
+          "workflow_id": "UUID - Workflow instance ID",
+          "workflow_type": "String - Type of workflow",
+          "step_number": "Integer - Current step in workflow",
+          "total_steps": "Integer - Total steps in workflow"
+        },
+        "coordination_data": {
+          "initiating_service": "Service that started the workflow",
+          "target_services": "Array of services involved",
+          "timeout": "Workflow timeout duration",
+          "compensation_required": "Boolean - If compensation is needed"
+        }
+      },
+      "examples": [
+        {
+          "event_type": "workflow.quote_to_policy.initiated",
+          "description": "Quote binding workflow started",
+          "workflow_context": {
+            "workflow_id": "wf-001",
+            "workflow_type": "quote_binding",
+            "step_number": 1,
+            "total_steps": 4
+          },
+          "data": {
+            "quote_id": "123456",
+            "payment_info": "payment_token_xyz",
+            "producer_id": "789"
+          }
+        },
+        {
+          "event_type": "workflow.reinstatement.step_completed",
+          "description": "Reinstatement workflow step completed",
+          "workflow_context": {
+            "workflow_id": "wf-002",
+            "workflow_type": "policy_reinstatement",
+            "step_number": 2,
+            "total_steps": 3
+          },
+          "data": {
+            "policy_id": "987654",
+            "step_result": "payment_processed",
+            "next_step": "restore_coverage"
+          }
+        }
+      ]
+    },
+    "notification_event_pattern": {
+      "pattern_name": "Communication Notification Events",
+      "description": "Events triggering customer and producer communications (GR-44)",
+      "event_structure": {
+        "recipient_info": {
+          "recipient_id": "ID of recipient entity",
+          "recipient_type": "customer, producer, external_entity",
+          "communication_preferences": "Preferred channels and formats"
+        },
+        "message_context": {
+          "template_id": "Communication template to use",
+          "urgency_level": "low, medium, high, critical",
+          "delivery_channels": "Array of channels (email, sms, document)",
+          "personalization_data": "Data for template variable substitution"
+        }
+      },
+      "examples": [
+        {
+          "event_type": "communication.email.triggered",
+          "description": "Email communication triggered",
+          "recipient_info": {
+            "recipient_id": "customer123",
+            "recipient_type": "customer",
+            "email_address": "customer@email.com"
+          },
+          "message_context": {
+            "template_id": "payment_reminder",
+            "urgency_level": "medium",
+            "personalization_data": {
+              "customer_name": "John Smith",
+              "amount_due": "$312.50",
+              "due_date": "2025-01-15"
+            }
+          }
+        },
+        {
+          "event_type": "communication.document.generated",
+          "description": "Document generation completed",
+          "data": {
+            "document_id": "doc-001",
+            "document_type": "policy_declarations",
+            "policy_id": "987654",
+            "generation_status": "completed",
+            "download_url": "https://docs.example.com/doc-001"
+          }
+        }
+      ]
+    },
+    "audit_event_pattern": {
+      "pattern_name": "Audit and Compliance Events",
+      "description": "Events for regulatory compliance and audit trails",
+      "event_structure": {
+        "audit_context": {
+          "user_id": "User performing the action",
+          "session_id": "User session identifier",
+          "ip_address": "Source IP address",
+          "user_agent": "Client user agent",
+          "action_type": "Type of action (create, update, delete, view)"
+        },
+        "compliance_data": {
+          "regulation_references": "Array of applicable regulations",
+          "sensitivity_level": "Data sensitivity classification",
+          "retention_period": "Required data retention period",
+          "anonymization_required": "Boolean - If PII anonymization needed"
+        }
+      },
+      "examples": [
+        {
+          "event_type": "audit.data.accessed",
+          "description": "Sensitive data accessed",
+          "audit_context": {
+            "user_id": "user123",
+            "action_type": "view",
+            "ip_address": "192.168.1.100"
+          },
+          "data": {
+            "entity_type": "driver",
+            "entity_id": "driver456",
+            "fields_accessed": ["ssn", "license_number"],
+            "access_reason": "quote_processing"
+          }
+        },
+        {
+          "event_type": "audit.policy.changed",
+          "description": "Policy data modified",
+          "data": {
+            "policy_id": "987654",
+            "changed_by": "user123",
+            "field_changes": [
+              {
+                "field": "effective_date",
+                "old_value": "2025-01-01",
+                "new_value": "2025-01-15"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "external_integration_event_pattern": {
+      "pattern_name": "External System Integration Events",
+      "description": "Events for tracking external service interactions",
+      "event_structure": {
+        "integration_context": {
+          "external_system": "Name of external system",
+          "operation_type": "Type of operation (verification, filing, payment)",
+          "request_id": "External system request ID",
+          "retry_count": "Number of retry attempts"
+        },
+        "performance_data": {
+          "response_time": "Time taken for operation",
+          "success": "Boolean - Operation success",
+          "error_code": "Error code if failed",
+          "rate_limit_status": "Current rate limit status"
+        }
+      },
+      "examples": [
+        {
+          "event_type": "external.dcs.verification.completed",
+          "description": "DCS driver verification completed",
+          "integration_context": {
+            "external_system": "DCS_Driver_Verification",
+            "operation_type": "driver_verification",
+            "request_id": "dcs-req-001"
+          },
+          "data": {
+            "driver_id": "driver456",
+            "verification_result": "verified",
+            "violation_count": 2,
+            "license_status": "valid"
+          }
+        },
+        {
+          "event_type": "external.payment.processor.response",
+          "description": "Payment processor response received",
+          "data": {
+            "payment_id": "payment789",
+            "processor": "stripe",
+            "transaction_id": "txn_abc123",
+            "status": "succeeded",
+            "processing_fee": 2.90
+          }
+        }
+      ]
+    },
+    "error_event_pattern": {
+      "pattern_name": "Error and Exception Events",
+      "description": "Events for tracking system errors and failures",
+      "event_structure": {
+        "error_context": {
+          "error_type": "business_error, system_error, integration_error",
+          "severity": "low, medium, high, critical",
+          "service_name": "Service where error occurred",
+          "operation": "Operation being performed"
+        },
+        "error_details": {
+          "error_message": "Human-readable error message",
+          "error_code": "Machine-readable error code",
+          "stack_trace": "Technical stack trace (if applicable)",
+          "user_impact": "Description of user impact"
+        }
+      },
+      "examples": [
+        {
+          "event_type": "error.business_rule.violated",
+          "description": "Business rule validation failed",
+          "error_context": {
+            "error_type": "business_error",
+            "severity": "medium",
+            "service_name": "quote-service"
+          },
+          "data": {
+            "rule_violated": "minimum_driver_age",
+            "entity_id": "quote123",
+            "error_message": "Driver must be at least 16 years old"
+          }
+        },
+        {
+          "event_type": "error.external_service.timeout",
+          "description": "External service timeout",
+          "error_context": {
+            "error_type": "integration_error",
+            "severity": "high",
+            "service_name": "verification-service"
+          },
+          "data": {
+            "external_service": "DCS_API",
+            "timeout_duration": "30s",
+            "retry_scheduled": true
+          }
+        }
+      ]
+    }
+  },
+  "message_consumption_patterns": {
+    "consumer_group_strategy": {
+      "pattern": "One consumer group per service per topic",
+      "scaling": "Scale consumer instances based on partition count",
+      "load_balancing": "Kafka handles partition assignment automatically"
+    },
+    "error_handling": {
+      "retry_policy": {
+        "max_retries": 3,
+        "retry_intervals": ["1s", "5s", "30s"],
+        "backoff_strategy": "exponential_with_jitter"
+      },
+      "dead_letter_queue": {
+        "topic_name": "{original_topic}.dlq",
+        "retention": "30 days",
+        "manual_review": "Failed messages require manual intervention"
+      },
+      "poison_message_handling": {
+        "detection": "Message fails processing multiple times",
+        "action": "Move to poison message topic",
+        "alerting": "Alert operations team immediately"
+      }
+    },
+    "idempotency_patterns": {
+      "message_deduplication": {
+        "method": "Store processed message IDs",
+        "storage": "Redis or database table",
+        "retention": "24 hours for message ID cache"
+      },
+      "operation_idempotency": {
+        "strategy": "Use correlation IDs for duplicate detection",
+        "implementation": "Check if operation already completed",
+        "response": "Return previous result if duplicate"
+      }
+    }
+  },
+  "saga_pattern_implementation": {
+    "choreography_pattern": {
+      "description": "Distributed coordination through event choreography",
+      "use_cases": ["Quote binding workflow", "Policy reinstatement"],
+      "implementation": {
+        "coordination": "Each service knows its role in the workflow",
+        "state_management": "Each service manages its own state",
+        "compensation": "Services publish compensation events on failure"
+      },
+      "example_workflow": {
+        "workflow": "Quote Binding Process",
+        "steps": [
+          {
+            "step": 1,
+            "service": "quote-service",
+            "action": "Validate quote for binding",
+            "success_event": "quote.binding.validated",
+            "failure_event": "quote.binding.validation_failed"
+          },
+          {
+            "step": 2,
+            "service": "payment-service",
+            "action": "Process payment",
+            "success_event": "payment.processed",
+            "failure_event": "payment.failed"
+          },
+          {
+            "step": 3,
+            "service": "policy-service",
+            "action": "Create policy",
+            "success_event": "policy.created",
+            "failure_event": "policy.creation_failed"
+          },
+          {
+            "step": 4,
+            "service": "billing-service",
+            "action": "Setup billing cycle",
+            "success_event": "billing.cycle_created",
+            "failure_event": "billing.cycle_creation_failed"
+          }
+        ]
+      }
+    },
+    "compensation_handling": {
+      "compensation_events": {
+        "naming": "{original_event}.compensate",
+        "examples": [
+          "payment.processed.compensate",
+          "policy.created.compensate"
+        ]
+      },
+      "compensation_logic": {
+        "payment_compensation": "Issue refund for processed payment",
+        "policy_compensation": "Cancel created policy",
+        "notification_compensation": "Send cancellation notification"
+      }
+    }
+  },
+  "performance_optimization": {
+    "batching_strategy": {
+      "batch_size": "100 messages per batch",
+      "batch_timeout": "5 seconds maximum",
+      "adaptive_batching": "Adjust batch size based on throughput"
+    },
+    "consumer_scaling": {
+      "auto_scaling": "Scale based on consumer lag",
+      "lag_threshold": "1000 messages per partition",
+      "scale_up_delay": "2 minutes",
+      "scale_down_delay": "10 minutes"
+    },
+    "message_compression": {
+      "compression_type": "GZIP for large messages",
+      "threshold": "1KB message size",
+      "trade_off": "CPU vs network bandwidth"
+    }
+  },
+  "monitoring_and_observability": {
+    "key_metrics": [
+      {
+        "metric": "Message throughput",
+        "description": "Messages produced/consumed per second",
+        "alert_threshold": "< 50% of expected throughput"
+      },
+      {
+        "metric": "Consumer lag",
+        "description": "Number of messages behind",
+        "alert_threshold": "> 1000 messages per partition"
+      },
+      {
+        "metric": "Message processing time",
+        "description": "Time to process a message",
+        "alert_threshold": "> 30 seconds average"
+      },
+      {
+        "metric": "Dead letter queue size",
+        "description": "Number of failed messages",
+        "alert_threshold": "> 10 messages in DLQ"
+      }
+    ],
+    "distributed_tracing": {
+      "trace_propagation": "Include trace ID in message headers",
+      "correlation": "Link related events across services",
+      "visualization": "Jaeger or similar tracing tools"
+    },
+    "logging_strategy": {
+      "message_logging": "Log message metadata, not full content",
+      "correlation_ids": "Include correlation ID in all logs",
+      "structured_format": "JSON structured logging"
+    }
+  },
+  "security_considerations": {
+    "message_encryption": {
+      "encryption_at_rest": "Kafka cluster encryption",
+      "encryption_in_transit": "TLS for all Kafka communication",
+      "sensitive_data": "Encrypt PII fields in message payload"
+    },
+    "access_control": {
+      "authentication": "SASL authentication for Kafka clients",
+      "authorization": "ACL-based topic access control",
+      "service_identity": "Each service has unique identity"
+    },
+    "data_privacy": {
+      "pii_handling": "Mask or encrypt PII in events",
+      "gdpr_compliance": "Support data deletion through tombstone events",
+      "audit_requirements": "Full audit trail for sensitive operations"
+    }
+  },
+  "testing_strategies": {
+    "contract_testing": {
+      "event_contracts": "Define expected event schemas",
+      "backward_compatibility": "Ensure schema evolution doesn't break consumers",
+      "validation": "Validate events against contracts"
+    },
+    "integration_testing": {
+      "test_environment": "Dedicated Kafka cluster for testing",
+      "test_data": "Use synthetic test events",
+      "cleanup": "Automatic test data cleanup"
+    },
+    "chaos_testing": {
+      "broker_failure": "Test consumer behavior during broker outages",
+      "network_partitions": "Simulate network splits",
+      "consumer_failure": "Test message reprocessing after consumer restart"
+    }
+  }
+}

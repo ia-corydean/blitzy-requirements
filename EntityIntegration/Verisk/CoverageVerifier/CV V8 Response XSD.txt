@@ -1,0 +1,1150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Response" nillable="true" type="Response" />
+  <xs:complexType name="Response">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="Header" type="Header" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Body" type="Body" />
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Header">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="TransactionId">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="36"></xs:length>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Quoteback" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Body">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="Policies" type="ArrayOfPolicy" />
+      <xs:element minOccurs="0" maxOccurs="1" name="CoverageLapseInformation" type="ArrayOfCoverageLapseInformation" />
+      <xs:element minOccurs="0" maxOccurs="1" name="AnalyticObjects" type="ArrayOfAnalyticObjects" />
+      <xs:element minOccurs="0" maxOccurs="1" name="CustomElements" type="ArrayOfCustomElement" />
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfPolicy">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Policy" nillable="true" type="Policy" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfCustomElement">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CustomElement" nillable="true" type="CustomElement" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Policy">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="PolicyNumber" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="25"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="PolicyStatus" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="20"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="PolicyReportedDate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="InceptionDate" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="LastReportedTermEffectiveDate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="LastReportedTermExpirationDate" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="NumberOfCancellations">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="2"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="NumberOfRenewals" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="2"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="NumberOfEndorsements" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="2"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="CancellationDate" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="CancellationReason" type="BaseCode" />
+      <xs:element minOccurs="0" maxOccurs="1" name="DisputeStatement" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="500"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="MatchBasisInformation" type="MatchBasisInformation" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Detail" type="PolicyDetailInformation" />
+      <xs:element minOccurs="0" maxOccurs="1" name="History" type="PolicyHistoryInformation" />
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="BaseCode">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="Code" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Description" type="xs:string" />
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="CustomElement">
+    <xs:all>
+      <xs:element minOccurs="1" maxOccurs="1" name="Key">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="Value">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="MatchBasisInformation">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="MatchScore">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="3"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="SearchType" type="BaseCode" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MatchReasons" type="ArrayOfString" />
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfString">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MatchReason" nillable="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="50"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PolicyDetailInformation">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="PolicyInformation" type="PolicyInformation" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Subjects" type="ArrayOfSubject" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Carrier" type="Carrier" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MailingAddress" type="MailingAddress" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Coverages" type="ArrayOfCoverage" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Vehicles" type="ArrayOfVehicle" />
+      <xs:element minOccurs="0" maxOccurs="1" name="GarageLocations" type="ArrayOfGarageLocation" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FinanceInformations" type="ArrayOfFinanceInformation" />
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="PolicyInformation">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="PolicyType" type="BaseCode" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TermEffectiveDate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="TermExpirationDate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="PremiumInformation" type="PremiumInformation" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RiskClass" type="BaseCode" />
+      <xs:element minOccurs="0" maxOccurs="1" name="PolicyForm" type="BaseCode" />
+      <xs:element minOccurs="0" maxOccurs="1" name="PolicyHolders" type="ArrayOfPolicyHolder" />
+      <xs:element minOccurs="0" maxOccurs="1" name="PhoneNumbers" type="ArrayOfPhoneNumber" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FromDate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ToDate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="PremiumInformation">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="PremiumAmount">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="7"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="PaymentType" type="BaseCode" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MethodOfPayment" type="BaseCode" />
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfPolicyHolder">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="PolicyHolder" nillable="true" type="PolicyHolder" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PolicyHolder">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="GivenName">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="20"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="MiddleName">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="20"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Surname">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="30"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="NameSuffix" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="3"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="DOB" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+
+      <xs:element minOccurs="0" maxOccurs="1" name="DLNumber">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="25"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="DLState">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="2"></xs:minLength>
+            <xs:maxLength value="2"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfPhoneNumber">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="PhoneNumber" nillable="true" type="PhoneNumber" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PhoneNumber">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="PhoneType">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="1"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Number">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="10"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Extension">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="4"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfSubject">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Subject" nillable="true" type="Subject" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Subject">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="GivenName" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="20"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="MiddleName" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="20"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Surname" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="30"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="NameSuffix">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="3"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="DOB" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="SSN" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="0"></xs:minLength>
+            <xs:maxLength value="9"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Gender" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="1"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="MaritalStatus">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="1"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="DLNumber" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="25"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="DLState">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="2"></xs:minLength>
+            <xs:maxLength value="2"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="RelationToPolicyHolder" type="BaseCode" />
+      <xs:element minOccurs="0" maxOccurs="1" name="RelationToInsured" type="BaseCode" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FromDate" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ToDate" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="DriverSequenceId" type="xs:integer" />
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Carrier">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="Name">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="20"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="AMBEST">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="5"></xs:minLength>
+            <xs:maxLength value="5"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FinancialAMBEST">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="5"></xs:minLength>
+            <xs:maxLength value="5"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="NAIC">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="5"></xs:minLength>
+            <xs:maxLength value="5"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="MailingAddress">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Address">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="FromDate">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:length value="8"></xs:length>
+                <xs:pattern value="\d{8}"></xs:pattern>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element minOccurs="0" maxOccurs="1" name="ToDate">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:length value="8"></xs:length>
+                <xs:pattern value="\d{8}"></xs:pattern>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Address">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="Street1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="50"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Street2">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="50"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="City">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="30"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="StateCode">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="2"></xs:minLength>
+            <xs:maxLength value="2"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Zip">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="9"></xs:maxLength>
+            <xs:pattern value="(\d{1,9})|([A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d)"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="CountryCode">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="3"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfCoverage">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Coverage" nillable="true" type="Coverage" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Coverage">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="CoverageType" type="BaseCode" />
+      <xs:element minOccurs="0" maxOccurs="1" name="IndividualLimitAmount" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="8"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="OccurrenceLimitAmount" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="8"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="CombinedSingleLimitAmount" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="8"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FromDate" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ToDate" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfVehicle">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Vehicle" nillable="true" type="Vehicle" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Vehicle">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="Year" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="4"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Make" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="10"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Model" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="25"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="VIN" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="23"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="VehicleTypeCode" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="5"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ClassCode" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="6"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="BusinessUse" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="1"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="TerritoryCode" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="3"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="AntiTheftDevice" type="BaseCode" />
+      <xs:element minOccurs="0" maxOccurs="1" name="CollisionDeductibleAmount" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="5"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ComprehensiveDeductibleAmount" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="5"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FromDate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ToDate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="CollisionIndicator">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="1"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="CollisionIndividualLimitAmount" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="8"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="CollisionOccurenceLimitAmount" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="8"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ComprehensiveIndicator" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="1"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ComprehensiveIndividualLimitAmount" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="8"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ComprehensiveOccurenceLimitAmount" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="8"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Coverages" type="ArrayOfCoverage" />
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfGarageLocation">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="GarageLocation" nillable="true" type="GarageLocation" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="GarageLocation">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="VIN" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="23"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Address" type="Address" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FromDate" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ToDate" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfFinanceInformation">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="FinanceInformation" nillable="true" type="FinanceInformation" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="FinanceInformation">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="VIN">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="23"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="LienHolderName">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="50"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FinanceCompanyAddress" type="Address" />
+      <xs:element minOccurs="0" maxOccurs="1" name="LoanNumber">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="40"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ABANumber">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="0"></xs:minLength>
+            <xs:maxLength value="9"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="FromDate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="ToDate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="PolicyHistoryInformation">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="PolicyInformations" type="ArrayOfPolicyInformation" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Subjects" type="ArrayOfSubject" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MailingAddresses" type="ArrayOfMailingAddress" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Coverages" type="ArrayOfCoverage" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Vehicles" type="ArrayOfVehicle" />
+      <xs:element minOccurs="0" maxOccurs="1" name="GarageLocations" type="ArrayOfGarageLocation" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FinanceInformations" type="ArrayOfFinanceInformation" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TransactionInformations" type="ArrayOfTransactionInformation" />
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfPolicyInformation">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="PolicyInformation" nillable="true" type="PolicyInformation" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfMailingAddress">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MailingAddress" nillable="true" type="MailingAddress" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfTransactionInformation">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TransactionInformation" nillable="true" type="TransactionInformation" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransactionInformation">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="TransactionType" type="BaseCode" />
+      <xs:element minOccurs="0" maxOccurs="1" name="EffectiveDate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfCoverageLapseInformation">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SearchPerson" nillable="true" type="CoverageLapseInformation" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CoverageLapseInformation">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="GivenName">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="20"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="MiddleName">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="20"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Surname">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="30"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="NameSuffix">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="3"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="InputDriverSequenceNumber">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="1"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="HasPossibleLapse">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="1"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="IsCurrentInforceCoverage">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="1"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="CoverageIntervals" type="ArrayOfCoverageInterval" />
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfCoverageInterval">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CoverageInterval" nillable="true" type="CoverageInterval" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CoverageInterval">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="Carrier" type="Carrier" />
+      <xs:element minOccurs="0" maxOccurs="1" name="StartDate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="EndDate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="NumberOfCoverageDays">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="5"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="HasBreakFromPriorCoverage">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="2"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="NumberOfLapseDays">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="5"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfAnalyticObjects">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SearchPersonAO" nillable="true" type="AnalyticObjects" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="AnalyticObjects">
+    <xs:all>     
+      <xs:element minOccurs="0" maxOccurs="1" name="GivenName">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="20"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="MiddleName">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="20"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Surname">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="30"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="InputDriverSequenceNumber">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="1"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>     
+      <xs:element minOccurs="0" maxOccurs="1" name="ChangeAttributes" type="ArrayOfChangeAttribute" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Scores" type="ArrayOfScore" />
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfChangeAttribute">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ChangeAttribute" nillable="true" type="ChangeAttribute" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ChangeAttribute">
+    <xs:all>
+      <xs:element minOccurs="0" maxOccurs="1" name="Code">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="3"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Description">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="50"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Count">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="6"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="Flag">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"></xs:minLength>
+            <xs:maxLength value="1"></xs:maxLength>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="LastReportedDate">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:length value="8"></xs:length>
+            <xs:pattern value="\d{8}"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>      
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfScore">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Score" nillable="true" type="Score" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Score">
+    <xs:all>
+    <xs:element minOccurs="0" maxOccurs="1" name="Name" >
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1"></xs:minLength>
+          <xs:maxLength value="50"></xs:maxLength>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:element>
+    <xs:element minOccurs="0" maxOccurs="1" name="Value">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1"></xs:minLength>
+          <xs:maxLength value="3"></xs:maxLength>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:element>
+    </xs:all>
+  </xs:complexType>
+</xs:schema>

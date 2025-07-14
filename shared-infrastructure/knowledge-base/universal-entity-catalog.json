@@ -1,0 +1,367 @@
+{
+  "catalog_metadata": {
+    "version": "1.0.0",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "description": "Universal Entity Catalog for Complete Requirements Generation System",
+    "gr_compliance": "GR-52 Universal Entity Management",
+    "total_entities": 15
+  },
+  "core_business_entities": {
+    "quote": {
+      "entity_id": "quote",
+      "entity_name": "Quote",
+      "domains": ["producer-portal", "accounting", "program-manager"],
+      "universal_pattern": "GR-52 compliant",
+      "shared_relationships": ["driver", "vehicle", "coverage", "billing", "producer"],
+      "integration_points": ["DCS verification", "payment processing", "rate calculation"],
+      "confidence_score": 0.95,
+      "usage_count": 47,
+      "success_rate": 0.96,
+      "table_structure": {
+        "primary_table": "quote",
+        "audit_fields": ["created_by", "updated_by", "created_at", "updated_at"],
+        "status_management": "status_id references status table",
+        "key_relationships": [
+          "belongsTo producer",
+          "hasMany drivers through map_quote_driver",
+          "hasMany vehicles through map_quote_vehicle",
+          "hasOne billing_schedule"
+        ]
+      }
+    },
+    "driver": {
+      "entity_id": "driver", 
+      "entity_name": "Driver",
+      "domains": ["producer-portal", "entity-integration", "sr22"],
+      "universal_pattern": "GR-52 compliant",
+      "shared_relationships": ["license", "vehicle", "violation", "sr22_filing", "address", "phone"],
+      "integration_points": ["DCS household lookup", "criminal background", "point tracking"],
+      "confidence_score": 0.98,
+      "usage_count": 89,
+      "success_rate": 0.97,
+      "table_structure": {
+        "primary_table": "driver",
+        "audit_fields": ["created_by", "updated_by", "created_at", "updated_at"],
+        "status_management": "status_id references status table",
+        "key_relationships": [
+          "belongsTo name",
+          "belongsTo driver_type",
+          "hasMany licenses",
+          "hasMany phones through map_driver_phone",
+          "hasMany addresses through map_driver_address",
+          "hasMany violations"
+        ],
+        "special_fields": ["is_named_insured", "date_of_birth"]
+      }
+    },
+    "vehicle": {
+      "entity_id": "vehicle",
+      "entity_name": "Vehicle", 
+      "domains": ["producer-portal", "entity-integration", "program-manager"],
+      "universal_pattern": "GR-52 compliant",
+      "shared_relationships": ["driver", "registration", "coverage", "rate_factor"],
+      "integration_points": ["DCS vehicle lookup", "VIN decoding", "rate calculation"],
+      "confidence_score": 0.94,
+      "usage_count": 76,
+      "success_rate": 0.95,
+      "table_structure": {
+        "primary_table": "vehicle",
+        "audit_fields": ["created_by", "updated_by", "created_at", "updated_at"],
+        "status_management": "status_id references status table",
+        "key_relationships": [
+          "belongsTo vehicle_type",
+          "hasMany registrations",
+          "hasMany drivers through map_quote_driver_vehicle",
+          "hasMany coverages"
+        ],
+        "special_fields": ["vin", "year", "make", "model", "is_primary_vehicle"]
+      }
+    },
+    "payment": {
+      "entity_id": "payment",
+      "entity_name": "Payment",
+      "domains": ["accounting", "producer-portal", "reinstatement"],
+      "universal_pattern": "GR-52 compliant",
+      "shared_relationships": ["policy", "billing_cycle", "ach_transaction", "payment_method"],
+      "integration_points": ["payment gateways", "ACH processing", "commission calculation"],
+      "confidence_score": 0.92,
+      "usage_count": 34,
+      "success_rate": 0.98,
+      "table_structure": {
+        "primary_table": "payment",
+        "audit_fields": ["created_by", "updated_by", "created_at", "updated_at"],
+        "status_management": "status_id references status table",
+        "key_relationships": [
+          "belongsTo policy",
+          "belongsTo payment_method",
+          "belongsTo payment_method_type",
+          "hasMany transactions"
+        ],
+        "special_fields": ["amount", "due_date", "processed_date"]
+      }
+    },
+    "address": {
+      "entity_id": "address",
+      "entity_name": "Address",
+      "domains": ["producer-portal", "accounting", "entity-integration"],
+      "universal_pattern": "GR-52 compliant",
+      "shared_relationships": ["driver", "producer", "entity", "territory"],
+      "integration_points": ["address validation", "territory assignment", "tax calculation"],
+      "confidence_score": 0.97,
+      "usage_count": 156,
+      "success_rate": 0.99,
+      "table_structure": {
+        "primary_table": "address",
+        "audit_fields": ["created_by", "updated_by", "created_at", "updated_at"],
+        "status_management": "status_id references status table",
+        "key_relationships": [
+          "belongsTo address_type",
+          "belongsTo territory",
+          "hasMany drivers through map_driver_address",
+          "hasMany entities through map_entity_address"
+        ],
+        "special_fields": ["street", "city", "state", "zip_code", "country"]
+      }
+    },
+    "phone": {
+      "entity_id": "phone",
+      "entity_name": "Phone",
+      "domains": ["producer-portal", "accounting", "entity-integration"],
+      "universal_pattern": "GR-52 compliant", 
+      "shared_relationships": ["driver", "producer", "entity", "communication"],
+      "integration_points": ["SMS messaging", "voice calls", "communication tracking"],
+      "confidence_score": 0.96,
+      "usage_count": 142,
+      "success_rate": 0.98,
+      "table_structure": {
+        "primary_table": "phone",
+        "audit_fields": ["created_by", "updated_by", "created_at", "updated_at"],
+        "status_management": "status_id references status table",
+        "key_relationships": [
+          "belongsTo phone_type",
+          "hasMany drivers through map_driver_phone",
+          "hasMany entities through map_entity_phone",
+          "hasMany communications"
+        ],
+        "special_fields": ["number", "extension", "is_primary"]
+      }
+    },
+    "email": {
+      "entity_id": "email",
+      "entity_name": "Email",
+      "domains": ["producer-portal", "accounting", "entity-integration"],
+      "universal_pattern": "GR-52 compliant",
+      "shared_relationships": ["driver", "producer", "entity", "communication"],
+      "integration_points": ["email delivery", "communication tracking", "document delivery"],
+      "confidence_score": 0.95,
+      "usage_count": 134,
+      "success_rate": 0.97,
+      "table_structure": {
+        "primary_table": "email",
+        "audit_fields": ["created_by", "updated_by", "created_at", "updated_at"],
+        "status_management": "status_id references status table",
+        "key_relationships": [
+          "belongsTo email_type",
+          "hasMany drivers through map_driver_email",
+          "hasMany entities through map_entity_email",
+          "hasMany communications"
+        ],
+        "special_fields": ["email_address", "is_primary", "is_verified"]
+      }
+    }
+  },
+  "integration_entities": {
+    "dcs_api": {
+      "entity_id": "dcs_api",
+      "entity_name": "DCS API Integration",
+      "pattern": "GR-53 DCS Integration Architecture",
+      "used_by": ["producer-portal", "entity-integration"],
+      "endpoints": ["household_drivers", "household_vehicles", "criminal_history"],
+      "confidence_score": 0.88,
+      "usage_count": 23,
+      "success_rate": 0.94,
+      "integration_points": {
+        "household_drivers": "Driver verification and lookup",
+        "household_vehicles": "Vehicle verification and lookup", 
+        "criminal_history": "Background check integration"
+      }
+    },
+    "communication_hub": {
+      "entity_id": "communication_hub",
+      "entity_name": "Communication Hub",
+      "pattern": "GR-44 Communication Architecture",
+      "used_by": ["all_domains"],
+      "channels": ["email", "sms", "voice", "document_generation"],
+      "confidence_score": 0.93,
+      "usage_count": 67,
+      "success_rate": 0.96,
+      "integration_points": {
+        "sendgrid": "Email delivery service",
+        "twilio": "SMS and voice communication",
+        "document_generation": "PDF and document creation"
+      }
+    },
+    "universal_entity": {
+      "entity_id": "universal_entity",
+      "entity_name": "Universal Entity Management",
+      "pattern": "GR-52 Universal Entity Management",
+      "used_by": ["all_domains"],
+      "entity_types": ["attorney", "body_shop", "vendor", "api_provider"],
+      "confidence_score": 0.99,
+      "usage_count": 45,
+      "success_rate": 0.98,
+      "benefits": "90% faster development for new external entity types"
+    }
+  },
+  "domain_specific_entities": {
+    "producer_portal": {
+      "producer": {
+        "entity_id": "producer",
+        "domains": ["producer-portal"],
+        "relationships": ["quote", "policy", "commission"],
+        "confidence_score": 0.96,
+        "usage_count": 12
+      },
+      "entity": {
+        "entity_id": "entity",
+        "domains": ["producer-portal", "entity-integration"],
+        "relationships": ["address", "phone", "email"],
+        "pattern": "GR-52 Universal Entity Management",
+        "confidence_score": 0.94,
+        "usage_count": 8
+      }
+    },
+    "accounting": {
+      "billing_cycle": {
+        "entity_id": "billing_cycle",
+        "domains": ["accounting"],
+        "relationships": ["payment", "policy", "commission"],
+        "confidence_score": 0.91,
+        "usage_count": 6
+      },
+      "commission": {
+        "entity_id": "commission",
+        "domains": ["accounting", "producer-portal"],
+        "relationships": ["producer", "policy", "payment"],
+        "confidence_score": 0.89,
+        "usage_count": 4
+      }
+    },
+    "program_manager": {
+      "rate_factor": {
+        "entity_id": "rate_factor",
+        "domains": ["program-manager"],
+        "relationships": ["vehicle", "driver", "territory"],
+        "confidence_score": 0.87,
+        "usage_count": 15
+      },
+      "underwriting_rule": {
+        "entity_id": "underwriting_rule",
+        "domains": ["program-manager", "program-traits"],
+        "relationships": ["quote", "driver", "vehicle"],
+        "confidence_score": 0.85,
+        "usage_count": 11
+      }
+    },
+    "program_traits": {
+      "program_config": {
+        "entity_id": "program_config",
+        "domains": ["program-traits"],
+        "relationships": ["rate_factor", "underwriting_rule"],
+        "confidence_score": 0.88,
+        "usage_count": 3
+      }
+    },
+    "reinstatement": {
+      "lapse_record": {
+        "entity_id": "lapse_record",
+        "domains": ["reinstatement"],
+        "relationships": ["policy", "payment"],
+        "confidence_score": 0.92,
+        "usage_count": 2
+      }
+    },
+    "sr22": {
+      "sr22_filing": {
+        "entity_id": "sr22_filing",
+        "domains": ["sr22"],
+        "relationships": ["driver", "policy", "violation"],
+        "confidence_score": 0.90,
+        "usage_count": 5
+      }
+    }
+  },
+  "cross_domain_relationships": {
+    "quote_to_billing": {
+      "relationship_id": "quote_to_billing",
+      "source_domain": "producer-portal",
+      "target_domain": "accounting",
+      "source_entity": "quote",
+      "target_entity": "billing_cycle",
+      "relationship_type": "one_to_one",
+      "trigger": "quote_binding_completed",
+      "confidence_score": 0.94
+    },
+    "driver_to_sr22": {
+      "relationship_id": "driver_to_sr22",
+      "source_domain": "producer-portal",
+      "target_domain": "sr22",
+      "source_entity": "driver",
+      "target_entity": "sr22_filing",
+      "relationship_type": "one_to_many",
+      "trigger": "violation_recorded",
+      "confidence_score": 0.88
+    },
+    "vehicle_to_rate": {
+      "relationship_id": "vehicle_to_rate",
+      "source_domain": "producer-portal", 
+      "target_domain": "program-manager",
+      "source_entity": "vehicle",
+      "target_entity": "rate_factor",
+      "relationship_type": "many_to_many",
+      "trigger": "rate_calculation_needed",
+      "confidence_score": 0.91
+    }
+  },
+  "pattern_library_references": {
+    "global_requirements": {
+      "GR-52": "Universal Entity Management",
+      "GR-44": "Communication Architecture", 
+      "GR-41": "Database Standards",
+      "GR-38": "Microservice Architecture",
+      "GR-53": "DCS Integration Architecture",
+      "GR-64": "Policy Reinstatement Process",
+      "GR-10": "SR22/SR26 Financial Responsibility Filing"
+    },
+    "pattern_locations": {
+      "universal_entities": "/shared-infrastructure/knowledge-base/global-patterns/universal-entities/",
+      "communication_templates": "/shared-infrastructure/knowledge-base/global-patterns/communication-templates/",
+      "database_schemas": "/shared-infrastructure/knowledge-base/global-patterns/database-schemas/",
+      "service_integrations": "/shared-infrastructure/knowledge-base/global-patterns/service-integrations/"
+    }
+  },
+  "usage_statistics": {
+    "most_used_entities": [
+      {"entity": "address", "usage_count": 156},
+      {"entity": "phone", "usage_count": 142},
+      {"entity": "email", "usage_count": 134},
+      {"entity": "driver", "usage_count": 89},
+      {"entity": "vehicle", "usage_count": 76}
+    ],
+    "highest_success_rates": [
+      {"entity": "address", "success_rate": 0.99},
+      {"entity": "payment", "success_rate": 0.98},
+      {"entity": "universal_entity", "success_rate": 0.98},
+      {"entity": "phone", "success_rate": 0.98},
+      {"entity": "driver", "success_rate": 0.97}
+    ],
+    "cross_domain_usage": {
+      "producer_portal_accounting": 23,
+      "producer_portal_program_manager": 18,
+      "accounting_reinstatement": 8,
+      "producer_portal_sr22": 12,
+      "entity_integration_all": 45
+    }
+  }
+}

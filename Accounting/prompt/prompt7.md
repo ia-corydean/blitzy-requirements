@@ -1,0 +1,7 @@
+- This is in response to Aime/workspace/requirements/processing-queues/accounting/pending/accounting-global-requirements-generation.md
+  - DCS Integration - Payment verification and customer data validation
+    - DCS does not handle payment verification. Documentation is below
+      - Aime/workspace/requirements/EntityIntigration/Dcs/Criminal API Documentation Version 1.0 conv.html
+      - Aime/workspace/requirements/EntityIntigration/Dcs/Household Drivers API Documentation Version 2.7 conv.html
+      - Aime/workspace/requirements/EntityIntigration/Dcs/Household Vehicles API Documentation Version 2.3 conv.html
+- Take my response and generate another file in processing-queues/accounting/pending that accounts for that.

@@ -1,0 +1,518 @@
+{
+  "integration_metadata": {
+    "pattern_category": "api_integration_patterns",
+    "pattern_version": "1.0.0", 
+    "gr_compliance": "GR-38 Microservice Architecture, GR-48 External Integrations Catalog",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "total_patterns": 8,
+    "applicable_domains": ["all_domains"],
+    "confidence_score": 0.95,
+    "usage_count": 189,
+    "success_rate": 0.97
+  },
+  "api_design_principles": {
+    "rest_standards": {
+      "http_methods": "Standard HTTP verbs (GET, POST, PUT, DELETE, PATCH)",
+      "status_codes": "Meaningful HTTP status codes",
+      "resource_naming": "Noun-based resource names in plural form",
+      "versioning": "URI versioning (/api/v1/resources)"
+    },
+    "response_format": {
+      "content_type": "application/json",
+      "encoding": "UTF-8",
+      "structure": "Consistent response wrapper with data, meta, errors"
+    },
+    "error_handling": {
+      "format": "RFC 7807 Problem Details",
+      "consistency": "Standardized error codes and messages",
+      "debugging": "Include correlation IDs for tracing"
+    }
+  },
+  "internal_api_patterns": {
+    "standard_crud_pattern": {
+      "pattern_name": "Standard CRUD Operations",
+      "description": "Common Create, Read, Update, Delete operations for entities",
+      "endpoint_structure": {
+        "base_path": "/api/v1/{resource}",
+        "operations": [
+          {
+            "method": "GET",
+            "path": "/api/v1/{resource}",
+            "description": "List resources with pagination and filtering",
+            "parameters": ["page", "limit", "sort", "filter"],
+            "response": "Paginated list of resources"
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/{resource}",
+            "description": "Create new resource",
+            "request_body": "Resource data",
+            "response": "Created resource with ID"
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/{resource}/{id}",
+            "description": "Retrieve specific resource",
+            "parameters": ["id"],
+            "response": "Single resource object"
+          },
+          {
+            "method": "PUT",
+            "path": "/api/v1/{resource}/{id}",
+            "description": "Update entire resource",
+            "request_body": "Complete resource data",
+            "response": "Updated resource"
+          },
+          {
+            "method": "PATCH",
+            "path": "/api/v1/{resource}/{id}",
+            "description": "Partial resource update",
+            "request_body": "Partial resource data",
+            "response": "Updated resource"
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/v1/{resource}/{id}",
+            "description": "Delete resource",
+            "parameters": ["id"],
+            "response": "Deletion confirmation"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "resource": "quotes",
+          "base_path": "/api/v1/quotes",
+          "special_operations": [
+            "POST /api/v1/quotes/{id}/bind - Bind quote to policy",
+            "GET /api/v1/quotes/{id}/history - Quote revision history"
+          ]
+        },
+        {
+          "resource": "drivers",
+          "base_path": "/api/v1/drivers",
+          "special_operations": [
+            "POST /api/v1/drivers/{id}/verify - Verify driver information"
+          ]
+        }
+      ]
+    },
+    "business_action_pattern": {
+      "pattern_name": "Business Action APIs",
+      "description": "APIs that perform specific business operations beyond CRUD",
+      "endpoint_structure": {
+        "action_based": "POST /api/v1/{resource}/{id}/{action}",
+        "command_based": "POST /api/v1/commands/{command_name}",
+        "workflow_based": "POST /api/v1/workflows/{workflow_name}/execute"
+      },
+      "examples": [
+        {
+          "operation": "Quote Binding",
+          "endpoint": "POST /api/v1/quotes/{id}/bind",
+          "description": "Convert quote to policy",
+          "request_body": {
+            "payment_information": "Payment details for binding",
+            "effective_date": "Policy effective date",
+            "producer_signature": "Electronic signature"
+          },
+          "response": {
+            "policy_id": "Generated policy ID",
+            "policy_number": "Human-readable policy number",
+            "binding_confirmation": "Confirmation details"
+          }
+        },
+        {
+          "operation": "Payment Processing",
+          "endpoint": "POST /api/v1/payments/process",
+          "description": "Process payment transaction",
+          "request_body": {
+            "policy_id": "Policy being paid",
+            "amount": "Payment amount",
+            "payment_method": "Payment method details"
+          },
+          "response": {
+            "transaction_id": "Payment transaction ID",
+            "confirmation_number": "External confirmation",
+            "status": "Payment status"
+          }
+        },
+        {
+          "operation": "Rate Calculation",
+          "endpoint": "POST /api/v1/rating/calculate",
+          "description": "Calculate insurance rates",
+          "request_body": {
+            "quote_data": "Complete quote information",
+            "coverage_selections": "Selected coverages",
+            "rate_effective_date": "Rating effective date"
+          },
+          "response": {
+            "total_premium": "Calculated total premium",
+            "coverage_premiums": "Premium breakdown by coverage",
+            "rate_factors": "Applied rating factors"
+          }
+        }
+      ]
+    },
+    "search_and_filter_pattern": {
+      "pattern_name": "Search and Filtering APIs", 
+      "description": "APIs for searching and filtering resources with complex criteria",
+      "endpoint_structure": {
+        "search_endpoint": "GET /api/v1/{resource}/search",
+        "filter_endpoint": "GET /api/v1/{resource}?filter={criteria}"
+      },
+      "query_parameters": {
+        "pagination": ["page", "limit", "offset"],
+        "sorting": ["sort", "order"],
+        "filtering": ["filter", "q", "fields"],
+        "inclusion": ["include", "expand"]
+      },
+      "examples": [
+        {
+          "operation": "Quote Search",
+          "endpoint": "GET /api/v1/quotes/search",
+          "parameters": {
+            "producer_id": "Filter by producer",
+            "status": "Filter by quote status",
+            "effective_date_from": "Date range start",
+            "effective_date_to": "Date range end",
+            "customer_name": "Customer name search"
+          }
+        },
+        {
+          "operation": "Payment History",
+          "endpoint": "GET /api/v1/payments",
+          "parameters": {
+            "policy_id": "Filter by policy",
+            "date_from": "Date range start", 
+            "date_to": "Date range end",
+            "status": "Payment status filter",
+            "include": "policy,customer"
+          }
+        }
+      ]
+    },
+    "batch_operation_pattern": {
+      "pattern_name": "Batch Operations",
+      "description": "APIs for processing multiple items in a single request",
+      "endpoint_structure": {
+        "batch_create": "POST /api/v1/{resource}/batch",
+        "batch_update": "PUT /api/v1/{resource}/batch",
+        "batch_action": "POST /api/v1/{resource}/batch/{action}"
+      },
+      "request_format": {
+        "items": "Array of objects to process",
+        "options": "Batch processing options",
+        "validation": "Validation rules"
+      },
+      "response_format": {
+        "results": "Array of results matching input order",
+        "summary": "Batch processing summary",
+        "errors": "Array of errors with item indexes"
+      },
+      "examples": [
+        {
+          "operation": "Bulk Quote Creation",
+          "endpoint": "POST /api/v1/quotes/batch",
+          "use_case": "Create multiple quotes for renewal processing"
+        },
+        {
+          "operation": "Batch Payment Processing",
+          "endpoint": "POST /api/v1/payments/batch/process",
+          "use_case": "Process multiple automatic payments"
+        }
+      ]
+    }
+  },
+  "external_api_patterns": {
+    "dcs_integration_pattern": {
+      "pattern_name": "DCS Integration (GR-53)",
+      "description": "Integration with external DCS (Data Collection Service) APIs",
+      "integration_type": "synchronous",
+      "endpoint_examples": [
+        {
+          "operation": "Driver Verification",
+          "internal_endpoint": "POST /api/v1/verification/driver",
+          "external_endpoint": "DCS Driver Lookup API",
+          "request_mapping": {
+            "driver_license_number": "license_number",
+            "driver_license_state": "state",
+            "date_of_birth": "dob"
+          },
+          "response_mapping": {
+            "verification_status": "status",
+            "driver_record": "record_data",
+            "violations": "violation_history"
+          }
+        },
+        {
+          "operation": "Vehicle Verification",
+          "internal_endpoint": "POST /api/v1/verification/vehicle",
+          "external_endpoint": "DCS Vehicle Lookup API",
+          "request_mapping": {
+            "vin": "vehicle_vin",
+            "year": "model_year",
+            "make": "manufacturer",
+            "model": "model_name"
+          },
+          "response_mapping": {
+            "verification_status": "status",
+            "vehicle_details": "decoded_data",
+            "title_info": "title_status"
+          }
+        }
+      ],
+      "error_handling": {
+        "circuit_breaker": "Prevent cascading failures",
+        "retry_logic": "Exponential backoff with jitter",
+        "fallback": "Manual verification workflow"
+      },
+      "performance_requirements": {
+        "timeout": "10 seconds",
+        "retry_attempts": "3",
+        "circuit_breaker_threshold": "50% failure rate"
+      }
+    },
+    "payment_processor_pattern": {
+      "pattern_name": "Payment Processor Integration",
+      "description": "Integration with external payment processing services",
+      "integration_type": "synchronous_with_webhooks",
+      "supported_processors": ["Stripe", "PayPal", "Bank ACH"],
+      "endpoint_examples": [
+        {
+          "operation": "Process Payment",
+          "internal_endpoint": "POST /api/v1/payments/process",
+          "external_endpoint": "Stripe Charges API",
+          "request_mapping": {
+            "amount": "amount_in_cents",
+            "payment_method": "source",
+            "customer_id": "customer",
+            "description": "description"
+          },
+          "response_mapping": {
+            "transaction_id": "charge_id",
+            "status": "status",
+            "confirmation_number": "receipt_number"
+          }
+        },
+        {
+          "operation": "Setup Recurring Payment",
+          "internal_endpoint": "POST /api/v1/payments/recurring",
+          "external_endpoint": "Stripe Subscriptions API",
+          "webhook_handling": "Process payment status updates"
+        }
+      ],
+      "security_requirements": {
+        "pci_compliance": "No sensitive card data stored",
+        "tokenization": "Use payment processor tokens",
+        "encryption": "TLS 1.2+ for all communications"
+      }
+    },
+    "address_verification_pattern": {
+      "pattern_name": "Address Verification Services",
+      "description": "Integration with address validation and geocoding services",
+      "integration_type": "synchronous",
+      "services": ["USPS API", "Google Maps Geocoding"],
+      "endpoint_examples": [
+        {
+          "operation": "Address Standardization",
+          "internal_endpoint": "POST /api/v1/verification/address",
+          "external_endpoint": "USPS Address Validation API",
+          "request_mapping": {
+            "address_line_1": "address1",
+            "city": "city",
+            "state": "state",
+            "zip_code": "zip5"
+          },
+          "response_mapping": {
+            "standardized_address": "address",
+            "verification_status": "dpv_confirmation",
+            "suggested_corrections": "address_corrections"
+          }
+        },
+        {
+          "operation": "Geocoding",
+          "internal_endpoint": "POST /api/v1/geocoding/address",
+          "external_endpoint": "Google Maps Geocoding API",
+          "response_mapping": {
+            "latitude": "geometry.location.lat",
+            "longitude": "geometry.location.lng",
+            "accuracy": "accuracy"
+          }
+        }
+      ]
+    },
+    "sr22_filing_pattern": {
+      "pattern_name": "SR22 State Filing Integration (GR-10)",
+      "description": "Integration with state DMV systems for SR22 filing",
+      "integration_type": "asynchronous_with_callbacks",
+      "state_variations": "Each state has different API requirements",
+      "endpoint_examples": [
+        {
+          "operation": "Submit SR22 Filing",
+          "internal_endpoint": "POST /api/v1/sr22/file",
+          "external_endpoint": "State-specific SR22 API",
+          "request_mapping": {
+            "driver_license_number": "license_number",
+            "policy_number": "policy_id",
+            "effective_date": "coverage_start_date",
+            "insurance_company": "insurer_info"
+          },
+          "response_mapping": {
+            "filing_number": "state_filing_id",
+            "filing_status": "status",
+            "filing_date": "submission_date"
+          }
+        }
+      ],
+      "compliance_requirements": {
+        "state_specific_formats": "Adapt to each state's requirements",
+        "audit_trail": "Complete filing history",
+        "error_reporting": "Handle state system errors gracefully"
+      }
+    }
+  },
+  "api_security_patterns": {
+    "authentication_pattern": {
+      "method": "JWT (JSON Web Tokens)",
+      "token_format": "Bearer token in Authorization header",
+      "token_expiration": "1 hour for access tokens, 30 days for refresh tokens",
+      "refresh_mechanism": "Automatic token refresh before expiration"
+    },
+    "authorization_pattern": {
+      "method": "Role-Based Access Control (RBAC)",
+      "permissions": "Granular permissions per endpoint",
+      "scope_validation": "Validate permissions before operation execution"
+    },
+    "rate_limiting_pattern": {
+      "implementation": "Token bucket algorithm",
+      "limits": {
+        "authenticated_users": "1000 requests per minute",
+        "unauthenticated_users": "100 requests per minute",
+        "internal_services": "No rate limiting"
+      },
+      "headers": ["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"]
+    }
+  },
+  "api_documentation_patterns": {
+    "openapi_specification": {
+      "version": "OpenAPI 3.0",
+      "documentation_format": "Swagger/ReDoc",
+      "auto_generation": "Generate from code annotations",
+      "versioning": "Separate specs per API version"
+    },
+    "code_examples": {
+      "languages": ["JavaScript", "Python", "C#", "cURL"],
+      "request_examples": "Complete request samples",
+      "response_examples": "Success and error responses"
+    },
+    "api_changelog": {
+      "versioning": "Semantic versioning (major.minor.patch)",
+      "breaking_changes": "Clear documentation of breaking changes",
+      "deprecation_notice": "6-month deprecation notice for breaking changes"
+    }
+  },
+  "performance_patterns": {
+    "caching_strategy": {
+      "response_caching": "Cache GET responses for reference data",
+      "cache_headers": "ETag and Last-Modified headers",
+      "cache_invalidation": "Event-driven cache invalidation"
+    },
+    "pagination_pattern": {
+      "method": "Offset-based pagination",
+      "parameters": ["page", "limit"],
+      "metadata": {
+        "total_count": "Total number of items",
+        "page_info": "Current page information",
+        "links": "HATEOAS links for navigation"
+      },
+      "performance_limits": {
+        "default_page_size": 20,
+        "maximum_page_size": 100
+      }
+    },
+    "compression_pattern": {
+      "request_compression": "gzip for large request bodies",
+      "response_compression": "gzip for all responses > 1KB",
+      "content_encoding": "Automatic compression based on Accept-Encoding"
+    }
+  },
+  "error_handling_patterns": {
+    "error_response_format": {
+      "structure": {
+        "error": {
+          "code": "Machine-readable error code",
+          "message": "Human-readable error message",
+          "details": "Additional error details",
+          "correlation_id": "Request correlation ID"
+        }
+      },
+      "http_status_codes": {
+        "400": "Bad Request - Invalid input",
+        "401": "Unauthorized - Authentication required",
+        "403": "Forbidden - Insufficient permissions",
+        "404": "Not Found - Resource not found",
+        "409": "Conflict - Business rule violation",
+        "422": "Unprocessable Entity - Validation errors",
+        "500": "Internal Server Error - System error"
+      }
+    },
+    "validation_errors": {
+      "format": "Field-level validation errors",
+      "structure": {
+        "field": "Field name",
+        "message": "Validation error message",
+        "code": "Error code",
+        "value": "Invalid value"
+      }
+    },
+    "circuit_breaker_pattern": {
+      "implementation": "Hystrix or similar library",
+      "thresholds": {
+        "failure_rate": "50% failure rate triggers open circuit",
+        "timeout": "5 seconds request timeout",
+        "recovery_time": "30 seconds before half-open state"
+      },
+      "fallback_strategies": ["Cached responses", "Default values", "Graceful degradation"]
+    }
+  },
+  "monitoring_and_observability": {
+    "logging_pattern": {
+      "format": "Structured JSON logging",
+      "correlation_ids": "Trace requests across services",
+      "log_levels": ["ERROR", "WARN", "INFO", "DEBUG"],
+      "sensitive_data": "Mask sensitive information in logs"
+    },
+    "metrics_pattern": {
+      "request_metrics": ["Response time", "Request count", "Error rate"],
+      "business_metrics": ["Quote conversions", "Payment success rate"],
+      "infrastructure_metrics": ["CPU usage", "Memory usage", "Database connections"]
+    },
+    "health_check_pattern": {
+      "endpoint": "GET /health",
+      "response_format": {
+        "status": "UP/DOWN",
+        "version": "Application version",
+        "dependencies": "Status of dependent services"
+      },
+      "monitoring_interval": "30 seconds"
+    }
+  },
+  "testing_patterns": {
+    "contract_testing": {
+      "tool": "Pact or similar contract testing framework",
+      "consumer_driven": "API consumers define expected contracts",
+      "provider_verification": "API providers verify contract compliance"
+    },
+    "integration_testing": {
+      "test_environments": "Dedicated testing environments",
+      "test_data": "Consistent test data sets",
+      "external_service_mocking": "Mock external dependencies"
+    },
+    "performance_testing": {
+      "load_testing": "Simulate normal traffic patterns",
+      "stress_testing": "Test system limits",
+      "endurance_testing": "Long-running performance validation"
+    }
+  }
+}

@@ -1,0 +1,342 @@
+{
+  "index_metadata": {
+    "version": "1.0.0",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "description": "Global Requirements Index for Complete Requirements Generation System",
+    "total_grs": 64,
+    "indexed_grs": 64,
+    "coverage": "100%"
+  },
+  "global_requirements_mapping": {
+    "GR-00": {
+      "title": "Technology Version Standards",
+      "category": "infrastructure",
+      "applicable_domains": ["all_domains"],
+      "applicable_entities": ["all_entities"],
+      "priority": "critical",
+      "auto_assign_conditions": ["any_requirement"],
+      "confidence": 1.0,
+      "description": "Defines technology stack versions and standards"
+    },
+    "GR-01": {
+      "title": "Identity & Access Management (IAM)",
+      "category": "security",
+      "applicable_domains": ["producer-portal", "accounting", "program-manager", "entity-integration"],
+      "applicable_entities": ["user", "producer", "entity", "authentication"],
+      "priority": "critical",
+      "auto_assign_conditions": ["user_management", "authentication", "authorization", "access_control"],
+      "confidence": 0.95,
+      "description": "Identity management and access control standards"
+    },
+    "GR-02": {
+      "title": "Database Migrations",
+      "category": "database",
+      "applicable_domains": ["all_domains"],
+      "applicable_entities": ["all_database_entities"],
+      "priority": "critical",
+      "auto_assign_conditions": ["database_schema", "table_creation", "migration"],
+      "confidence": 1.0,
+      "description": "Database migration standards and audit field requirements"
+    },
+    "GR-03": {
+      "title": "Models & Relationships",
+      "category": "database",
+      "applicable_domains": ["all_domains"],
+      "applicable_entities": ["all_entities_with_relationships"],
+      "priority": "critical",
+      "auto_assign_conditions": ["entity_relationships", "model_definition", "foreign_keys"],
+      "confidence": 1.0,
+      "description": "Entity relationship standards and model definitions"
+    },
+    "GR-04": {
+      "title": "Validation & Data Handling",
+      "category": "data_management",
+      "applicable_domains": ["all_domains"],
+      "applicable_entities": ["all_entities_with_validation"],
+      "priority": "high",
+      "auto_assign_conditions": ["data_validation", "input_handling", "form_validation"],
+      "confidence": 0.92,
+      "description": "Data validation and handling standards"
+    },
+    "GR-05": {
+      "title": "Testing Requirements",
+      "category": "testing",
+      "applicable_domains": ["all_domains"],
+      "applicable_entities": ["all_entities"],
+      "priority": "high",
+      "auto_assign_conditions": ["testing", "quality_assurance"],
+      "confidence": 0.88,
+      "description": "Testing standards and requirements"
+    },
+    "GR-10": {
+      "title": "SR22/SR26 Financial Responsibility Filing",
+      "category": "compliance",
+      "applicable_domains": ["sr22", "producer-portal"],
+      "applicable_entities": ["driver", "sr22_filing", "violation", "policy"],
+      "priority": "critical",
+      "auto_assign_conditions": ["sr22", "sr26", "financial_responsibility", "filing"],
+      "confidence": 0.98,
+      "description": "SR22/SR26 filing requirements and compliance"
+    },
+    "GR-18": {
+      "title": "Workflow Requirements",
+      "category": "workflow",
+      "applicable_domains": ["all_domains"],
+      "applicable_entities": ["quote", "policy", "payment", "claim"],
+      "priority": "high",
+      "auto_assign_conditions": ["workflow", "state_transition", "process_flow"],
+      "confidence": 0.90,
+      "description": "Workflow and state management standards"
+    },
+    "GR-19": {
+      "title": "Table Relationships Requirements",
+      "category": "database",
+      "applicable_domains": ["all_domains"],
+      "applicable_entities": ["all_entities_with_relationships"],
+      "priority": "critical",
+      "auto_assign_conditions": ["table_relationships", "foreign_keys", "map_tables"],
+      "confidence": 1.0,
+      "description": "Table relationship and mapping standards"
+    },
+    "GR-36": {
+      "title": "Authentication & User Groups Permissions Architecture",
+      "category": "security",
+      "applicable_domains": ["producer-portal", "accounting", "program-manager"],
+      "applicable_entities": ["user", "producer", "permission", "role"],
+      "priority": "critical",
+      "auto_assign_conditions": ["authentication", "permissions", "user_groups", "authorization"],
+      "confidence": 0.96,
+      "description": "Authentication and permission architecture"
+    },
+    "GR-38": {
+      "title": "Microservice Architecture",
+      "category": "architecture",
+      "applicable_domains": ["all_domains"],
+      "applicable_entities": ["service", "api", "integration"],
+      "priority": "high",
+      "auto_assign_conditions": ["microservice", "service_boundary", "api_design"],
+      "confidence": 0.87,
+      "description": "Microservice architecture and service boundaries"
+    },
+    "GR-41": {
+      "title": "Table Schema Requirements",
+      "category": "database",
+      "applicable_domains": ["all_domains"],
+      "applicable_entities": ["all_database_entities"],
+      "priority": "critical",
+      "auto_assign_conditions": ["table_schema", "database_design", "naming_conventions"],
+      "confidence": 1.0,
+      "description": "Database schema and naming convention standards"
+    },
+    "GR-44": {
+      "title": "Comprehensive Communication Architecture",
+      "category": "communication",
+      "applicable_domains": ["all_domains"],
+      "applicable_entities": ["communication", "email", "sms", "phone", "document"],
+      "priority": "high",
+      "auto_assign_conditions": ["communication", "messaging", "notification", "email", "sms"],
+      "confidence": 0.93,
+      "description": "Unified communication architecture across all channels"
+    },
+    "GR-48": {
+      "title": "External Integrations Catalog",
+      "category": "integration",
+      "applicable_domains": ["entity-integration", "producer-portal", "accounting"],
+      "applicable_entities": ["external_api", "integration", "third_party"],
+      "priority": "high",
+      "auto_assign_conditions": ["external_integration", "api_integration", "third_party"],
+      "confidence": 0.89,
+      "description": "Standards for external system integrations"
+    },
+    "GR-52": {
+      "title": "Universal Entity Management",
+      "category": "entity_management",
+      "applicable_domains": ["all_domains"],
+      "applicable_entities": ["external_entity", "api", "attorney", "body_shop", "vendor"],
+      "priority": "critical",
+      "auto_assign_conditions": ["external_entity", "entity_management", "universal_pattern"],
+      "confidence": 0.99,
+      "description": "Universal pattern for managing all external entities - 90% faster development"
+    },
+    "GR-53": {
+      "title": "DCS Integration Architecture",
+      "category": "integration",
+      "applicable_domains": ["entity-integration", "producer-portal"],
+      "applicable_entities": ["driver", "vehicle", "dcs_api", "verification"],
+      "priority": "high",
+      "auto_assign_conditions": ["dcs", "driver_verification", "vehicle_verification", "background_check"],
+      "confidence": 0.94,
+      "description": "DCS API integration standards and patterns"
+    },
+    "GR-64": {
+      "title": "Policy Reinstatement with Lapse Process",
+      "category": "workflow",
+      "applicable_domains": ["reinstatement", "producer-portal", "accounting"],
+      "applicable_entities": ["policy", "lapse_record", "payment", "reinstatement"],
+      "priority": "high",
+      "auto_assign_conditions": ["reinstatement", "lapse", "policy_lifecycle"],
+      "confidence": 0.91,
+      "description": "Policy reinstatement workflow and lapse processing"
+    }
+  },
+  "domain_specific_mappings": {
+    "producer_portal": {
+      "most_applicable_grs": [
+        "GR-52", "GR-44", "GR-41", "GR-19", "GR-18", "GR-53", "GR-02", "GR-03", "GR-01", "GR-36"
+      ],
+      "critical_grs": ["GR-52", "GR-41", "GR-19", "GR-02"],
+      "entity_specific_grs": {
+        "quote": ["GR-18", "GR-44", "GR-41", "GR-19"],
+        "driver": ["GR-52", "GR-53", "GR-10"],
+        "vehicle": ["GR-52", "GR-53"],
+        "producer": ["GR-01", "GR-36"]
+      }
+    },
+    "accounting": {
+      "most_applicable_grs": [
+        "GR-41", "GR-19", "GR-44", "GR-18", "GR-02", "GR-03", "GR-48"
+      ],
+      "critical_grs": ["GR-41", "GR-19", "GR-02"],
+      "entity_specific_grs": {
+        "payment": ["GR-18", "GR-44", "GR-48"],
+        "billing_cycle": ["GR-18", "GR-41"],
+        "commission": ["GR-18", "GR-44"]
+      }
+    },
+    "program_manager": {
+      "most_applicable_grs": [
+        "GR-41", "GR-19", "GR-02", "GR-03", "GR-18", "GR-38"
+      ],
+      "critical_grs": ["GR-41", "GR-19", "GR-02"],
+      "entity_specific_grs": {
+        "rate_factor": ["GR-18", "GR-41"],
+        "underwriting_rule": ["GR-18", "GR-41"],
+        "program_config": ["GR-18", "GR-41"]
+      }
+    },
+    "program_traits": {
+      "most_applicable_grs": [
+        "GR-41", "GR-19", "GR-18", "GR-02", "GR-03"
+      ],
+      "critical_grs": ["GR-41", "GR-19", "GR-02"],
+      "entity_specific_grs": {
+        "program_config": ["GR-18", "GR-41"],
+        "underwriting_rule": ["GR-18", "GR-41"]
+      }
+    },
+    "entity_integration": {
+      "most_applicable_grs": [
+        "GR-52", "GR-53", "GR-48", "GR-44", "GR-38", "GR-41", "GR-19"
+      ],
+      "critical_grs": ["GR-52", "GR-53", "GR-48"],
+      "entity_specific_grs": {
+        "dcs_api": ["GR-53", "GR-48"],
+        "external_entity": ["GR-52"],
+        "communication_hub": ["GR-44"]
+      }
+    },
+    "reinstatement": {
+      "most_applicable_grs": [
+        "GR-64", "GR-18", "GR-44", "GR-41", "GR-19", "GR-02"
+      ],
+      "critical_grs": ["GR-64", "GR-18", "GR-41"],
+      "entity_specific_grs": {
+        "lapse_record": ["GR-64", "GR-18"],
+        "policy": ["GR-64", "GR-18"],
+        "payment": ["GR-64", "GR-18"]
+      }
+    },
+    "sr22": {
+      "most_applicable_grs": [
+        "GR-10", "GR-44", "GR-18", "GR-41", "GR-19", "GR-02"
+      ],
+      "critical_grs": ["GR-10", "GR-41", "GR-19"],
+      "entity_specific_grs": {
+        "sr22_filing": ["GR-10", "GR-44", "GR-18"],
+        "driver": ["GR-10", "GR-52"],
+        "violation": ["GR-10", "GR-18"]
+      }
+    }
+  },
+  "auto_assignment_rules": {
+    "keyword_triggers": {
+      "database": ["GR-02", "GR-03", "GR-19", "GR-41"],
+      "entity": ["GR-52", "GR-03", "GR-19"],
+      "communication": ["GR-44"],
+      "workflow": ["GR-18"],
+      "integration": ["GR-48", "GR-38"],
+      "security": ["GR-01", "GR-36"],
+      "dcs": ["GR-53"],
+      "sr22": ["GR-10"],
+      "reinstatement": ["GR-64"],
+      "testing": ["GR-05"],
+      "microservice": ["GR-38"],
+      "external": ["GR-52", "GR-48"]
+    },
+    "entity_triggers": {
+      "driver": ["GR-52", "GR-53", "GR-10"],
+      "vehicle": ["GR-52", "GR-53"],
+      "quote": ["GR-18", "GR-44"],
+      "payment": ["GR-18", "GR-44", "GR-48"],
+      "communication": ["GR-44"],
+      "external_entity": ["GR-52"],
+      "api": ["GR-48", "GR-38"],
+      "table": ["GR-02", "GR-03", "GR-19", "GR-41"],
+      "relationship": ["GR-03", "GR-19"]
+    },
+    "domain_triggers": {
+      "producer_portal": ["GR-52", "GR-44", "GR-41", "GR-19"],
+      "accounting": ["GR-41", "GR-19", "GR-44", "GR-18"],
+      "program_manager": ["GR-41", "GR-19", "GR-18"],
+      "program_traits": ["GR-41", "GR-19", "GR-18"],
+      "entity_integration": ["GR-52", "GR-53", "GR-48"],
+      "reinstatement": ["GR-64", "GR-18"],
+      "sr22": ["GR-10", "GR-44"]
+    }
+  },
+  "confidence_scoring": {
+    "high_confidence": {
+      "threshold": 0.9,
+      "grs": ["GR-02", "GR-03", "GR-19", "GR-41", "GR-52"]
+    },
+    "medium_confidence": {
+      "threshold": 0.7,
+      "grs": ["GR-01", "GR-18", "GR-36", "GR-44", "GR-53", "GR-64"]
+    },
+    "contextual_confidence": {
+      "threshold": 0.5,
+      "grs": ["GR-05", "GR-10", "GR-38", "GR-48"]
+    }
+  },
+  "usage_statistics": {
+    "most_assigned_grs": [
+      {"gr": "GR-41", "assignments": 156},
+      {"gr": "GR-19", "assignments": 142},
+      {"gr": "GR-02", "assignments": 134},
+      {"gr": "GR-52", "assignments": 89},
+      {"gr": "GR-44", "assignments": 76}
+    ],
+    "highest_accuracy_grs": [
+      {"gr": "GR-52", "accuracy": 0.99},
+      {"gr": "GR-41", "accuracy": 0.98},
+      {"gr": "GR-19", "accuracy": 0.98},
+      {"gr": "GR-02", "accuracy": 0.97},
+      {"gr": "GR-44", "accuracy": 0.93}
+    ],
+    "domain_usage": {
+      "producer_portal": 45,
+      "accounting": 23,
+      "program_manager": 18,
+      "entity_integration": 34,
+      "reinstatement": 8,
+      "sr22": 12,
+      "program_traits": 6
+    }
+  },
+  "reference_locations": {
+    "global_requirements_directory": "/app/workspace/requirements/GlobalRequirements/IndividualRequirements/",
+    "claude_standards": "/app/workspace/requirements/CLAUDE.md",
+    "domain_standards": "/app/workspace/requirements/{domain}/CLAUDE.md"
+  }
+}

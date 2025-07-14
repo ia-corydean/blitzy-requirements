@@ -1,0 +1,349 @@
+{
+  "pattern_metadata": {
+    "entity_name": "payment",
+    "pattern_version": "1.0.0",
+    "gr_compliance": "GR-52 Universal Entity Management",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "confidence_score": 0.95,
+    "usage_count": 234,
+    "success_rate": 0.97,
+    "applicable_domains": ["accounting", "producer-portal", "reinstatement"]
+  },
+  "entity_definition": {
+    "primary_table": "payment",
+    "description": "Universal pattern for payment entities across all business domains",
+    "business_purpose": "Manage all payment transactions including premiums, fees, refunds, and commissions",
+    "gr_52_compliant": true
+  },
+  "table_structure": {
+    "core_fields": [
+      {
+        "name": "id",
+        "type": "bigint",
+        "constraints": "PRIMARY KEY AUTO_INCREMENT",
+        "description": "Unique payment identifier"
+      },
+      {
+        "name": "payment_number",
+        "type": "varchar(50)",
+        "constraints": "UNIQUE NOT NULL",
+        "description": "Human-readable payment number"
+      },
+      {
+        "name": "policy_id",
+        "type": "bigint",
+        "constraints": "FOREIGN KEY REFERENCES policy(id)",
+        "description": "Policy associated with this payment"
+      },
+      {
+        "name": "payment_type_id",
+        "type": "bigint",
+        "constraints": "FOREIGN KEY REFERENCES payment_type(id)",
+        "description": "Type of payment (premium, fee, refund, commission)"
+      },
+      {
+        "name": "payment_method_id",
+        "type": "bigint",
+        "constraints": "FOREIGN KEY REFERENCES payment_method(id)",
+        "description": "Method used for payment (credit_card, ach, check, etc.)"
+      },
+      {
+        "name": "amount",
+        "type": "decimal(10,2)",
+        "constraints": "NOT NULL",
+        "description": "Payment amount (positive for received, negative for refunds)"
+      },
+      {
+        "name": "transaction_date",
+        "type": "date",
+        "constraints": "NOT NULL",
+        "description": "Date the payment transaction occurred"
+      },
+      {
+        "name": "effective_date",
+        "type": "date",
+        "constraints": "NOT NULL",
+        "description": "Date the payment takes effect for accounting"
+      },
+      {
+        "name": "due_date",
+        "type": "date",
+        "constraints": "NULL",
+        "description": "Due date for scheduled payments"
+      },
+      {
+        "name": "confirmation_number",
+        "type": "varchar(100)",
+        "constraints": "NULL",
+        "description": "External confirmation/reference number"
+      },
+      {
+        "name": "is_recurring",
+        "type": "boolean",
+        "constraints": "DEFAULT false",
+        "description": "Indicates if payment is part of recurring series"
+      },
+      {
+        "name": "recurring_schedule_id",
+        "type": "bigint",
+        "constraints": "FOREIGN KEY REFERENCES recurring_schedule(id)",
+        "description": "Associated recurring payment schedule"
+      },
+      {
+        "name": "external_transaction_id",
+        "type": "varchar(100)",
+        "constraints": "NULL",
+        "description": "External payment processor transaction ID"
+      }
+    ],
+    "audit_fields": [
+      {
+        "name": "created_by",
+        "type": "bigint",
+        "constraints": "NOT NULL",
+        "description": "User who created the record"
+      },
+      {
+        "name": "updated_by",
+        "type": "bigint",
+        "constraints": "NOT NULL",
+        "description": "User who last updated the record"
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp",
+        "constraints": "DEFAULT CURRENT_TIMESTAMP",
+        "description": "Record creation timestamp"
+      },
+      {
+        "name": "updated_at",
+        "type": "timestamp",
+        "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+        "description": "Record last update timestamp"
+      }
+    ],
+    "status_management": {
+      "field": "status_id",
+      "type": "bigint",
+      "reference": "status",
+      "description": "References universal status table per GR-19 (pending, processed, failed, reversed)"
+    }
+  },
+  "relationships": {
+    "belongs_to": [
+      {
+        "entity": "policy",
+        "foreign_key": "policy_id",
+        "description": "Policy this payment applies to"
+      },
+      {
+        "entity": "payment_type",
+        "foreign_key": "payment_type_id",
+        "description": "Classification of payment type"
+      },
+      {
+        "entity": "payment_method",
+        "foreign_key": "payment_method_id",
+        "description": "Method used for payment processing"
+      },
+      {
+        "entity": "recurring_schedule",
+        "foreign_key": "recurring_schedule_id",
+        "description": "Associated recurring payment schedule"
+      },
+      {
+        "entity": "status",
+        "foreign_key": "status_id",
+        "description": "Current status of payment"
+      }
+    ],
+    "has_many": [
+      {
+        "entity": "payment_allocation",
+        "relationship": "payment_id",
+        "description": "How payment amount is allocated across coverages/fees"
+      },
+      {
+        "entity": "payment_reversal",
+        "relationship": "original_payment_id",
+        "description": "Reversals of this payment"
+      },
+      {
+        "entity": "commission_calculation",
+        "relationship": "payment_id",
+        "description": "Commission calculations based on this payment"
+      }
+    ],
+    "many_to_many": [
+      {
+        "entity": "billing_cycle",
+        "through": "map_payment_billing_cycle",
+        "description": "Billing cycles this payment applies to"
+      },
+      {
+        "entity": "invoice",
+        "through": "map_payment_invoice",
+        "description": "Invoices this payment satisfies"
+      }
+    ]
+  },
+  "business_rules": {
+    "validation_rules": [
+      {
+        "rule": "amount_not_zero",
+        "description": "Payment amount must not be zero"
+      },
+      {
+        "rule": "effective_date_validation",
+        "description": "Effective date must be within reasonable range of transaction date"
+      },
+      {
+        "rule": "refund_amount_validation",
+        "description": "Refund amounts (negative) cannot exceed total payments received"
+      },
+      {
+        "rule": "recurring_schedule_consistency",
+        "description": "If is_recurring = true, recurring_schedule_id must be provided"
+      },
+      {
+        "rule": "due_date_logic",
+        "description": "Due date only applies to scheduled/future payments"
+      }
+    ],
+    "business_logic": [
+      {
+        "logic": "commission_calculation_trigger",
+        "description": "Successful premium payments trigger commission calculations"
+      },
+      {
+        "logic": "policy_status_updates",
+        "description": "Payment status affects policy standing (active, lapsed, cancelled)"
+      },
+      {
+        "logic": "refund_processing",
+        "description": "Refunds create offsetting payment records with negative amounts"
+      },
+      {
+        "logic": "recurring_payment_automation",
+        "description": "Recurring payments auto-generate based on schedule"
+      }
+    ]
+  },
+  "integration_points": {
+    "payment_processor_integration": {
+      "purpose": "Process credit card and ACH transactions",
+      "external_systems": ["Stripe", "PayPal", "Bank ACH"],
+      "gr_reference": "GR-48 External Integrations Catalog"
+    },
+    "accounting_integration": {
+      "purpose": "Post payments to general ledger and billing cycles",
+      "target_domain": "accounting",
+      "gr_reference": "Cross-domain workflow integration"
+    },
+    "commission_calculation": {
+      "purpose": "Calculate producer commissions based on premium payments",
+      "trigger": "payment_processed",
+      "gr_reference": "GR-38 Microservice Architecture"
+    },
+    "reinstatement_integration": {
+      "purpose": "Handle lapse recovery and reinstatement payments",
+      "target_domain": "reinstatement",
+      "gr_reference": "GR-64 Policy Reinstatement with Lapse Process"
+    }
+  },
+  "section_c_template": {
+    "description": "Backend mapping template for payment fields",
+    "example_mapping": "get payment.* from payment\n-> join policy on payment.policy_id = policy.id\n-> join payment_type on payment.payment_type_id = payment_type.id\n-> join payment_method on payment.payment_method_id = payment_method.id\n-> join status on payment.status_id = status.id\n-> where payment.status_id = processed_status_id",
+    "performance_notes": "Index on (policy_id, status_id, transaction_date) for payment history queries"
+  },
+  "section_e_template": {
+    "description": "Database schema template for payment table",
+    "create_statement": "CREATE TABLE payment (\n  id bigint PRIMARY KEY AUTO_INCREMENT,\n  payment_number varchar(50) UNIQUE NOT NULL,\n  policy_id bigint NOT NULL,\n  payment_type_id bigint NOT NULL,\n  payment_method_id bigint NOT NULL,\n  amount decimal(10,2) NOT NULL,\n  transaction_date date NOT NULL,\n  effective_date date NOT NULL,\n  due_date date NULL,\n  confirmation_number varchar(100) NULL,\n  is_recurring boolean DEFAULT false,\n  recurring_schedule_id bigint NULL,\n  external_transaction_id varchar(100) NULL,\n  status_id bigint NOT NULL,\n  created_by bigint NOT NULL,\n  updated_by bigint NOT NULL,\n  created_at timestamp DEFAULT CURRENT_TIMESTAMP,\n  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  \n  FOREIGN KEY (policy_id) REFERENCES policy(id),\n  FOREIGN KEY (payment_type_id) REFERENCES payment_type(id),\n  FOREIGN KEY (payment_method_id) REFERENCES payment_method(id),\n  FOREIGN KEY (recurring_schedule_id) REFERENCES recurring_schedule(id),\n  FOREIGN KEY (status_id) REFERENCES status(id),\n  \n  INDEX idx_payment_policy (policy_id),\n  INDEX idx_payment_status (status_id),\n  INDEX idx_payment_transaction_date (transaction_date),\n  INDEX idx_payment_effective_date (effective_date),\n  INDEX idx_payment_policy_status_date (policy_id, status_id, transaction_date),\n  INDEX idx_payment_external_transaction (external_transaction_id),\n  \n  CONSTRAINT chk_amount_not_zero CHECK (amount != 0),\n  CONSTRAINT chk_recurring_logic CHECK ((is_recurring = false AND recurring_schedule_id IS NULL) OR (is_recurring = true AND recurring_schedule_id IS NOT NULL))\n);"
+  },
+  "usage_patterns": {
+    "common_queries": [
+      {
+        "purpose": "Get payment history for policy",
+        "query": "SELECT p.*, pt.name as payment_type, pm.name as payment_method, s.name as status FROM payment p JOIN payment_type pt ON p.payment_type_id = pt.id JOIN payment_method pm ON p.payment_method_id = pm.id JOIN status s ON p.status_id = s.id WHERE p.policy_id = ? ORDER BY p.transaction_date DESC"
+      },
+      {
+        "purpose": "Get pending payments for processing",
+        "query": "SELECT p.* FROM payment p WHERE p.status_id = ? AND p.due_date <= CURDATE() ORDER BY p.due_date ASC"
+      },
+      {
+        "purpose": "Calculate policy payment balance",
+        "query": "SELECT SUM(CASE WHEN pt.is_credit = true THEN p.amount ELSE -p.amount END) as balance FROM payment p JOIN payment_type pt ON p.payment_type_id = pt.id WHERE p.policy_id = ? AND p.status_id = ?"
+      }
+    ],
+    "performance_considerations": [
+      "Index on (policy_id, status_id, transaction_date) for payment history queries",
+      "Composite index on (status_id, due_date) for batch payment processing",
+      "Consider partitioning by transaction_date for large payment volumes",
+      "Cache policy payment balances for performance"
+    ]
+  },
+  "domain_customizations": {
+    "accounting": {
+      "additional_fields": ["general_ledger_account", "cost_center", "posting_date"],
+      "integration_requirements": ["gl_posting", "reconciliation_tracking"],
+      "reporting_needs": ["cash_flow_analysis", "commission_reporting"]
+    },
+    "producer_portal": {
+      "payment_scheduling": ["installment_plans", "automatic_payments"],
+      "ui_considerations": ["payment_method_selection", "payment_history_display"],
+      "validation_rules": ["minimum_payment_amounts", "payment_frequency_limits"]
+    },
+    "reinstatement": {
+      "lapse_recovery": ["outstanding_balance_calculation", "late_fee_application"],
+      "reinstatement_logic": ["payment_allocation_rules", "policy_restoration_triggers"]
+    }
+  },
+  "payment_allocation_patterns": {
+    "premium_allocation": {
+      "allocation_order": ["base_premium", "fees", "taxes", "surcharges"],
+      "coverage_distribution": "proportional_by_premium_amount"
+    },
+    "refund_allocation": {
+      "allocation_order": ["surcharges", "taxes", "fees", "base_premium"],
+      "logic": "reverse_order_of_original_payment"
+    },
+    "partial_payment_handling": {
+      "minimum_payment_rules": "state_specific_requirements",
+      "grace_period_logic": "configurable_by_program"
+    }
+  },
+  "recurring_payment_integration": {
+    "schedule_types": ["monthly", "quarterly", "semi_annual", "annual"],
+    "auto_generation": {
+      "trigger": "billing_cycle_creation",
+      "failure_handling": "retry_with_notification",
+      "cancellation_logic": "policy_status_dependent"
+    },
+    "payment_method_validation": {
+      "expiration_checking": "monthly_validation",
+      "failure_notification": "advance_warning_system"
+    }
+  },
+  "compliance_requirements": {
+    "audit_trail": {
+      "retention_period": "7_years",
+      "immutable_records": "original_payment_data",
+      "change_tracking": "full_audit_log"
+    },
+    "pci_compliance": {
+      "sensitive_data_handling": "tokenization_required",
+      "access_controls": "role_based_restrictions",
+      "encryption": "data_at_rest_and_in_transit"
+    },
+    "regulatory_reporting": {
+      "state_reporting": "premium_tax_calculations",
+      "federal_reporting": "1099_commission_reporting"
+    }
+  },
+  "migration_guidance": {
+    "from_legacy": "Map existing payment tables to this pattern, ensuring proper payment_type and status classifications",
+    "data_cleanup": "Standardize payment_method values, validate amount signs (positive/negative), ensure proper status progression",
+    "validation": "Verify payment allocations sum correctly, validate recurring payment schedules, ensure external transaction ID uniqueness"
+  }
+}

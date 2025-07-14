@@ -1,0 +1,501 @@
+# Reinstatement Domain Specialist Configuration
+# Complete Requirements Generation System - Multi-Agent Architecture
+# Specialized agent for Reinstatement domain requirements processing
+
+metadata:
+  agent_name: "Reinstatement Specialist"
+  agent_type: "domain_specialist"
+  version: "1.0.0"
+  created_date: "2025-01-07"
+  last_updated: "2025-01-07"
+  gr_compliance: ["GR-38", "GR-44", "GR-52", "GR-49", "GR-19", "GR-41", "GR-64"]
+  description: "Domain specialist for policy lapse, reinstatement process, grace periods, and restoration"
+
+# Core Agent Configuration
+agent_config:
+  # Agent Identity
+  agent_id: "reinstatement-specialist"
+  display_name: "Reinstatement Specialist"
+  domain: "reinstatement"
+  agent_type: "domain_specialist"
+  
+  # Core Capabilities
+  capabilities:
+    domain_expertise: true
+    pattern_recognition: true
+    requirement_processing: true
+    cross_domain_coordination: true
+    global_requirements_validation: true
+    entity_management: true
+    
+  # Reinstatement Specific Capabilities
+  domain_capabilities:
+    specializations: 
+      - "policy_lapse"
+      - "reinstatement_process"
+      - "grace_periods"
+      - "restoration"
+      - "lapse_management"
+      - "reinstatement_automation"
+      - "grace_period_management"
+      - "policy_restoration"
+      - "lapse_notifications"
+      - "reinstatement_workflows"
+    
+    primary_entities:
+      - "policy_lapse"
+      - "reinstatement_request"
+      - "grace_period"
+      - "lapse_notification"
+      - "restoration_process"
+      - "reinstatement_fee"
+      - "lapse_reason"
+      - "reinstatement_status"
+    
+    secondary_entities:
+      - "policy"
+      - "payment"
+      - "customer"
+      - "producer"
+      - "billing_account"
+      - "communication"
+      - "document"
+      - "workflow"
+    
+    workflow_expertise:
+      - "lapse_detection"
+      - "grace_period_management"
+      - "reinstatement_processing"
+      - "restoration_workflow"
+      - "lapse_notification_workflow"
+      - "payment_collection"
+      - "policy_restoration"
+      - "compliance_validation"
+      - "reinstatement_automation"
+      - "customer_communication"
+    
+    integration_points:
+      - "billing_systems"
+      - "payment_processing"
+      - "communication_services"
+      - "policy_management"
+      - "document_generation"
+      - "workflow_engines"
+    
+  # Processing Configuration
+  processing:
+    max_concurrent_requirements: 4
+    processing_timeout: "18 minutes"
+    pattern_confidence_threshold: 0.73
+    auto_validation_threshold: 0.83
+    coordination_timeout: "5 minutes"
+
+# Knowledge Base Integration
+knowledge_base:
+  # Reinstatement Specific Knowledge
+  domain_patterns: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/reinstatement/"
+  domain_entities: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/reinstatement/entities.json"
+  domain_workflows: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/reinstatement/workflows.json"
+  domain_integrations: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/reinstatement/integrations.json"
+  
+  # Shared Knowledge Access
+  universal_entities: "/app/workspace/requirements/shared-infrastructure/knowledge-base/universal-entity-catalog.json"
+  global_requirements: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-requirements-index.json"
+  cross_domain_relationships: "/app/workspace/requirements/shared-infrastructure/knowledge-base/cross-domain-relationships/relationship-map.json"
+  communication_templates: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/communication-templates/"
+  service_integrations: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/service-integrations/"
+  
+  # GR-64 Specific Knowledge
+  policy_reinstatement_process: "/app/workspace/requirements/GlobalRequirements/IndividualRequirements/GR-64-policy-reinstatement-process.md"
+  
+  # Caching Configuration
+  cache_enabled: true
+  cache_ttl: "2 hours"
+  cache_size_limit: "80MB"
+
+# System Orchestrator Integration
+orchestrator_integration:
+  orchestrator_agent_id: "system-orchestrator"
+  coordination_mode: "collaborative"
+  shared_context_participation: true
+  cross_domain_coordination: true
+  priority_level: "low"  # Lower priority domain
+  
+  # Communication Patterns
+  reporting_frequency: "real_time"
+  status_updates: true
+  performance_metrics_sharing: true
+  error_escalation: "automatic"
+  reinstatement_coordination: true
+
+# Universal Validator Integration
+validator_integration:
+  validator_agent_id: "universal-validator"
+  validation_stages:
+    - "pre_processing"
+    - "reinstatement_validation"
+    - "grace_period_validation"
+    - "post_processing"
+    - "cross_domain_consistency"
+  
+  # Validation Configuration
+  fail_fast_enabled: true
+  progressive_validation: true
+  confidence_threshold: 0.83
+  auto_fix_enabled: true  # Can auto-fix reinstatement process issues
+
+# Pattern Recognition Configuration
+pattern_recognition:
+  # Pattern Matching (Reinstatement optimized)
+  similarity_threshold: 0.73
+  max_patterns_per_requirement: 6
+  domain_pattern_weight: 0.85  # Strong preference for Reinstatement patterns
+  universal_pattern_weight: 0.15
+  
+  # Reinstatement Specific Pattern Weights
+  lapse_patterns_weight: 0.95  # Highest weight for lapse patterns
+  reinstatement_patterns_weight: 0.90  # High weight for reinstatement patterns
+  grace_period_patterns_weight: 0.85  # High weight for grace period patterns
+  restoration_patterns_weight: 0.80
+  
+  # GR-64 Integration
+  gr64_pattern_weight: 0.95  # Highest weight for GR-64 reinstatement patterns
+  
+  # Pattern Learning
+  pattern_learning_enabled: true
+  success_pattern_tracking: true
+  failure_pattern_avoidance: true
+  confidence_improvement_tracking: true
+  
+  # Pattern Application
+  auto_apply_high_confidence: true  # >88% confidence
+  suggest_medium_confidence: true   # 73-88% confidence
+  manual_review_low_confidence: true  # <73% confidence
+
+# Workflow Processing
+workflow_processing:
+  # Processing Modes
+  supported_modes:
+    - "individual_requirement"
+    - "batch_processing"
+    - "cross_domain_coordination"
+    - "emergency_processing"
+    - "lapse_processing"               # Reinstatement specific
+    - "reinstatement_processing"       # Reinstatement specific
+    - "grace_period_processing"        # Reinstatement specific
+  
+  # Reinstatement Workflow (GR-64 compliant)
+  domain_workflow:
+    1_analysis:
+      - "requirement_validation"
+      - "reinstatement_context_analysis"
+      - "entity_extraction"
+      - "lapse_reinstatement_pattern_matching"
+      - "gr64_compliance_analysis"
+      - "complexity_assessment"
+      
+    2_processing:
+      - "reinstatement_expertise_application"
+      - "lapse_pattern_application"
+      - "reinstatement_entity_resolution"
+      - "workflow_design"
+      - "billing_integration_planning"
+      - "communication_integration_planning"
+      
+    3_validation:
+      - "reinstatement_domain_validation"
+      - "grace_period_validation"
+      - "lapse_process_validation"
+      - "cross_domain_reinstatement_consistency"
+      - "gr64_compliance_validation"
+      - "restoration_process_validation"
+      
+    4_finalization:
+      - "reinstatement_artifact_generation"
+      - "lapse_documentation_creation"
+      - "pattern_library_update"
+      - "reinstatement_metrics_recording"
+      - "gr64_compliance_documentation"
+  
+  # Quality Gates (Reinstatement specific)
+  quality_gates:
+    entity_completeness: ">85%"
+    pattern_coverage: ">80%"
+    gr_compliance: ">95%"
+    cross_domain_consistency: ">82%"
+    gr64_compliance: ">98%"  # High standard for GR-64
+    lapse_process_coverage: ">90%"
+    reinstatement_process_coverage: ">92%"
+
+# Entity Management (Reinstatement specific)
+entity_management:
+  # Reinstatement Entity Priorities
+  primary_entity_focus:
+    - "policy_lapse"
+    - "reinstatement_request"
+    - "grace_period"
+    - "lapse_notification"
+    - "restoration_process"
+  
+  # Entity Recognition
+  entity_extraction_enabled: true
+  universal_entity_reuse: true
+  domain_entity_specialization: true
+  entity_validation: "strict"
+  reinstatement_entity_validation: "enhanced"
+  
+  # Reinstatement Entity Relationships
+  critical_relationships:
+    - "policy_lapse_to_policy"
+    - "reinstatement_request_to_customer"
+    - "grace_period_to_policy_lapse"
+    - "lapse_notification_to_communication"
+    - "restoration_process_to_payment"
+    - "reinstatement_fee_to_billing"
+  
+  # Entity Standards Compliance
+  compliance_standards:
+    - "GR-52 Universal Entity Management"
+    - "GR-64 Policy Reinstatement Process"
+    - "GR-41 Database Design Standards"
+    - "GR-19 Table Relationships"
+    - "GR-02 Audit Field Standards"
+    - "Reinstatement Process Standards"
+
+# Communication & Coordination
+communication:
+  # Shared Context Participation
+  shared_context_manager: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/shared-context-manager.py"
+  memory_interface: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/agent-memory-interface.py"
+  
+  # Communication Patterns
+  sync_mode: "real_time"
+  sync_interval: "20 seconds"
+  conflict_resolution: "reinstatement_authority"  # Reinstatement has authority on lapse matters
+  
+  # Reinstatement Message Types
+  supported_messages:
+    - "requirement_assignment"
+    - "lapse_coordination_request"
+    - "reinstatement_coordination_request"
+    - "grace_period_coordination_request"
+    - "restoration_coordination_request"
+    - "cross_domain_coordination_request"
+    - "pattern_sharing"
+    - "entity_discovery"
+    - "validation_request"
+    - "status_update"
+    - "error_notification"
+    - "lapse_alert"
+
+# Performance & Monitoring
+performance:
+  # Performance Targets (Reinstatement specific)
+  targets:
+    processing_time: "< 15 minutes per requirement"
+    pattern_recognition_accuracy: "> 78%"
+    entity_extraction_accuracy: "> 85%"
+    gr_compliance_accuracy: "> 95%"
+    coordination_overhead: "< 7%"
+    gr64_compliance_accuracy: "> 98%"
+    lapse_process_accuracy: "> 90%"
+    reinstatement_process_accuracy: "> 92%"
+  
+  # Metrics Collection
+  metrics:
+    processing_time_tracking: true
+    pattern_success_tracking: true
+    entity_accuracy_tracking: true
+    error_rate_tracking: true
+    coordination_efficiency_tracking: true
+    lapse_workflow_metrics: true
+    reinstatement_workflow_metrics: true
+    grace_period_workflow_metrics: true
+  
+  # Performance Optimization
+  optimization:
+    caching_enabled: true
+    pattern_indexing: true
+    entity_caching: true
+    batch_processing_optimization: true
+    lapse_pattern_optimization: true
+    reinstatement_pattern_optimization: true
+
+# Queue Management
+queue_management:
+  # Reinstatement Queue Configuration
+  input_queue: "/app/workspace/requirements/processing-queues/reinstatement/pending/"
+  processing_queue: "/app/workspace/requirements/processing-queues/reinstatement/in-progress/"
+  completed_queue: "/app/workspace/requirements/processing-queues/reinstatement/completed/"
+  intelligence_queue: "/app/workspace/requirements/processing-queues/reinstatement/intelligence/"
+  cross_domain_queue: "/app/workspace/requirements/processing-queues/reinstatement/cross-domain-batches/"
+  
+  # Processing Configuration
+  polling_interval: "45 seconds"
+  max_queue_size: 25
+  priority_processing: true
+  load_balancing: "balanced"
+  
+  # Queue Monitoring
+  queue_monitoring: true
+  alert_thresholds:
+    queue_size_warning: 18
+    queue_size_critical: 22
+    processing_time_warning: "12 minutes"
+    processing_time_critical: "15 minutes"
+
+# Reinstatement Specific Configuration
+reinstatement_config:
+  # Business Rules (GR-64 compliant)
+  business_rules:
+    lapse_rules:
+      grace_period_duration: "configurable_by_state"
+      lapse_detection: "automated"
+      lapse_notification_timing: "grace_period_based"
+      lapse_reversal_period: "limited"
+    
+    reinstatement_rules:
+      reinstatement_eligibility: "policy_specific"
+      reinstatement_fee_calculation: "automated"
+      payment_requirements: "full_amount_plus_fees"
+      restoration_timeline: "immediate_upon_payment"
+    
+    grace_period_rules:
+      grace_period_calculation: "policy_terms_based"
+      grace_period_extensions: "limited_exceptions"
+      grace_period_communication: "mandatory"
+      grace_period_monitoring: "automated"
+  
+  # Integration Specifications
+  external_integrations:
+    billing_systems:
+      primary_billing:
+        integration_pattern: "api"
+        timeout: "20 seconds"
+        retry_policy: "2_retries_exponential"
+        real_time_updates: true
+      
+    payment_processing:
+      payment_gateway:
+        integration_pattern: "api"
+        timeout: "30 seconds"
+        retry_policy: "3_retries_exponential"
+        fraud_detection: true
+        
+    communication_services:
+      notification_service:
+        integration_pattern: "event_driven"
+        timeout: "10 seconds"
+        retry_policy: "2_retries"
+        multi_channel: true
+        
+    document_generation:
+      document_service:
+        integration_pattern: "api"
+        timeout: "60 seconds"
+        retry_policy: "2_retries"
+        template_based: true
+  
+  # Workflow Customizations (GR-64 aligned)
+  workflow_customizations:
+    lapse_workflow:
+      automated_detection: true
+      grace_period_calculation: "rule_based"
+      notification_automation: true
+      escalation_procedures: "defined"
+      
+    reinstatement_workflow:
+      eligibility_verification: "automated"
+      fee_calculation: "rule_based"
+      payment_processing: "integrated"
+      restoration_automation: "immediate"
+      
+    grace_period_workflow:
+      monitoring: "continuous"
+      communication: "scheduled"
+      extension_handling: "exception_based"
+      expiration_processing: "automated"
+
+# Error Handling & Recovery
+error_handling:
+  # Reinstatement Specific Error Handling
+  domain_error_categories:
+    - "lapse_detection_error"
+    - "grace_period_calculation_error"
+    - "reinstatement_eligibility_error"
+    - "restoration_process_error"
+    - "payment_processing_error"
+    - "notification_delivery_error"
+    - "gr64_compliance_error"
+  
+  # Error Management
+  error_tracking: true
+  error_categorization: true
+  automatic_retry: true
+  escalation_enabled: true
+  
+  # Retry Configuration
+  retry_policy:
+    max_retries: 2
+    retry_intervals: ["60s", "5m"]
+    backoff_strategy: "linear"
+    retry_conditions: 
+      - "temporary_failure"
+      - "timeout"
+      - "billing_system_error"
+      - "communication_error"
+  
+  # Escalation Rules
+  escalation:
+    escalate_to: "system-orchestrator"
+    escalation_triggers:
+      - "2_consecutive_failures"
+      - "grace_period_expiration_error"
+      - "reinstatement_processing_failure"
+      - "gr64_compliance_violation"
+    escalation_timeout: "3 minutes"
+  
+  # Recovery Procedures
+  recovery:
+    automatic_recovery: true
+    recovery_timeout: "2 minutes"
+    fallback_modes: 
+      - "manual_processing"
+      - "grace_period_extension"
+      - "supervisor_intervention"
+
+# Compliance & Audit
+compliance:
+  # Reinstatement Specific Compliance
+  domain_compliance:
+    gr64_compliance: "mandatory"
+    state_regulation_compliance: true
+    grace_period_compliance: true
+    reinstatement_fee_compliance: true
+    notification_compliance: true
+    
+  # Regulatory Compliance
+  regulatory_requirements:
+    data_retention: "7 years"
+    audit_trail: "complete"
+    privacy_protection: "gdpr_compliant"
+    security_standards: "iso27001"
+    reinstatement_documentation: "complete"
+  
+  # Audit Configuration
+  audit:
+    audit_enabled: true
+    audit_level: "full"
+    audit_retention: "7 years"
+    audit_format: "structured_json"
+    lapse_audit_tracking: true
+    reinstatement_audit_tracking: true
+    gr64_compliance_tracking: true
+  
+  # GR-64 Compliance Controls
+  gr64_controls:
+    process_documentation: "mandatory"
+    timeline_tracking: "automated"
+    communication_tracking: "complete"
+    fee_calculation_audit: "detailed"
+    restoration_verification: "required"

@@ -1,0 +1,314 @@
+{
+  "template_metadata": {
+    "template_category": "sms_templates",
+    "template_version": "1.0.0",
+    "gr_compliance": "GR-44 Communication Architecture",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "total_templates": 12,
+    "supported_domains": ["producer-portal", "accounting", "reinstatement", "sr22"],
+    "confidence_score": 0.92,
+    "usage_count": 89,
+    "success_rate": 0.97
+  },
+  "template_structure": {
+    "message_components": {
+      "sender_id": "{{company.short_name}}",
+      "message_body": "template_specific_content",
+      "opt_out_instruction": "Reply STOP to opt out",
+      "character_limit": "160_characters_standard_320_characters_extended"
+    },
+    "variable_substitution": {
+      "policy_variables": [
+        "{{policy.number}}",
+        "{{policy.effective_date}}",
+        "{{payment.amount}}",
+        "{{payment.due_date}}"
+      ],
+      "customer_variables": [
+        "{{customer.first_name}}",
+        "{{customer.last_name}}"
+      ],
+      "producer_variables": [
+        "{{producer.name}}",
+        "{{producer.phone}}"
+      ],
+      "system_variables": [
+        "{{company.short_name}}",
+        "{{company.phone}}",
+        "{{current_date}}"
+      ]
+    }
+  },
+  "sms_templates": {
+    "payment_related": {
+      "payment_reminder": {
+        "template_id": "sms_payment_reminder",
+        "message_body": "{{company.short_name}}: Payment of ${{payment.amount}} for policy {{policy.number}} is due {{payment.due_date}}. Pay now: {{payment.short_url}} Reply STOP to opt out",
+        "character_count": 158,
+        "trigger_conditions": ["payment_due_in_3_days"],
+        "delivery_timing": "3_days_before_due_date",
+        "applicable_domains": ["accounting", "producer-portal"],
+        "urgency_level": "medium"
+      },
+      "payment_overdue": {
+        "template_id": "sms_payment_overdue",
+        "message_body": "{{company.short_name}}: URGENT - Payment of ${{payment.amount}} for policy {{policy.number}} is overdue. Avoid cancellation: {{payment.short_url}} Call {{producer.phone}}",
+        "character_count": 156,
+        "trigger_conditions": ["payment_past_due"],
+        "delivery_timing": "1_day_after_due_date",
+        "applicable_domains": ["accounting", "producer-portal"],
+        "urgency_level": "high"
+      },
+      "payment_confirmation": {
+        "template_id": "sms_payment_confirmation",
+        "message_body": "{{company.short_name}}: Payment of ${{payment.amount}} received for policy {{policy.number}}. Confirmation: {{payment.confirmation_number}}. Thank you!",
+        "character_count": 142,
+        "trigger_conditions": ["payment_processed_successfully"],
+        "delivery_timing": "immediate",
+        "applicable_domains": ["accounting", "producer-portal"],
+        "urgency_level": "low"
+      },
+      "payment_failed": {
+        "template_id": "sms_payment_failed",
+        "message_body": "{{company.short_name}}: Payment failed for policy {{policy.number}}. Update payment method: {{payment.update_url}} or call {{company.phone}}",
+        "character_count": 148,
+        "trigger_conditions": ["payment_processing_failed"],
+        "delivery_timing": "immediate",
+        "applicable_domains": ["accounting", "producer-portal"],
+        "urgency_level": "high"
+      }
+    },
+    "policy_related": {
+      "policy_expiring": {
+        "template_id": "sms_policy_expiring",
+        "message_body": "{{company.short_name}}: Policy {{policy.number}} expires {{policy.expiration_date}}. Renew now to avoid coverage gap: {{renewal.short_url}}",
+        "character_count": 134,
+        "trigger_conditions": ["policy_expiring_in_30_days"],
+        "delivery_timing": "30_days_before_expiration",
+        "applicable_domains": ["producer-portal"],
+        "urgency_level": "medium"
+      },
+      "policy_cancelled": {
+        "template_id": "sms_policy_cancelled",
+        "message_body": "{{company.short_name}}: Policy {{policy.number}} cancelled for non-payment. Reinstate within {{grace_period.days}} days: {{reinstatement.short_url}}",
+        "character_count": 145,
+        "trigger_conditions": ["policy_cancellation_processed"],
+        "delivery_timing": "immediate",
+        "applicable_domains": ["reinstatement", "accounting"],
+        "urgency_level": "critical"
+      },
+      "policy_bound": {
+        "template_id": "sms_policy_bound",
+        "message_body": "{{company.short_name}}: Welcome! Policy {{policy.number}} is active. Effective {{policy.effective_date}}. Documents emailed to {{customer.email}}.",
+        "character_count": 139,
+        "trigger_conditions": ["policy_binding_completed"],
+        "delivery_timing": "immediate",
+        "applicable_domains": ["producer-portal"],
+        "urgency_level": "low"
+      }
+    },
+    "quote_related": {
+      "quote_ready": {
+        "template_id": "sms_quote_ready",
+        "message_body": "{{company.short_name}}: Your quote {{quote.number}} is ready! Premium: ${{quote.total_premium}}. Review: {{quote.short_url}} or call {{producer.phone}}",
+        "character_count": 147,
+        "trigger_conditions": ["quote_generation_completed"],
+        "delivery_timing": "immediate",
+        "applicable_domains": ["producer-portal"],
+        "urgency_level": "medium"
+      },
+      "quote_expiring": {
+        "template_id": "sms_quote_expiring",
+        "message_body": "{{company.short_name}}: Quote {{quote.number}} expires {{quote.expiration_date}}. Secure your rate: {{quote.bind_short_url}}",
+        "character_count": 121,
+        "trigger_conditions": ["quote_expiring_in_7_days"],
+        "delivery_timing": "7_days_before_expiration",
+        "applicable_domains": ["producer-portal"],
+        "urgency_level": "medium"
+      }
+    },
+    "reinstatement_related": {
+      "reinstatement_opportunity": {
+        "template_id": "sms_reinstatement_opportunity",
+        "message_body": "{{company.short_name}}: Reinstate policy {{policy.number}} by {{reinstatement.deadline}}. Amount due: ${{reinstatement.total_amount}}. Pay: {{reinstatement.short_url}}",
+        "character_count": 155,
+        "trigger_conditions": ["policy_lapse_reinstatement_available"],
+        "delivery_timing": "immediate_after_lapse",
+        "applicable_domains": ["reinstatement", "accounting"],
+        "urgency_level": "high"
+      },
+      "reinstatement_deadline": {
+        "template_id": "sms_reinstatement_deadline",
+        "message_body": "{{company.short_name}}: FINAL NOTICE - Reinstate policy {{policy.number}} by {{reinstatement.deadline}} or lose coverage permanently. Pay: {{reinstatement.short_url}}",
+        "character_count": 159,
+        "trigger_conditions": ["reinstatement_deadline_approaching"],
+        "delivery_timing": "3_days_before_deadline",
+        "applicable_domains": ["reinstatement"],
+        "urgency_level": "critical"
+      }
+    },
+    "verification_related": {
+      "phone_verification": {
+        "template_id": "sms_phone_verification",
+        "message_body": "{{company.short_name}}: Your verification code is {{verification.code}}. Enter this code to verify your phone number. Code expires in 10 minutes.",
+        "character_count": 138,
+        "trigger_conditions": ["phone_verification_requested"],
+        "delivery_timing": "immediate",
+        "applicable_domains": ["producer-portal", "entity-integration"],
+        "urgency_level": "medium"
+      }
+    }
+  },
+  "template_configuration": {
+    "delivery_settings": {
+      "sender_identification": "{{company.short_name}}_or_short_code",
+      "delivery_optimization": "carrier_specific_routing",
+      "retry_logic": "3_attempts_with_exponential_backoff",
+      "delivery_receipt": "track_delivery_status"
+    },
+    "compliance_requirements": {
+      "opt_out_handling": {
+        "stop_commands": ["STOP", "QUIT", "UNSUBSCRIBE"],
+        "opt_out_response": "You have been unsubscribed. Reply START to re-subscribe.",
+        "opt_out_persistence": "permanent_until_explicit_opt_in"
+      },
+      "tcpa_compliance": {
+        "consent_tracking": "prior_express_written_consent_required",
+        "time_restrictions": "8am_9pm_recipient_timezone",
+        "frequency_limits": "max_1_promotional_per_day"
+      },
+      "content_restrictions": {
+        "no_autodialer_language": "avoid_spam_trigger_words",
+        "clear_identification": "sender_must_be_identifiable",
+        "contact_information": "include_contact_method"
+      }
+    },
+    "character_optimization": {
+      "url_shortening": "automatic_link_shortening",
+      "content_compression": "abbreviation_dictionary",
+      "multi_part_handling": "split_long_messages_intelligently"
+    }
+  },
+  "delivery_optimization": {
+    "timing_intelligence": {
+      "recipient_timezone": "deliver_in_local_timezone",
+      "optimal_send_times": "9am_6pm_weekdays_10am_4pm_weekends",
+      "avoid_send_times": "late_night_early_morning_restrictions"
+    },
+    "carrier_optimization": {
+      "carrier_specific_routing": "optimize_by_carrier_network",
+      "throughput_management": "respect_carrier_rate_limits",
+      "delivery_prioritization": "urgent_messages_first"
+    },
+    "content_adaptation": {
+      "dynamic_shortening": "adapt_to_character_limits",
+      "emoji_support": "unicode_emoji_support",
+      "encoding_optimization": "utf8_gsm7_optimization"
+    }
+  },
+  "tracking_and_analytics": {
+    "delivery_tracking": {
+      "delivery_states": ["sent", "delivered", "failed", "unknown"],
+      "delivery_receipts": "carrier_provided_status_updates",
+      "bounce_handling": "invalid_number_detection"
+    },
+    "engagement_tracking": {
+      "link_clicks": "shortened_url_click_tracking",
+      "response_tracking": "reply_message_processing",
+      "opt_out_tracking": "unsubscribe_rate_monitoring"
+    },
+    "performance_metrics": {
+      "delivery_rate": "> 98% target_delivery_rate",
+      "response_rate": "track_customer_engagement",
+      "conversion_rate": "measure_action_completion"
+    }
+  },
+  "integration_specifications": {
+    "sms_service_integration": {
+      "service_provider": "Twilio_SMS_API",
+      "api_endpoints": "message_sending_and_status_tracking",
+      "webhook_handling": "delivery_status_callbacks"
+    },
+    "url_shortening_service": {
+      "service_provider": "custom_domain_shortener",
+      "click_tracking": "detailed_analytics_per_link",
+      "security": "malicious_link_protection"
+    },
+    "opt_out_management": {
+      "database_integration": "real_time_preference_updates",
+      "cross_channel_sync": "sync_with_email_preferences",
+      "compliance_logging": "audit_trail_for_opt_outs"
+    }
+  },
+  "template_personalization": {
+    "dynamic_content": {
+      "payment_amounts": "formatted_currency_display",
+      "dates": "human_readable_date_formats",
+      "policy_numbers": "formatted_for_readability"
+    },
+    "conditional_content": {
+      "urgency_modifiers": "based_on_days_overdue",
+      "channel_preferences": "adjust_based_on_customer_preference",
+      "payment_methods": "customize_based_on_available_options"
+    },
+    "localization_support": {
+      "timezone_awareness": "display_dates_in_customer_timezone",
+      "language_support": "english_spanish_template_variants",
+      "cultural_adaptation": "culturally_appropriate_messaging"
+    }
+  },
+  "security_and_privacy": {
+    "data_protection": {
+      "sensitive_information": "no_ssn_or_full_account_numbers",
+      "policy_number_display": "partial_masking_when_appropriate",
+      "link_security": "encrypted_parameter_passing"
+    },
+    "message_encryption": {
+      "transmission_security": "tls_encrypted_delivery",
+      "content_protection": "no_sensitive_data_in_message_body",
+      "secure_tokens": "short_lived_verification_codes"
+    }
+  },
+  "testing_framework": {
+    "template_testing": {
+      "character_count_validation": "automated_length_checking",
+      "variable_substitution_testing": "test_all_variable_combinations",
+      "link_validation": "verify_shortened_urls_work"
+    },
+    "delivery_testing": {
+      "carrier_testing": "test_across_major_carriers",
+      "device_testing": "various_phone_models_and_platforms",
+      "network_testing": "different_network_conditions"
+    },
+    "compliance_testing": {
+      "opt_out_workflow": "test_stop_commands_work",
+      "timing_restrictions": "verify_time_zone_compliance",
+      "consent_validation": "ensure_proper_consent_tracking"
+    }
+  },
+  "performance_requirements": {
+    "message_processing": {
+      "queue_processing": "< 10 seconds average",
+      "template_rendering": "< 50ms per message",
+      "delivery_initiation": "< 30 seconds from trigger"
+    },
+    "scalability": {
+      "throughput": "10000_messages_per_minute",
+      "concurrent_processing": "parallel_message_handling",
+      "queue_management": "intelligent_priority_queuing"
+    }
+  },
+  "maintenance_procedures": {
+    "template_management": {
+      "version_control": "template_change_tracking",
+      "approval_workflow": "compliance_review_required",
+      "rollback_capability": "instant_template_reversion"
+    },
+    "performance_monitoring": {
+      "delivery_monitoring": "real_time_delivery_dashboards",
+      "carrier_performance": "track_carrier_specific_metrics",
+      "compliance_auditing": "monthly_tcpa_compliance_reviews"
+    }
+  }
+}

@@ -92,7 +92,7 @@ The purpose of this step is to expedite including, excluding, or removing driver
 - **violation_type**: Violation type classification
 - **driver_violations**: Individual violation tracking per driver
 - **map_entity_violation**: Maps DCS-specific violations to system violations
-- **sr22_reason**: SR-22 requirement reasons
+- **sr22_reason**: SR-22 requirement reasons (per GR-10 SR22/SR26 filing requirements)
 - **removal_reason**: Predefined driver removal reasons
 
 ### Modifications to Existing Tables

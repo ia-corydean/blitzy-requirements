@@ -1,0 +1,426 @@
+{
+  "relationship_metadata": {
+    "version": "1.0.0",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "description": "Cross-Domain Entity Relationships for Complete Requirements Generation System",
+    "total_relationships": 18,
+    "active_relationships": 18,
+    "domains_connected": 7
+  },
+  "primary_cross_domain_workflows": {
+    "quote_to_billing_workflow": {
+      "workflow_id": "quote_to_billing",
+      "name": "Quote to Billing Workflow",
+      "source_domain": "producer-portal",
+      "target_domain": "accounting",
+      "trigger_event": "quote_binding_completed",
+      "priority": "critical",
+      "frequency": "high",
+      "entities_involved": {
+        "source_entities": ["quote", "driver", "vehicle", "coverage"],
+        "target_entities": ["billing_cycle", "payment", "commission"],
+        "shared_entities": ["policy", "producer", "address", "phone", "email"]
+      },
+      "relationship_details": {
+        "quote_to_policy": {
+          "type": "one_to_one",
+          "cascade": "required",
+          "timing": "immediate"
+        },
+        "policy_to_billing_cycle": {
+          "type": "one_to_one", 
+          "cascade": "required",
+          "timing": "immediate"
+        },
+        "producer_to_commission": {
+          "type": "one_to_many",
+          "cascade": "optional",
+          "timing": "batch"
+        }
+      },
+      "validation_requirements": {
+        "data_consistency": ["policy_amount", "billing_amount"],
+        "timing_constraints": ["billing_cycle_creation_within_24h"],
+        "business_rules": ["commission_calculation_accuracy"]
+      },
+      "confidence_score": 0.96,
+      "success_rate": 0.94
+    },
+    "driver_to_sr22_workflow": {
+      "workflow_id": "driver_to_sr22",
+      "name": "Driver to SR22 Filing Workflow",
+      "source_domain": "producer-portal",
+      "target_domain": "sr22",
+      "trigger_event": "violation_recorded",
+      "priority": "high",
+      "frequency": "medium",
+      "entities_involved": {
+        "source_entities": ["driver", "violation", "license"],
+        "target_entities": ["sr22_filing", "filing_status"],
+        "shared_entities": ["policy", "address", "phone"]
+      },
+      "relationship_details": {
+        "driver_to_sr22_filing": {
+          "type": "one_to_many",
+          "cascade": "required",
+          "timing": "as_needed"
+        },
+        "violation_to_sr22_filing": {
+          "type": "many_to_one",
+          "cascade": "optional",
+          "timing": "immediate"
+        }
+      },
+      "validation_requirements": {
+        "compliance_rules": ["state_requirements", "filing_deadlines"],
+        "data_requirements": ["driver_verification", "violation_details"]
+      },
+      "confidence_score": 0.91,
+      "success_rate": 0.88
+    },
+    "vehicle_to_rate_calculation": {
+      "workflow_id": "vehicle_to_rate",
+      "name": "Vehicle to Rate Calculation Workflow", 
+      "source_domain": "producer-portal",
+      "target_domain": "program-manager",
+      "trigger_event": "vehicle_added_to_quote",
+      "priority": "high",
+      "frequency": "very_high",
+      "entities_involved": {
+        "source_entities": ["vehicle", "driver", "quote"],
+        "target_entities": ["rate_factor", "calculation_result"],
+        "shared_entities": ["territory", "coverage"]
+      },
+      "relationship_details": {
+        "vehicle_to_rate_factor": {
+          "type": "many_to_many",
+          "cascade": "required",
+          "timing": "immediate"
+        },
+        "driver_to_rate_factor": {
+          "type": "many_to_many", 
+          "cascade": "required",
+          "timing": "immediate"
+        }
+      },
+      "validation_requirements": {
+        "calculation_accuracy": ["rate_factor_application"],
+        "performance": ["calculation_time_under_2s"]
+      },
+      "confidence_score": 0.93,
+      "success_rate": 0.96
+    },
+    "policy_reinstatement_workflow": {
+      "workflow_id": "policy_reinstatement",
+      "name": "Policy Reinstatement Workflow",
+      "source_domain": "reinstatement",
+      "target_domain": "accounting",
+      "trigger_event": "reinstatement_requested",
+      "priority": "high",
+      "frequency": "low",
+      "entities_involved": {
+        "source_entities": ["lapse_record", "reinstatement_request"],
+        "target_entities": ["payment", "billing_cycle"],
+        "shared_entities": ["policy", "producer"]
+      },
+      "relationship_details": {
+        "lapse_to_payment": {
+          "type": "one_to_many",
+          "cascade": "required",
+          "timing": "immediate"
+        },
+        "reinstatement_to_billing": {
+          "type": "one_to_one",
+          "cascade": "required",
+          "timing": "immediate"
+        }
+      },
+      "validation_requirements": {
+        "compliance": ["GR-64_reinstatement_process"],
+        "payment_validation": ["outstanding_balance_calculation"]
+      },
+      "confidence_score": 0.89,
+      "success_rate": 0.91
+    }
+  },
+  "entity_relationship_matrix": {
+    "producer_portal_to_accounting": {
+      "quote": {
+        "billing_cycle": {
+          "relationship_type": "one_to_one",
+          "relationship_strength": "strong",
+          "frequency": "high",
+          "confidence": 0.95
+        },
+        "payment": {
+          "relationship_type": "one_to_many",
+          "relationship_strength": "strong", 
+          "frequency": "high",
+          "confidence": 0.94
+        }
+      },
+      "producer": {
+        "commission": {
+          "relationship_type": "one_to_many",
+          "relationship_strength": "strong",
+          "frequency": "medium",
+          "confidence": 0.92
+        }
+      }
+    },
+    "producer_portal_to_program_manager": {
+      "vehicle": {
+        "rate_factor": {
+          "relationship_type": "many_to_many",
+          "relationship_strength": "strong",
+          "frequency": "very_high",
+          "confidence": 0.96
+        }
+      },
+      "driver": {
+        "rate_factor": {
+          "relationship_type": "many_to_many",
+          "relationship_strength": "strong",
+          "frequency": "very_high",
+          "confidence": 0.94
+        }
+      },
+      "quote": {
+        "underwriting_rule": {
+          "relationship_type": "many_to_many",
+          "relationship_strength": "medium",
+          "frequency": "high",
+          "confidence": 0.87
+        }
+      }
+    },
+    "producer_portal_to_entity_integration": {
+      "driver": {
+        "dcs_api": {
+          "relationship_type": "many_to_one",
+          "relationship_strength": "medium",
+          "frequency": "high",
+          "confidence": 0.88
+        }
+      },
+      "vehicle": {
+        "dcs_api": {
+          "relationship_type": "many_to_one",
+          "relationship_strength": "medium",
+          "frequency": "high", 
+          "confidence": 0.86
+        }
+      }
+    },
+    "producer_portal_to_sr22": {
+      "driver": {
+        "sr22_filing": {
+          "relationship_type": "one_to_many",
+          "relationship_strength": "medium",
+          "frequency": "low",
+          "confidence": 0.91
+        }
+      }
+    },
+    "accounting_to_reinstatement": {
+      "payment": {
+        "lapse_record": {
+          "relationship_type": "many_to_one",
+          "relationship_strength": "strong",
+          "frequency": "low",
+          "confidence": 0.89
+        }
+      }
+    }
+  },
+  "shared_entity_definitions": {
+    "policy": {
+      "primary_domain": "producer-portal",
+      "shared_by": ["accounting", "reinstatement", "sr22"],
+      "synchronization_requirements": {
+        "real_time": ["status_changes", "coverage_changes"],
+        "batch": ["premium_updates", "address_changes"]
+      },
+      "consistency_rules": {
+        "single_source_of_truth": "producer-portal",
+        "propagation_delay": "< 30 seconds",
+        "conflict_resolution": "source_domain_wins"
+      }
+    },
+    "producer": {
+      "primary_domain": "producer-portal",
+      "shared_by": ["accounting"],
+      "synchronization_requirements": {
+        "real_time": ["commission_rate_changes"],
+        "batch": ["contact_information_updates"]
+      },
+      "consistency_rules": {
+        "single_source_of_truth": "producer-portal",
+        "propagation_delay": "< 60 seconds",
+        "conflict_resolution": "manual_review"
+      }
+    },
+    "address": {
+      "primary_domain": "universal",
+      "shared_by": ["producer-portal", "accounting", "entity-integration", "sr22"],
+      "synchronization_requirements": {
+        "real_time": [],
+        "batch": ["address_updates"]
+      },
+      "consistency_rules": {
+        "single_source_of_truth": "universal_entity_management",
+        "propagation_delay": "< 5 minutes",
+        "conflict_resolution": "latest_update_wins"
+      }
+    },
+    "phone": {
+      "primary_domain": "universal",
+      "shared_by": ["producer-portal", "accounting", "entity-integration"],
+      "synchronization_requirements": {
+        "real_time": ["communication_preferences"],
+        "batch": ["phone_number_updates"]
+      },
+      "consistency_rules": {
+        "single_source_of_truth": "universal_entity_management",
+        "propagation_delay": "< 5 minutes",
+        "conflict_resolution": "latest_update_wins"
+      }
+    },
+    "email": {
+      "primary_domain": "universal",
+      "shared_by": ["producer-portal", "accounting", "entity-integration"],
+      "synchronization_requirements": {
+        "real_time": ["communication_preferences"],
+        "batch": ["email_address_updates"]
+      },
+      "consistency_rules": {
+        "single_source_of_truth": "universal_entity_management", 
+        "propagation_delay": "< 5 minutes",
+        "conflict_resolution": "latest_update_wins"
+      }
+    }
+  },
+  "integration_patterns": {
+    "synchronous_integration": {
+      "use_cases": ["rate_calculation", "dcs_verification", "sr22_filing"],
+      "requirements": {
+        "response_time": "< 2 seconds",
+        "availability": "99.9%",
+        "error_handling": "immediate_retry_with_fallback"
+      },
+      "applicable_relationships": [
+        "vehicle_to_rate_calculation",
+        "driver_to_dcs_verification",
+        "violation_to_sr22_filing"
+      ]
+    },
+    "asynchronous_integration": {
+      "use_cases": ["billing_cycle_creation", "commission_calculation", "reinstatement_processing"],
+      "requirements": {
+        "processing_time": "< 5 minutes",
+        "reliability": "99.99%",
+        "error_handling": "queue_retry_with_dlq"
+      },
+      "applicable_relationships": [
+        "quote_to_billing_workflow",
+        "policy_reinstatement_workflow"
+      ]
+    },
+    "event_driven_integration": {
+      "use_cases": ["status_changes", "workflow_triggers", "notification_delivery"],
+      "requirements": {
+        "event_delivery": "at_least_once",
+        "ordering": "per_entity_ordering",
+        "error_handling": "dead_letter_queue"
+      },
+      "applicable_relationships": [
+        "all_cross_domain_workflows"
+      ]
+    }
+  },
+  "data_consistency_requirements": {
+    "eventual_consistency": {
+      "applicable_entities": ["address", "phone", "email"],
+      "max_propagation_delay": "5 minutes",
+      "conflict_resolution": "last_writer_wins"
+    },
+    "strong_consistency": {
+      "applicable_entities": ["policy", "payment", "billing_cycle"],
+      "synchronization": "immediate",
+      "conflict_resolution": "source_domain_authority"
+    },
+    "causal_consistency": {
+      "applicable_entities": ["quote", "rate_calculation", "underwriting_result"],
+      "dependency_tracking": "required",
+      "conflict_resolution": "dependency_order"
+    }
+  },
+  "performance_requirements": {
+    "cross_domain_query_performance": {
+      "target_response_time": "< 500ms",
+      "max_response_time": "< 2s",
+      "throughput": "1000 requests/minute",
+      "cache_hit_ratio": "> 80%"
+    },
+    "batch_processing_performance": {
+      "target_batch_size": "100 entities",
+      "max_processing_time": "< 30 minutes",
+      "error_tolerance": "< 1%",
+      "retry_strategy": "exponential_backoff"
+    }
+  },
+  "monitoring_and_alerting": {
+    "relationship_health_metrics": {
+      "success_rate": "> 95%",
+      "average_processing_time": "< 1s", 
+      "error_rate": "< 2%",
+      "data_consistency_violations": "< 0.1%"
+    },
+    "alert_conditions": {
+      "critical": ["relationship_failure_rate > 10%", "data_inconsistency_detected"],
+      "warning": ["processing_time > 5s", "error_rate > 5%"],
+      "info": ["new_relationship_pattern_detected", "usage_spike_detected"]
+    }
+  },
+  "relationship_evolution": {
+    "emerging_patterns": [
+      {
+        "pattern": "program_traits_to_accounting",
+        "description": "Program-specific billing rules affecting commission calculation",
+        "confidence": 0.67,
+        "observations": 3
+      },
+      {
+        "pattern": "entity_integration_to_sr22",
+        "description": "External verification affecting SR22 filing requirements",
+        "confidence": 0.72,
+        "observations": 8
+      }
+    ],
+    "deprecated_patterns": [
+      {
+        "pattern": "direct_quote_to_commission",
+        "description": "Direct commission calculation from quote (now via billing)",
+        "deprecated_date": "2024-12-01",
+        "replacement": "quote_to_billing_to_commission"
+      }
+    ]
+  },
+  "usage_statistics": {
+    "most_frequent_relationships": [
+      {"relationship": "vehicle_to_rate_calculation", "frequency": 1567},
+      {"relationship": "quote_to_billing_workflow", "frequency": 892},
+      {"relationship": "driver_to_dcs_verification", "frequency": 743},
+      {"relationship": "producer_to_commission", "frequency": 234},
+      {"relationship": "driver_to_sr22_filing", "frequency": 89}
+    ],
+    "highest_success_rates": [
+      {"relationship": "vehicle_to_rate_calculation", "success_rate": 0.98},
+      {"relationship": "quote_to_billing_workflow", "success_rate": 0.96},
+      {"relationship": "address_synchronization", "success_rate": 0.99},
+      {"relationship": "phone_synchronization", "success_rate": 0.97},
+      {"relationship": "email_synchronization", "success_rate": 0.96}
+    ]
+  }
+}

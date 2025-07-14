@@ -1,0 +1,523 @@
+# Entity Integration Domain Specialist Configuration
+# Complete Requirements Generation System - Multi-Agent Architecture
+# Specialized agent for Entity Integration domain requirements processing
+
+metadata:
+  agent_name: "Entity Integration Specialist"
+  agent_type: "domain_specialist"
+  version: "1.0.0"
+  created_date: "2025-01-07"
+  last_updated: "2025-01-07"
+  gr_compliance: ["GR-38", "GR-44", "GR-52", "GR-49", "GR-19", "GR-41", "GR-53"]
+  description: "Domain specialist for DCS integration, external APIs, data verification, and entity management"
+
+# Core Agent Configuration
+agent_config:
+  # Agent Identity
+  agent_id: "entity-integration-specialist"
+  display_name: "Entity Integration Specialist"
+  domain: "entity_integration"
+  agent_type: "domain_specialist"
+  
+  # Core Capabilities
+  capabilities:
+    domain_expertise: true
+    pattern_recognition: true
+    requirement_processing: true
+    cross_domain_coordination: true
+    global_requirements_validation: true
+    entity_management: true
+    
+  # Entity Integration Specific Capabilities
+  domain_capabilities:
+    specializations: 
+      - "dcs_integration"
+      - "external_apis"
+      - "data_verification"
+      - "entity_management"
+      - "third_party_services"
+      - "api_orchestration"
+      - "data_synchronization"
+      - "service_integration"
+      - "external_validation"
+      - "integration_monitoring"
+    
+    primary_entities:
+      - "external_service"
+      - "api_endpoint"
+      - "integration_point"
+      - "verification_service"
+      - "data_source"
+      - "service_mapping"
+      - "integration_log"
+      - "external_entity"
+    
+    secondary_entities:
+      - "driver"
+      - "vehicle"
+      - "quote"
+      - "policy"
+      - "address"
+      - "phone"
+      - "email"
+      - "communication"
+    
+    workflow_expertise:
+      - "dcs_verification"
+      - "external_api_integration"
+      - "data_validation"
+      - "service_orchestration"
+      - "entity_synchronization"
+      - "integration_testing"
+      - "api_monitoring"
+      - "error_handling"
+      - "data_mapping"
+      - "service_discovery"
+    
+    integration_points:
+      - "dcs_systems"
+      - "verification_services"
+      - "external_apis"
+      - "third_party_platforms"
+      - "data_providers"
+      - "monitoring_systems"
+    
+  # Processing Configuration
+  processing:
+    max_concurrent_requirements: 6
+    processing_timeout: "30 minutes"  # Longer for integration complexity
+    pattern_confidence_threshold: 0.75
+    auto_validation_threshold: 0.85
+    coordination_timeout: "8 minutes"
+
+# Knowledge Base Integration
+knowledge_base:
+  # Entity Integration Specific Knowledge
+  domain_patterns: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/entity-integration/"
+  domain_entities: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/entity-integration/entities.json"
+  domain_workflows: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/entity-integration/workflows.json"
+  domain_integrations: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/entity-integration/integrations.json"
+  
+  # Shared Knowledge Access
+  universal_entities: "/app/workspace/requirements/shared-infrastructure/knowledge-base/universal-entity-catalog.json"
+  global_requirements: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-requirements-index.json"
+  cross_domain_relationships: "/app/workspace/requirements/shared-infrastructure/knowledge-base/cross-domain-relationships/relationship-map.json"
+  communication_templates: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/communication-templates/"
+  service_integrations: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/service-integrations/"
+  
+  # DCS Integration Specific (GR-53)
+  dcs_integration_patterns: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/service-integrations/dcs-integration.json"
+  external_api_patterns: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/service-integrations/api-integration-patterns.json"
+  
+  # Caching Configuration
+  cache_enabled: true
+  cache_ttl: "1 hour"  # Shorter cache for dynamic integration data
+  cache_size_limit: "150MB"
+
+# System Orchestrator Integration
+orchestrator_integration:
+  orchestrator_agent_id: "system-orchestrator"
+  coordination_mode: "collaborative"
+  shared_context_participation: true
+  cross_domain_coordination: true
+  priority_level: "medium"
+  
+  # Communication Patterns
+  reporting_frequency: "real_time"
+  status_updates: true
+  performance_metrics_sharing: true
+  error_escalation: "automatic"
+  integration_coordination: true
+
+# Universal Validator Integration
+validator_integration:
+  validator_agent_id: "universal-validator"
+  validation_stages:
+    - "pre_processing"
+    - "integration_validation"
+    - "external_service_validation"
+    - "post_processing"
+    - "cross_domain_consistency"
+  
+  # Validation Configuration
+  fail_fast_enabled: true
+  progressive_validation: true
+  confidence_threshold: 0.85
+  auto_fix_enabled: false  # Manual review for integration changes
+
+# Pattern Recognition Configuration
+pattern_recognition:
+  # Pattern Matching (Entity Integration optimized)
+  similarity_threshold: 0.75
+  max_patterns_per_requirement: 8
+  domain_pattern_weight: 0.8  # Strong preference for Entity Integration patterns
+  universal_pattern_weight: 0.2
+  
+  # Entity Integration Specific Pattern Weights
+  dcs_integration_patterns_weight: 0.95  # Highest weight for DCS patterns (GR-53)
+  external_api_patterns_weight: 0.90  # High weight for API patterns
+  verification_patterns_weight: 0.85  # High weight for verification patterns
+  data_sync_patterns_weight: 0.80
+  
+  # Pattern Learning
+  pattern_learning_enabled: true
+  success_pattern_tracking: true
+  failure_pattern_avoidance: true
+  confidence_improvement_tracking: true
+  
+  # Pattern Application
+  auto_apply_high_confidence: true  # >90% confidence
+  suggest_medium_confidence: true   # 75-90% confidence
+  manual_review_low_confidence: true  # <75% confidence
+
+# Workflow Processing
+workflow_processing:
+  # Processing Modes
+  supported_modes:
+    - "individual_requirement"
+    - "batch_processing"
+    - "cross_domain_coordination"
+    - "emergency_processing"
+    - "dcs_integration_processing"     # Entity Integration specific
+    - "external_api_processing"       # Entity Integration specific
+    - "verification_workflow_processing" # Entity Integration specific
+  
+  # Entity Integration Workflow
+  domain_workflow:
+    1_analysis:
+      - "requirement_validation"
+      - "integration_context_analysis"
+      - "entity_extraction"
+      - "integration_pattern_matching"
+      - "external_service_analysis"
+      - "complexity_assessment"
+      
+    2_processing:
+      - "entity_integration_expertise_application"
+      - "integration_pattern_application"
+      - "external_service_entity_resolution"
+      - "workflow_design"
+      - "api_integration_planning"
+      - "dcs_integration_planning"
+      
+    3_validation:
+      - "entity_integration_domain_validation"
+      - "external_service_validation"
+      - "integration_consistency_validation"
+      - "cross_domain_integration_consistency"
+      - "global_requirements_compliance"
+      - "security_integration_validation"
+      
+    4_finalization:
+      - "entity_integration_artifact_generation"
+      - "integration_documentation_creation"
+      - "pattern_library_update"
+      - "entity_integration_metrics_recording"
+      - "external_service_monitoring_setup"
+  
+  # Quality Gates (Entity Integration specific)
+  quality_gates:
+    entity_completeness: ">90%"
+    pattern_coverage: ">85%"
+    gr_compliance: ">95%"
+    cross_domain_consistency: ">88%"
+    integration_coverage: ">92%"
+    external_service_validation: ">90%"
+    dcs_integration_compliance: ">95%"  # High standard for DCS (GR-53)
+
+# Entity Management (Entity Integration specific)
+entity_management:
+  # Entity Integration Entity Priorities
+  primary_entity_focus:
+    - "external_service"
+    - "api_endpoint"
+    - "integration_point"
+    - "verification_service"
+    - "data_source"
+  
+  # Entity Recognition
+  entity_extraction_enabled: true
+  universal_entity_reuse: true
+  domain_entity_specialization: true
+  entity_validation: "strict"
+  external_entity_validation: "enhanced"
+  
+  # Entity Integration Entity Relationships
+  critical_relationships:
+    - "external_service_to_api_endpoint"
+    - "integration_point_to_verification_service"
+    - "data_source_to_external_entity"
+    - "service_mapping_to_entity"
+    - "integration_log_to_external_service"
+    - "verification_service_to_driver"  # DCS specific
+  
+  # Entity Standards Compliance
+  compliance_standards:
+    - "GR-52 Universal Entity Management"
+    - "GR-53 DCS Integration Architecture"
+    - "GR-41 Database Design Standards"
+    - "GR-19 Table Relationships"
+    - "GR-02 Audit Field Standards"
+    - "External Integration Standards"
+
+# Communication & Coordination
+communication:
+  # Shared Context Participation
+  shared_context_manager: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/shared-context-manager.py"
+  memory_interface: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/agent-memory-interface.py"
+  
+  # Communication Patterns
+  sync_mode: "real_time"
+  sync_interval: "10 seconds"
+  conflict_resolution: "integration_authority"  # Entity Integration has authority on integration matters
+  
+  # Entity Integration Message Types
+  supported_messages:
+    - "requirement_assignment"
+    - "dcs_integration_coordination"
+    - "external_api_coordination"
+    - "verification_coordination_request"
+    - "data_sync_coordination_request"
+    - "cross_domain_coordination_request"
+    - "pattern_sharing"
+    - "entity_discovery"
+    - "validation_request"
+    - "status_update"
+    - "error_notification"
+    - "integration_alert"
+
+# Performance & Monitoring
+performance:
+  # Performance Targets (Entity Integration specific)
+  targets:
+    processing_time: "< 25 minutes per requirement"
+    pattern_recognition_accuracy: "> 82%"
+    entity_extraction_accuracy: "> 90%"
+    gr_compliance_accuracy: "> 95%"
+    coordination_overhead: "< 8%"
+    integration_accuracy: "> 92%"
+    external_service_uptime: "> 99%"
+    dcs_integration_performance: "> 95%"
+  
+  # Metrics Collection
+  metrics:
+    processing_time_tracking: true
+    pattern_success_tracking: true
+    entity_accuracy_tracking: true
+    error_rate_tracking: true
+    coordination_efficiency_tracking: true
+    integration_workflow_metrics: true
+    external_service_metrics: true
+    dcs_integration_metrics: true
+  
+  # Performance Optimization
+  optimization:
+    caching_enabled: true
+    pattern_indexing: true
+    entity_caching: true
+    batch_processing_optimization: true
+    integration_pattern_optimization: true
+    external_service_caching: true
+
+# Queue Management
+queue_management:
+  # Entity Integration Queue Configuration
+  input_queue: "/app/workspace/requirements/processing-queues/entity-integration/pending/"
+  processing_queue: "/app/workspace/requirements/processing-queues/entity-integration/in-progress/"
+  completed_queue: "/app/workspace/requirements/processing-queues/entity-integration/completed/"
+  intelligence_queue: "/app/workspace/requirements/processing-queues/entity-integration/intelligence/"
+  cross_domain_queue: "/app/workspace/requirements/processing-queues/entity-integration/cross-domain-batches/"
+  
+  # Processing Configuration
+  polling_interval: "20 seconds"
+  max_queue_size: 45
+  priority_processing: true
+  load_balancing: "balanced"
+  
+  # Queue Monitoring
+  queue_monitoring: true
+  alert_thresholds:
+    queue_size_warning: 32
+    queue_size_critical: 40
+    processing_time_warning: "18 minutes"
+    processing_time_critical: "25 minutes"
+
+# Entity Integration Specific Configuration
+entity_integration_config:
+  # Business Rules
+  business_rules:
+    dcs_integration_rules:
+      driver_verification_required: true
+      real_time_verification: true
+      verification_caching: "24_hours"
+      error_handling: "graceful_degradation"
+    
+    external_api_rules:
+      timeout_configuration: "service_specific"
+      retry_policy: "exponential_backoff"
+      rate_limiting: "respected"
+      authentication: "oauth_preferred"
+    
+    data_verification_rules:
+      data_quality_validation: "strict"
+      data_freshness_validation: true
+      data_completeness_validation: true
+      data_consistency_validation: "cross_reference"
+  
+  # Integration Specifications
+  external_integrations:
+    dcs_systems:
+      primary_dcs:
+        service_name: "DCS Driver Verification Service"
+        integration_pattern: "rest_api"
+        timeout: "30 seconds"
+        retry_policy: "3_retries_exponential"
+        caching: "24_hours"
+        compliance: "GR-53"
+      
+      backup_dcs:
+        service_name: "Backup DCS Service"
+        integration_pattern: "rest_api"
+        timeout: "45 seconds"
+        retry_policy: "2_retries_linear"
+        caching: "12_hours"
+        
+    verification_services:
+      address_verification:
+        service_name: "Address Validation Service"
+        integration_pattern: "api"
+        timeout: "15 seconds"
+        retry_policy: "2_retries"
+        caching: "7_days"
+        
+      phone_verification:
+        service_name: "Phone Validation Service"
+        integration_pattern: "api"
+        timeout: "10 seconds"
+        retry_policy: "1_retry"
+        caching: "30_days"
+        
+    external_apis:
+      credit_scoring:
+        service_name: "Credit Scoring API"
+        integration_pattern: "rest_api"
+        timeout: "20 seconds"
+        retry_policy: "2_retries"
+        security: "api_key"
+        
+      geographic_services:
+        service_name: "Geographic Data API"
+        integration_pattern: "rest_api"
+        timeout: "15 seconds"
+        retry_policy: "3_retries"
+        caching: "30_days"
+  
+  # Workflow Customizations
+  workflow_customizations:
+    dcs_integration_workflow:
+      real_time_verification: true
+      batch_verification_support: true
+      error_handling: "comprehensive"
+      monitoring: "real_time"
+      
+    external_api_workflow:
+      api_discovery: "automatic"
+      load_balancing: "round_robin"
+      circuit_breaker: "enabled"
+      rate_limiting: "dynamic"
+      
+    verification_workflow:
+      multi_source_verification: true
+      verification_scoring: "confidence_based"
+      verification_audit: "complete"
+      verification_reporting: "real_time"
+
+# Error Handling & Recovery
+error_handling:
+  # Entity Integration Specific Error Handling
+  domain_error_categories:
+    - "dcs_integration_error"
+    - "external_api_error"
+    - "verification_failure"
+    - "data_synchronization_error"
+    - "service_timeout_error"
+    - "authentication_error"
+    - "data_validation_error"
+  
+  # Error Management
+  error_tracking: true
+  error_categorization: true
+  automatic_retry: true
+  escalation_enabled: true
+  
+  # Integration Error Handling
+  integration_error_protocols:
+    service_timeouts: "circuit_breaker_activation"
+    authentication_failures: "credential_refresh"
+    rate_limiting: "backoff_strategy"
+    service_unavailable: "fallback_service"
+  
+  # Retry Configuration
+  retry_policy:
+    max_retries: 3
+    retry_intervals: ["30s", "2m", "5m"]
+    backoff_strategy: "exponential"
+    retry_conditions: 
+      - "temporary_failure"
+      - "timeout"
+      - "rate_limit_exceeded"
+      - "service_unavailable"
+  
+  # Escalation Rules
+  escalation:
+    escalate_to: "system-orchestrator"
+    escalation_triggers:
+      - "3_consecutive_failures"
+      - "service_unavailable"
+      - "authentication_failure"
+      - "critical_integration_error"
+    escalation_timeout: "5 minutes"
+  
+  # Recovery Procedures
+  recovery:
+    automatic_recovery: true
+    recovery_timeout: "3 minutes"
+    fallback_modes: 
+      - "fallback_service"
+      - "cached_data"
+      - "manual_intervention"
+
+# Compliance & Audit
+compliance:
+  # Entity Integration Specific Compliance
+  domain_compliance:
+    dcs_compliance: "GR-53"
+    api_security_compliance: true
+    data_privacy_compliance: true
+    external_service_compliance: true
+    integration_audit_compliance: true
+    
+  # Regulatory Compliance
+  regulatory_requirements:
+    data_retention: "7 years"
+    audit_trail: "complete"
+    privacy_protection: "gdpr_compliant"
+    security_standards: "iso27001"
+    integration_security: "enhanced"
+  
+  # Audit Configuration
+  audit:
+    audit_enabled: true
+    audit_level: "full"
+    audit_retention: "7 years"
+    audit_format: "structured_json"
+    integration_audit_tracking: true
+    external_service_audit: true
+  
+  # Security Controls
+  security_controls:
+    api_authentication: "oauth_2_0"
+    data_encryption: "in_transit_and_rest"
+    access_logging: "comprehensive"
+    vulnerability_scanning: "automated"
+    security_monitoring: "real_time"

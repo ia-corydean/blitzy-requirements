@@ -1,0 +1,504 @@
+# Producer Portal Domain Specialist Configuration
+# Complete Requirements Generation System - Multi-Agent Architecture
+# Specialized agent for Producer Portal domain requirements processing
+
+metadata:
+  agent_name: "Producer Portal Specialist"
+  agent_type: "domain_specialist"
+  version: "1.0.0"
+  created_date: "2025-01-07"
+  last_updated: "2025-01-07"
+  gr_compliance: ["GR-38", "GR-44", "GR-52", "GR-49", "GR-19", "GR-41"]
+  description: "Domain specialist for Producer Portal quotes, policies, and producer management"
+
+# Core Agent Configuration
+agent_config:
+  # Agent Identity
+  agent_id: "producer-portal-specialist"
+  display_name: "Producer Portal Specialist"
+  domain: "producer_portal"
+  agent_type: "domain_specialist"
+  
+  # Core Capabilities
+  capabilities:
+    domain_expertise: true
+    pattern_recognition: true
+    requirement_processing: true
+    cross_domain_coordination: true
+    global_requirements_validation: true
+    entity_management: true
+    
+  # Producer Portal Specific Capabilities
+  domain_capabilities:
+    specializations: 
+      - "quotes"
+      - "policies" 
+      - "drivers"
+      - "vehicles"
+      - "producers"
+      - "rating"
+      - "binding"
+      - "policy_management"
+      - "producer_management"
+      - "quote_workflow"
+    
+    primary_entities:
+      - "quote"
+      - "policy" 
+      - "driver"
+      - "vehicle"
+      - "producer"
+      - "coverage"
+      - "rating_factor"
+    
+    secondary_entities:
+      - "payment"
+      - "address"
+      - "phone"
+      - "email"
+      - "communication"
+      - "document"
+      - "attachment"
+    
+    workflow_expertise:
+      - "quote_creation"
+      - "quote_modification"
+      - "rating_calculation"
+      - "coverage_selection"
+      - "binding_process"
+      - "policy_issuance"
+      - "policy_changes"
+      - "renewals"
+      - "producer_onboarding"
+      - "producer_management"
+    
+    integration_points:
+      - "dcs_integration"
+      - "payment_processing"
+      - "document_generation"
+      - "communication_services"
+      - "rating_engine"
+      - "underwriting_services"
+    
+  # Processing Configuration
+  processing:
+    max_concurrent_requirements: 8
+    processing_timeout: "25 minutes"
+    pattern_confidence_threshold: 0.80
+    auto_validation_threshold: 0.90
+    coordination_timeout: "7 minutes"
+
+# Knowledge Base Integration
+knowledge_base:
+  # Producer Portal Specific Knowledge
+  domain_patterns: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/producer-portal/"
+  domain_entities: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/producer-portal/entities.json"
+  domain_workflows: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/producer-portal/workflows.json"
+  domain_integrations: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/producer-portal/integrations.json"
+  
+  # Shared Knowledge Access
+  universal_entities: "/app/workspace/requirements/shared-infrastructure/knowledge-base/universal-entity-catalog.json"
+  global_requirements: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-requirements-index.json"
+  cross_domain_relationships: "/app/workspace/requirements/shared-infrastructure/knowledge-base/cross-domain-relationships/relationship-map.json"
+  communication_templates: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/communication-templates/"
+  service_integrations: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/service-integrations/"
+  
+  # Producer Portal Legacy Integration
+  legacy_requirements: "/app/workspace/requirements/ProducerPortal/"
+  approved_requirements: "/app/workspace/requirements/ProducerPortal/approved-requirements/"
+  queue_system: "/app/workspace/requirements/ProducerPortal/queue/"
+  
+  # Caching Configuration
+  cache_enabled: true
+  cache_ttl: "3 hours"
+  cache_size_limit: "150MB"
+
+# System Orchestrator Integration
+orchestrator_integration:
+  orchestrator_agent_id: "system-orchestrator"
+  coordination_mode: "collaborative"
+  shared_context_participation: true
+  cross_domain_coordination: true
+  priority_level: "high"  # High priority domain
+  
+  # Communication Patterns
+  reporting_frequency: "real_time"
+  status_updates: true
+  performance_metrics_sharing: true
+  error_escalation: "automatic"
+  coordination_leadership: true  # Can lead cross-domain workflows
+
+# Universal Validator Integration
+validator_integration:
+  validator_agent_id: "universal-validator"
+  validation_stages:
+    - "pre_processing"
+    - "entity_validation" 
+    - "workflow_validation"
+    - "post_processing"
+    - "cross_domain_consistency"
+  
+  # Validation Configuration
+  fail_fast_enabled: true
+  progressive_validation: true
+  confidence_threshold: 0.88
+  auto_fix_enabled: true  # Can auto-fix common Producer Portal issues
+
+# Pattern Recognition Configuration
+pattern_recognition:
+  # Pattern Matching (Producer Portal optimized)
+  similarity_threshold: 0.75
+  max_patterns_per_requirement: 10
+  domain_pattern_weight: 0.7  # Strong preference for Producer Portal patterns
+  universal_pattern_weight: 0.3
+  
+  # Producer Portal Specific Patterns
+  quote_patterns_weight: 0.9  # High weight for quote-related patterns
+  policy_patterns_weight: 0.9  # High weight for policy-related patterns
+  producer_patterns_weight: 0.8  # High weight for producer management patterns
+  
+  # Pattern Learning
+  pattern_learning_enabled: true
+  success_pattern_tracking: true
+  failure_pattern_avoidance: true
+  confidence_improvement_tracking: true
+  
+  # Pattern Application
+  auto_apply_high_confidence: true  # >92% confidence
+  suggest_medium_confidence: true   # 75-92% confidence
+  manual_review_low_confidence: true  # <75% confidence
+
+# Workflow Processing
+workflow_processing:
+  # Processing Modes
+  supported_modes:
+    - "individual_requirement"
+    - "batch_processing"
+    - "cross_domain_coordination"
+    - "emergency_processing"
+    - "quote_workflow_processing"  # Producer Portal specific
+    - "policy_lifecycle_processing"  # Producer Portal specific
+  
+  # Producer Portal Workflow
+  domain_workflow:
+    1_analysis:
+      - "requirement_validation"
+      - "producer_portal_context_analysis"
+      - "entity_extraction"
+      - "quote_policy_pattern_matching"
+      - "producer_workflow_analysis"
+      - "complexity_assessment"
+      
+    2_processing:
+      - "producer_portal_expertise_application"
+      - "quote_policy_pattern_application"
+      - "producer_entity_resolution"
+      - "workflow_design"
+      - "rating_integration_planning"
+      - "dcs_integration_planning"
+      
+    3_validation:
+      - "producer_portal_domain_validation"
+      - "quote_policy_consistency_check"
+      - "producer_workflow_validation"
+      - "cross_domain_coordination_check"
+      - "global_requirements_compliance"
+      - "performance_validation"
+      
+    4_finalization:
+      - "producer_portal_artifact_generation"
+      - "documentation_creation"
+      - "pattern_library_update"
+      - "producer_portal_metrics_recording"
+      - "legacy_system_integration_notes"
+  
+  # Quality Gates (Producer Portal specific)
+  quality_gates:
+    entity_completeness: ">92%"
+    pattern_coverage: ">85%"
+    gr_compliance: ">96%"
+    cross_domain_consistency: ">88%"
+    quote_workflow_coverage: ">90%"
+    policy_workflow_coverage: ">90%"
+    producer_management_coverage: ">85%"
+
+# Entity Management (Producer Portal specific)
+entity_management:
+  # Producer Portal Entity Priorities
+  primary_entity_focus:
+    - "quote"
+    - "policy"
+    - "driver"
+    - "vehicle"
+    - "producer"
+  
+  # Entity Recognition
+  entity_extraction_enabled: true
+  universal_entity_reuse: true
+  domain_entity_specialization: true
+  entity_validation: "strict"
+  producer_portal_entity_validation: "enhanced"
+  
+  # Producer Portal Entity Relationships
+  critical_relationships:
+    - "quote_to_policy"
+    - "producer_to_quote"
+    - "driver_to_vehicle"
+    - "quote_to_coverage"
+    - "policy_to_payment"
+    - "producer_to_commission"
+  
+  # Entity Standards Compliance
+  compliance_standards:
+    - "GR-52 Universal Entity Management"
+    - "GR-41 Database Design Standards"
+    - "GR-19 Table Relationships"
+    - "GR-02 Audit Field Standards"
+    - "Producer Portal Entity Standards"
+
+# Communication & Coordination
+communication:
+  # Shared Context Participation
+  shared_context_manager: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/shared-context-manager.py"
+  memory_interface: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/agent-memory-interface.py"
+  
+  # Communication Patterns
+  sync_mode: "real_time"
+  sync_interval: "8 seconds"
+  conflict_resolution: "domain_expert_authority"  # Producer Portal has authority in conflicts
+  
+  # Producer Portal Message Types
+  supported_messages:
+    - "requirement_assignment"
+    - "quote_workflow_coordination"
+    - "policy_lifecycle_coordination"
+    - "producer_management_coordination"
+    - "rating_coordination_request"
+    - "dcs_integration_coordination"
+    - "payment_coordination_request"
+    - "cross_domain_coordination_request"
+    - "pattern_sharing"
+    - "entity_discovery"
+    - "validation_request"
+    - "status_update"
+    - "error_notification"
+
+# Performance & Monitoring
+performance:
+  # Performance Targets (Producer Portal specific)
+  targets:
+    processing_time: "< 18 minutes per requirement"
+    pattern_recognition_accuracy: "> 85%"
+    entity_extraction_accuracy: "> 92%"
+    gr_compliance_accuracy: "> 96%"
+    coordination_overhead: "< 8%"
+    quote_workflow_accuracy: "> 90%"
+    policy_workflow_accuracy: "> 90%"
+  
+  # Metrics Collection
+  metrics:
+    processing_time_tracking: true
+    pattern_success_tracking: true
+    entity_accuracy_tracking: true
+    error_rate_tracking: true
+    coordination_efficiency_tracking: true
+    quote_workflow_metrics: true
+    policy_workflow_metrics: true
+    producer_management_metrics: true
+  
+  # Performance Optimization
+  optimization:
+    caching_enabled: true
+    pattern_indexing: true
+    entity_caching: true
+    batch_processing_optimization: true
+    quote_pattern_optimization: true
+    policy_pattern_optimization: true
+
+# Queue Management
+queue_management:
+  # Producer Portal Queue Configuration
+  input_queue: "/app/workspace/requirements/processing-queues/producer-portal/pending/"
+  processing_queue: "/app/workspace/requirements/processing-queues/producer-portal/in-progress/"
+  completed_queue: "/app/workspace/requirements/processing-queues/producer-portal/completed/"
+  intelligence_queue: "/app/workspace/requirements/processing-queues/producer-portal/intelligence/"
+  cross_domain_queue: "/app/workspace/requirements/processing-queues/producer-portal/cross-domain-batches/"
+  
+  # Legacy Integration
+  legacy_queue_integration: "/app/workspace/requirements/ProducerPortal/queue/"
+  legacy_queue_monitoring: true
+  legacy_migration_support: true
+  
+  # Processing Configuration
+  polling_interval: "20 seconds"
+  max_queue_size: 60
+  priority_processing: true
+  load_balancing: "priority"  # Priority-based for Producer Portal
+  
+  # Queue Monitoring
+  queue_monitoring: true
+  alert_thresholds:
+    queue_size_warning: 40
+    queue_size_critical: 55
+    processing_time_warning: "12 minutes"
+    processing_time_critical: "18 minutes"
+
+# Producer Portal Specific Configuration
+producer_portal_config:
+  # Business Logic
+  business_rules:
+    quote_creation_rules:
+      minimum_coverage_validation: true
+      driver_age_validation: true
+      vehicle_year_validation: true
+      territory_validation: true
+    
+    policy_binding_rules:
+      payment_validation: true
+      coverage_completeness_validation: true
+      producer_authorization_validation: true
+      underwriting_approval_validation: true
+    
+    producer_management_rules:
+      licensing_validation: true
+      appointment_validation: true
+      commission_structure_validation: true
+      territory_assignment_validation: true
+  
+  # Integration Specifications
+  external_integrations:
+    dcs_integration:
+      service_name: "DCS Driver Verification"
+      integration_pattern: "real_time_api"
+      timeout: "30 seconds"
+      retry_policy: "3_retries_exponential"
+      
+    rating_engine:
+      service_name: "Rating Calculation Service"
+      integration_pattern: "synchronous_api"
+      timeout: "15 seconds"
+      caching_enabled: true
+      
+    payment_processing:
+      service_name: "Payment Gateway"
+      integration_pattern: "asynchronous_webhook"
+      timeout: "60 seconds"
+      security: "tokenized"
+      
+    document_generation:
+      service_name: "Document Service"
+      integration_pattern: "event_driven"
+      timeout: "120 seconds"
+      storage: "cloud_storage"
+  
+  # Workflow Customizations
+  workflow_customizations:
+    quote_workflow:
+      auto_rating: true
+      real_time_validation: true
+      producer_assistance: true
+      save_and_continue: true
+      
+    policy_workflow:
+      binding_workflow: "guided"
+      document_generation: "automatic"
+      communication_triggers: "event_based"
+      renewal_automation: true
+      
+    producer_workflow:
+      onboarding_automation: true
+      performance_tracking: true
+      commission_calculation: "real_time"
+      territory_management: true
+
+# Error Handling & Recovery
+error_handling:
+  # Producer Portal Specific Error Handling
+  domain_error_categories:
+    - "quote_validation_error"
+    - "rating_calculation_error"
+    - "dcs_verification_error"
+    - "policy_binding_error"
+    - "producer_authorization_error"
+    - "payment_processing_error"
+    - "document_generation_error"
+  
+  # Error Management
+  error_tracking: true
+  error_categorization: true
+  automatic_retry: true
+  escalation_enabled: true
+  
+  # Retry Configuration
+  retry_policy:
+    max_retries: 3
+    retry_intervals: ["45s", "3m", "8m"]
+    backoff_strategy: "exponential"
+    retry_conditions: 
+      - "temporary_failure"
+      - "timeout"
+      - "external_service_error"
+      - "dcs_service_error"
+      - "rating_service_error"
+  
+  # Escalation Rules
+  escalation:
+    escalate_to: "system-orchestrator"
+    escalation_triggers:
+      - "3_consecutive_failures"
+      - "critical_error"
+      - "timeout_exceeded"
+      - "validation_failure"
+      - "cross_domain_coordination_failure"
+    escalation_timeout: "6 minutes"
+  
+  # Recovery Procedures
+  recovery:
+    automatic_recovery: true
+    recovery_timeout: "4 minutes"
+    fallback_modes: 
+      - "simplified_processing"
+      - "manual_intervention"
+      - "legacy_system_fallback"
+
+# Integration with Existing ProducerPortal
+legacy_integration:
+  # Backward Compatibility
+  legacy_system_support: true
+  approved_requirements_integration: true
+  existing_queue_system_integration: true
+  
+  # Migration Support
+  migration_assistance: true
+  pattern_migration: true
+  data_migration_support: true
+  
+  # Legacy Validation
+  legacy_pattern_validation: true
+  legacy_entity_mapping: true
+  legacy_workflow_compatibility: true
+
+# Compliance & Audit
+compliance:
+  # Producer Portal Specific Compliance
+  domain_compliance:
+    insurance_regulations: true
+    producer_licensing_compliance: true
+    policy_form_compliance: true
+    rate_filing_compliance: true
+    
+  # Regulatory Compliance
+  regulatory_requirements:
+    data_retention: "7 years"
+    audit_trail: "complete"
+    privacy_protection: "gdpr_compliant"
+    security_standards: "iso27001"
+    producer_data_protection: "enhanced"
+  
+  # Audit Configuration
+  audit:
+    audit_enabled: true
+    audit_level: "full"
+    audit_retention: "7 years"
+    audit_format: "structured_json"
+    producer_portal_audit_tracking: true

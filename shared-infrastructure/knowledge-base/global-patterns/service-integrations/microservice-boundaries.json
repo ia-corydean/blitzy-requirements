@@ -1,0 +1,546 @@
+{
+  "integration_metadata": {
+    "pattern_category": "microservice_boundaries",
+    "pattern_version": "1.0.0",
+    "gr_compliance": "GR-38 Microservice Architecture",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "total_services": 21,
+    "applicable_domains": ["all_domains"],
+    "confidence_score": 0.94,
+    "usage_count": 134,
+    "success_rate": 0.96
+  },
+  "architectural_principles": {
+    "service_definition": {
+      "single_responsibility": "Each service owns a specific business capability",
+      "data_ownership": "Services own their data and expose it through APIs",
+      "autonomous_deployment": "Services can be deployed independently",
+      "fault_isolation": "Service failures don't cascade to other services"
+    },
+    "communication_patterns": {
+      "synchronous": "REST APIs for real-time queries and commands",
+      "asynchronous": "Event-driven messaging for eventual consistency",
+      "data_consistency": "Eventually consistent across service boundaries"
+    },
+    "evolution_strategy": {
+      "current_state": "Monolithic application with clear internal boundaries",
+      "transition_approach": "Gradual extraction of services when needed",
+      "timeline": "Extract services based on scalability and team autonomy needs"
+    }
+  },
+  "core_business_services": {
+    "quote_management_service": {
+      "service_id": "quote-mgmt",
+      "business_capability": "Quote creation, modification, and binding lifecycle",
+      "data_ownership": ["quote", "quote_revision", "quote_component"],
+      "primary_domain": "producer-portal",
+      "api_endpoints": [
+        "POST /api/quotes - Create new quote",
+        "GET /api/quotes/{id} - Retrieve quote details",
+        "PUT /api/quotes/{id} - Update quote",
+        "POST /api/quotes/{id}/bind - Bind quote to policy",
+        "GET /api/quotes/{id}/history - Quote revision history"
+      ],
+      "dependencies": [
+        "rating-engine",
+        "underwriting-service",
+        "policy-service",
+        "customer-service"
+      ],
+      "events_published": [
+        "quote.created",
+        "quote.updated",
+        "quote.bound",
+        "quote.expired"
+      ],
+      "events_consumed": [
+        "rating.completed",
+        "underwriting.approved",
+        "policy.created"
+      ],
+      "scalability_requirements": {
+        "read_load": "high",
+        "write_load": "medium",
+        "peak_usage": "end_of_month_renewals"
+      }
+    },
+    "policy_service": {
+      "service_id": "policy-mgmt",
+      "business_capability": "Policy lifecycle management and document generation",
+      "data_ownership": ["policy", "policy_document", "policy_transaction"],
+      "primary_domain": "producer-portal",
+      "api_endpoints": [
+        "POST /api/policies - Create policy from quote",
+        "GET /api/policies/{id} - Retrieve policy details",
+        "PUT /api/policies/{id} - Update policy",
+        "POST /api/policies/{id}/renew - Initiate renewal",
+        "GET /api/policies/{id}/documents - Policy documents"
+      ],
+      "dependencies": [
+        "billing-service",
+        "document-generation-service",
+        "communication-service"
+      ],
+      "events_published": [
+        "policy.created",
+        "policy.updated",
+        "policy.renewed",
+        "policy.cancelled"
+      ],
+      "events_consumed": [
+        "quote.bound",
+        "payment.received",
+        "billing.cycle_created"
+      ]
+    },
+    "customer_service": {
+      "service_id": "customer-mgmt",
+      "business_capability": "Customer information and relationship management",
+      "data_ownership": ["driver", "name", "address", "phone", "email"],
+      "primary_domain": "universal",
+      "api_endpoints": [
+        "POST /api/customers - Create customer profile",
+        "GET /api/customers/{id} - Retrieve customer details",
+        "PUT /api/customers/{id} - Update customer information",
+        "GET /api/customers/{id}/policies - Customer policies",
+        "POST /api/customers/{id}/verify - Verify customer information"
+      ],
+      "dependencies": [
+        "communication-service",
+        "verification-service"
+      ],
+      "events_published": [
+        "customer.created",
+        "customer.updated",
+        "customer.verified"
+      ],
+      "integration_points": {
+        "dcs_integration": "Driver verification and household lookup",
+        "address_verification": "USPS address standardization"
+      }
+    },
+    "vehicle_service": {
+      "service_id": "vehicle-mgmt", 
+      "business_capability": "Vehicle information management and verification",
+      "data_ownership": ["vehicle", "vehicle_type", "vehicle_use"],
+      "primary_domain": "producer-portal",
+      "api_endpoints": [
+        "POST /api/vehicles - Add vehicle to system",
+        "GET /api/vehicles/{id} - Retrieve vehicle details",
+        "PUT /api/vehicles/{id} - Update vehicle information",
+        "POST /api/vehicles/{id}/verify - Verify vehicle information",
+        "GET /api/vehicles/search - Search vehicles by criteria"
+      ],
+      "dependencies": [
+        "verification-service",
+        "rating-engine"
+      ],
+      "events_published": [
+        "vehicle.created",
+        "vehicle.updated",
+        "vehicle.verified"
+      ],
+      "integration_points": {
+        "vin_decoding": "External VIN decoding services",
+        "dcs_integration": "Vehicle verification"
+      }
+    },
+    "rating_engine": {
+      "service_id": "rating-engine",
+      "business_capability": "Insurance rate calculation and pricing",
+      "data_ownership": ["rate_factor", "rating_rule", "rate_calculation"],
+      "primary_domain": "program-manager",
+      "api_endpoints": [
+        "POST /api/rating/calculate - Calculate rates for quote",
+        "GET /api/rating/factors - Available rating factors",
+        "POST /api/rating/rules - Create/update rating rules",
+        "GET /api/rating/audit/{id} - Rate calculation audit trail"
+      ],
+      "dependencies": [
+        "quote-management-service",
+        "vehicle-service",
+        "customer-service"
+      ],
+      "events_published": [
+        "rating.calculated",
+        "rating.updated",
+        "rating.rule_changed"
+      ],
+      "events_consumed": [
+        "quote.created",
+        "quote.updated",
+        "vehicle.updated",
+        "customer.updated"
+      ],
+      "performance_requirements": {
+        "response_time": "< 2 seconds",
+        "throughput": "1000 calculations per minute",
+        "availability": "99.9%"
+      }
+    },
+    "underwriting_service": {
+      "service_id": "underwriting",
+      "business_capability": "Risk assessment and underwriting decisions",
+      "data_ownership": ["underwriting_rule", "underwriting_result", "risk_assessment"],
+      "primary_domain": "program-manager",
+      "api_endpoints": [
+        "POST /api/underwriting/evaluate - Evaluate quote for underwriting",
+        "GET /api/underwriting/rules - Underwriting rules",
+        "POST /api/underwriting/rules - Create/update underwriting rules",
+        "GET /api/underwriting/results/{id} - Underwriting results"
+      ],
+      "dependencies": [
+        "quote-management-service",
+        "customer-service",
+        "vehicle-service"
+      ],
+      "events_published": [
+        "underwriting.approved",
+        "underwriting.declined",
+        "underwriting.refer"
+      ],
+      "events_consumed": [
+        "quote.created",
+        "rating.calculated"
+      ]
+    }
+  },
+  "financial_services": {
+    "billing_service": {
+      "service_id": "billing-mgmt",
+      "business_capability": "Billing cycle management and invoice generation",
+      "data_ownership": ["billing_cycle", "invoice", "installment_plan"],
+      "primary_domain": "accounting",
+      "api_endpoints": [
+        "POST /api/billing/cycles - Create billing cycle",
+        "GET /api/billing/cycles/{id} - Billing cycle details",
+        "POST /api/billing/invoices - Generate invoice",
+        "GET /api/billing/invoices/{id} - Invoice details"
+      ],
+      "dependencies": [
+        "policy-service",
+        "payment-service",
+        "communication-service"
+      ],
+      "events_published": [
+        "billing.cycle_created",
+        "billing.invoice_generated",
+        "billing.payment_due"
+      ],
+      "events_consumed": [
+        "policy.created",
+        "payment.received",
+        "payment.failed"
+      ]
+    },
+    "payment_service": {
+      "service_id": "payment-processing",
+      "business_capability": "Payment processing and transaction management",
+      "data_ownership": ["payment", "payment_method", "payment_allocation"],
+      "primary_domain": "accounting",
+      "api_endpoints": [
+        "POST /api/payments - Process payment",
+        "GET /api/payments/{id} - Payment details",
+        "POST /api/payments/{id}/refund - Process refund",
+        "GET /api/payments/methods - Available payment methods"
+      ],
+      "dependencies": [
+        "billing-service",
+        "external-payment-processors"
+      ],
+      "events_published": [
+        "payment.received",
+        "payment.failed",
+        "payment.refunded"
+      ],
+      "integration_points": {
+        "payment_processors": "Stripe, PayPal, Bank ACH",
+        "fraud_detection": "External fraud prevention services"
+      }
+    },
+    "commission_service": {
+      "service_id": "commission-mgmt",
+      "business_capability": "Producer commission calculation and tracking",
+      "data_ownership": ["commission", "commission_rate", "commission_payment"],
+      "primary_domain": "accounting",
+      "api_endpoints": [
+        "POST /api/commissions/calculate - Calculate commission",
+        "GET /api/commissions/{producer_id} - Producer commissions",
+        "POST /api/commissions/pay - Process commission payment",
+        "GET /api/commissions/reports - Commission reports"
+      ],
+      "dependencies": [
+        "payment-service",
+        "policy-service"
+      ],
+      "events_published": [
+        "commission.calculated",
+        "commission.paid"
+      ],
+      "events_consumed": [
+        "payment.received",
+        "policy.created"
+      ]
+    }
+  },
+  "supporting_services": {
+    "communication_service": {
+      "service_id": "communication",
+      "business_capability": "Multi-channel communication management (GR-44)",
+      "data_ownership": ["communication_log", "communication_template", "delivery_status"],
+      "primary_domain": "universal",
+      "api_endpoints": [
+        "POST /api/communications/email - Send email",
+        "POST /api/communications/sms - Send SMS",
+        "POST /api/communications/document - Generate document",
+        "GET /api/communications/{id}/status - Delivery status"
+      ],
+      "dependencies": [
+        "external-email-service",
+        "external-sms-service",
+        "document-generation-service"
+      ],
+      "events_published": [
+        "communication.sent",
+        "communication.delivered",
+        "communication.failed"
+      ],
+      "integration_points": {
+        "email_service": "SendGrid, Mailgun",
+        "sms_service": "Twilio SMS",
+        "document_service": "Internal document generation"
+      }
+    },
+    "document_generation_service": {
+      "service_id": "document-gen",
+      "business_capability": "Document generation and template management",
+      "data_ownership": ["document_template", "generated_document", "document_metadata"],
+      "primary_domain": "universal",
+      "api_endpoints": [
+        "POST /api/documents/generate - Generate document",
+        "GET /api/documents/{id} - Retrieve document",
+        "GET /api/documents/templates - Available templates",
+        "POST /api/documents/templates - Create/update template"
+      ],
+      "dependencies": [
+        "policy-service",
+        "customer-service"
+      ],
+      "events_published": [
+        "document.generated",
+        "document.template_updated"
+      ]
+    },
+    "verification_service": {
+      "service_id": "verification",
+      "business_capability": "External data verification and validation",
+      "data_ownership": ["verification_result", "verification_log"],
+      "primary_domain": "entity-integration",
+      "api_endpoints": [
+        "POST /api/verification/driver - Verify driver information",
+        "POST /api/verification/vehicle - Verify vehicle information",
+        "POST /api/verification/address - Verify address",
+        "GET /api/verification/{id}/result - Verification result"
+      ],
+      "dependencies": [
+        "external-dcs-service",
+        "external-address-service"
+      ],
+      "events_published": [
+        "verification.completed",
+        "verification.failed"
+      ],
+      "integration_points": {
+        "dcs_integration": "Driver and vehicle verification (GR-53)",
+        "address_verification": "USPS address validation",
+        "vin_decoding": "VIN decoding services"
+      }
+    },
+    "notification_service": {
+      "service_id": "notifications",
+      "business_capability": "Real-time notifications and alerts",
+      "data_ownership": ["notification", "notification_preference"],
+      "primary_domain": "universal",
+      "api_endpoints": [
+        "POST /api/notifications - Send notification",
+        "GET /api/notifications/{user_id} - User notifications",
+        "PUT /api/notifications/{id}/read - Mark as read",
+        "POST /api/notifications/preferences - Update preferences"
+      ],
+      "dependencies": [
+        "communication-service"
+      ],
+      "events_published": [
+        "notification.sent",
+        "notification.read"
+      ]
+    }
+  },
+  "specialized_services": {
+    "sr22_service": {
+      "service_id": "sr22-filing",
+      "business_capability": "SR22/SR26 financial responsibility filing (GR-10)",
+      "data_ownership": ["sr22_filing", "filing_status", "state_requirement"],
+      "primary_domain": "sr22",
+      "api_endpoints": [
+        "POST /api/sr22/file - Submit SR22 filing",
+        "GET /api/sr22/{id} - Filing details",
+        "POST /api/sr22/{id}/cancel - Cancel filing",
+        "GET /api/sr22/requirements/{state} - State requirements"
+      ],
+      "dependencies": [
+        "policy-service",
+        "customer-service",
+        "external-state-systems"
+      ],
+      "events_published": [
+        "sr22.filed",
+        "sr22.cancelled",
+        "sr22.lapsed"
+      ],
+      "integration_points": {
+        "state_filing_systems": "State-specific SR22 filing APIs"
+      }
+    },
+    "reinstatement_service": {
+      "service_id": "reinstatement",
+      "business_capability": "Policy reinstatement and lapse management (GR-64)", 
+      "data_ownership": ["lapse_record", "reinstatement_request", "grace_period"],
+      "primary_domain": "reinstatement",
+      "api_endpoints": [
+        "POST /api/reinstatement/initiate - Initiate reinstatement",
+        "GET /api/reinstatement/{policy_id} - Reinstatement status",
+        "POST /api/reinstatement/{id}/complete - Complete reinstatement",
+        "GET /api/reinstatement/eligible - Eligible policies"
+      ],
+      "dependencies": [
+        "policy-service",
+        "payment-service",
+        "billing-service"
+      ],
+      "events_published": [
+        "reinstatement.initiated",
+        "reinstatement.completed",
+        "reinstatement.expired"
+      ],
+      "events_consumed": [
+        "policy.lapsed",
+        "payment.received"
+      ]
+    },
+    "external_entity_service": {
+      "service_id": "external-entities",
+      "business_capability": "Universal external entity management (GR-52)",
+      "data_ownership": ["external_entity", "external_entity_type", "entity_metadata"],
+      "primary_domain": "universal",
+      "api_endpoints": [
+        "POST /api/external-entities - Create external entity",
+        "GET /api/external-entities/{id} - Entity details",
+        "PUT /api/external-entities/{id} - Update entity",
+        "GET /api/external-entities/types - Entity types"
+      ],
+      "dependencies": [
+        "customer-service"
+      ],
+      "events_published": [
+        "external_entity.created",
+        "external_entity.updated"
+      ],
+      "supported_entity_types": [
+        "api_endpoint",
+        "attorney",
+        "body_shop",
+        "vendor",
+        "repair_facility",
+        "medical_provider"
+      ]
+    }
+  },
+  "infrastructure_services": {
+    "audit_service": {
+      "service_id": "audit-logging",
+      "business_capability": "Centralized audit trail and compliance logging",
+      "data_ownership": ["audit_log", "compliance_report"],
+      "primary_domain": "universal",
+      "api_endpoints": [
+        "POST /api/audit/log - Log audit event",
+        "GET /api/audit/{entity_type}/{entity_id} - Entity audit trail",
+        "GET /api/audit/reports - Compliance reports"
+      ],
+      "events_consumed": ["all_business_events"],
+      "compliance_requirements": ["7_year_retention", "immutable_logs"]
+    },
+    "configuration_service": {
+      "service_id": "configuration",
+      "business_capability": "Centralized configuration management",
+      "data_ownership": ["configuration", "feature_flag"],
+      "primary_domain": "universal",
+      "api_endpoints": [
+        "GET /api/config/{key} - Get configuration value",
+        "PUT /api/config/{key} - Update configuration",
+        "GET /api/config/features - Feature flags"
+      ]
+    },
+    "reporting_service": {
+      "service_id": "reporting",
+      "business_capability": "Business intelligence and reporting",
+      "data_ownership": ["report_definition", "report_result"],
+      "primary_domain": "universal",
+      "api_endpoints": [
+        "POST /api/reports/generate - Generate report",
+        "GET /api/reports/{id} - Report results",
+        "GET /api/reports/definitions - Available reports"
+      ],
+      "dependencies": ["all_business_services_read_only"]
+    }
+  },
+  "service_communication_patterns": {
+    "synchronous_apis": {
+      "protocol": "REST over HTTPS",
+      "format": "JSON",
+      "authentication": "JWT tokens",
+      "timeout": "30 seconds default",
+      "retry_policy": "exponential_backoff_3_attempts"
+    },
+    "asynchronous_messaging": {
+      "message_broker": "Apache Kafka or RabbitMQ",
+      "event_format": "CloudEvents specification",
+      "delivery_guarantee": "at_least_once",
+      "ordering": "per_entity_ordering"
+    },
+    "data_consistency": {
+      "strong_consistency": "Within service boundaries",
+      "eventual_consistency": "Across service boundaries",
+      "saga_pattern": "For distributed transactions"
+    }
+  },
+  "deployment_strategy": {
+    "containerization": "Docker containers for each service",
+    "orchestration": "Kubernetes for production deployment",
+    "service_mesh": "Istio for service-to-service communication",
+    "monitoring": "Prometheus and Grafana for observability"
+  },
+  "migration_roadmap": {
+    "phase_1": {
+      "timeline": "Months 1-6",
+      "services": ["communication-service", "document-generation-service"],
+      "rationale": "Low coupling, clear boundaries"
+    },
+    "phase_2": {
+      "timeline": "Months 7-12", 
+      "services": ["payment-service", "billing-service"],
+      "rationale": "High business value, scalability needs"
+    },
+    "phase_3": {
+      "timeline": "Months 13-18",
+      "services": ["rating-engine", "underwriting-service"],
+      "rationale": "Performance critical, domain expertise"
+    },
+    "phase_4": {
+      "timeline": "Months 19-24",
+      "services": ["quote-management-service", "policy-service"],
+      "rationale": "Core business logic, final extraction"
+    }
+  }
+}

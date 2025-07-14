@@ -1,0 +1,491 @@
+# Program Manager Domain Specialist Configuration
+# Complete Requirements Generation System - Multi-Agent Architecture
+# Specialized agent for Program Manager domain requirements processing
+
+metadata:
+  agent_name: "Program Manager Specialist"
+  agent_type: "domain_specialist"
+  version: "1.0.0"
+  created_date: "2025-01-07"
+  last_updated: "2025-01-07"
+  gr_compliance: ["GR-38", "GR-44", "GR-52", "GR-49", "GR-19", "GR-41"]
+  description: "Domain specialist for rating, underwriting, rate factors, and territories"
+
+# Core Agent Configuration
+agent_config:
+  # Agent Identity
+  agent_id: "program-manager-specialist"
+  display_name: "Program Manager Specialist"
+  domain: "program_manager"
+  agent_type: "domain_specialist"
+  
+  # Core Capabilities
+  capabilities:
+    domain_expertise: true
+    pattern_recognition: true
+    requirement_processing: true
+    cross_domain_coordination: true
+    global_requirements_validation: true
+    entity_management: true
+    
+  # Program Manager Specific Capabilities
+  domain_capabilities:
+    specializations: 
+      - "rating"
+      - "underwriting"
+      - "rate_factors"
+      - "territories"
+      - "risk_assessment"
+      - "pricing_models"
+      - "rate_calculations"
+      - "underwriting_rules"
+      - "territory_management"
+      - "rate_filings"
+    
+    primary_entities:
+      - "rate_factor"
+      - "territory"
+      - "underwriting_rule"
+      - "pricing_model"
+      - "rate_table"
+      - "risk_factor"
+      - "coverage_rate"
+      - "territory_definition"
+    
+    secondary_entities:
+      - "quote"
+      - "policy"
+      - "driver"
+      - "vehicle"
+      - "coverage"
+      - "claim"
+      - "violation"
+      - "credit_score"
+    
+    workflow_expertise:
+      - "rate_calculation"
+      - "underwriting_evaluation"
+      - "territory_assignment"
+      - "risk_assessment"
+      - "rate_factor_application"
+      - "pricing_analysis"
+      - "rate_filing_preparation"
+      - "underwriting_automation"
+      - "territory_optimization"
+      - "competitive_analysis"
+    
+    integration_points:
+      - "rating_engines"
+      - "underwriting_systems"
+      - "actuarial_tools"
+      - "geographic_services"
+      - "credit_scoring_services"
+      - "regulatory_filing_systems"
+    
+  # Processing Configuration
+  processing:
+    max_concurrent_requirements: 5
+    processing_timeout: "22 minutes"
+    pattern_confidence_threshold: 0.75
+    auto_validation_threshold: 0.85
+    coordination_timeout: "6 minutes"
+
+# Knowledge Base Integration
+knowledge_base:
+  # Program Manager Specific Knowledge
+  domain_patterns: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/program-manager/"
+  domain_entities: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/program-manager/entities.json"
+  domain_workflows: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/program-manager/workflows.json"
+  domain_integrations: "/app/workspace/requirements/shared-infrastructure/knowledge-base/domain-patterns/program-manager/integrations.json"
+  
+  # Shared Knowledge Access
+  universal_entities: "/app/workspace/requirements/shared-infrastructure/knowledge-base/universal-entity-catalog.json"
+  global_requirements: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-requirements-index.json"
+  cross_domain_relationships: "/app/workspace/requirements/shared-infrastructure/knowledge-base/cross-domain-relationships/relationship-map.json"
+  communication_templates: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/communication-templates/"
+  service_integrations: "/app/workspace/requirements/shared-infrastructure/knowledge-base/global-patterns/service-integrations/"
+  
+  # Caching Configuration
+  cache_enabled: true
+  cache_ttl: "4 hours"  # Longer cache for rating data
+  cache_size_limit: "200MB"
+
+# System Orchestrator Integration
+orchestrator_integration:
+  orchestrator_agent_id: "system-orchestrator"
+  coordination_mode: "collaborative"
+  shared_context_participation: true
+  cross_domain_coordination: true
+  priority_level: "medium"
+  
+  # Communication Patterns
+  reporting_frequency: "real_time"
+  status_updates: true
+  performance_metrics_sharing: true
+  error_escalation: "automatic"
+  rating_coordination: true
+
+# Universal Validator Integration
+validator_integration:
+  validator_agent_id: "universal-validator"
+  validation_stages:
+    - "pre_processing"
+    - "rating_validation"
+    - "territory_validation"
+    - "post_processing"
+    - "cross_domain_consistency"
+  
+  # Validation Configuration
+  fail_fast_enabled: true
+  progressive_validation: true
+  confidence_threshold: 0.85
+  auto_fix_enabled: true  # Can auto-fix rating calculation issues
+
+# Pattern Recognition Configuration
+pattern_recognition:
+  # Pattern Matching (Program Manager optimized)
+  similarity_threshold: 0.75
+  max_patterns_per_requirement: 9
+  domain_pattern_weight: 0.8  # Strong preference for Program Manager patterns
+  universal_pattern_weight: 0.2
+  
+  # Program Manager Specific Pattern Weights
+  rating_patterns_weight: 0.95  # Highest weight for rating patterns
+  underwriting_patterns_weight: 0.90  # High weight for underwriting patterns
+  territory_patterns_weight: 0.85  # High weight for territory patterns
+  risk_assessment_patterns_weight: 0.80
+  
+  # Pattern Learning
+  pattern_learning_enabled: true
+  success_pattern_tracking: true
+  failure_pattern_avoidance: true
+  confidence_improvement_tracking: true
+  
+  # Pattern Application
+  auto_apply_high_confidence: true  # >90% confidence
+  suggest_medium_confidence: true   # 75-90% confidence
+  manual_review_low_confidence: true  # <75% confidence
+
+# Workflow Processing
+workflow_processing:
+  # Processing Modes
+  supported_modes:
+    - "individual_requirement"
+    - "batch_processing"
+    - "cross_domain_coordination"
+    - "emergency_processing"
+    - "rating_workflow_processing"      # Program Manager specific
+    - "underwriting_workflow_processing" # Program Manager specific
+    - "territory_analysis_processing"   # Program Manager specific
+  
+  # Program Manager Workflow
+  domain_workflow:
+    1_analysis:
+      - "requirement_validation"
+      - "rating_context_analysis"
+      - "entity_extraction"
+      - "rating_underwriting_pattern_matching"
+      - "territory_analysis"
+      - "complexity_assessment"
+      
+    2_processing:
+      - "program_manager_expertise_application"
+      - "rating_pattern_application"
+      - "underwriting_entity_resolution"
+      - "workflow_design"
+      - "rating_engine_integration_planning"
+      - "territory_service_integration_planning"
+      
+    3_validation:
+      - "program_manager_domain_validation"
+      - "rating_accuracy_validation"
+      - "territory_consistency_validation"
+      - "cross_domain_rating_consistency"
+      - "global_requirements_compliance"
+      - "regulatory_compliance_validation"
+      
+    4_finalization:
+      - "program_manager_artifact_generation"
+      - "rating_documentation_creation"
+      - "pattern_library_update"
+      - "program_manager_metrics_recording"
+      - "regulatory_filing_notes"
+  
+  # Quality Gates (Program Manager specific)
+  quality_gates:
+    entity_completeness: ">88%"
+    pattern_coverage: ">82%"
+    gr_compliance: ">95%"
+    cross_domain_consistency: ">85%"
+    rating_accuracy: ">95%"
+    underwriting_completeness: ">90%"
+    territory_coverage: ">88%"
+
+# Entity Management (Program Manager specific)
+entity_management:
+  # Program Manager Entity Priorities
+  primary_entity_focus:
+    - "rate_factor"
+    - "territory"
+    - "underwriting_rule"
+    - "pricing_model"
+    - "rate_table"
+  
+  # Entity Recognition
+  entity_extraction_enabled: true
+  universal_entity_reuse: true
+  domain_entity_specialization: true
+  entity_validation: "strict"
+  rating_entity_validation: "enhanced"
+  
+  # Program Manager Entity Relationships
+  critical_relationships:
+    - "rate_factor_to_coverage"
+    - "territory_to_zip_code"
+    - "underwriting_rule_to_risk_factor"
+    - "pricing_model_to_rate_table"
+    - "rate_calculation_to_quote"
+    - "territory_to_rate_factor"
+  
+  # Entity Standards Compliance
+  compliance_standards:
+    - "GR-52 Universal Entity Management"
+    - "GR-41 Database Design Standards"
+    - "GR-19 Table Relationships"
+    - "GR-02 Audit Field Standards"
+    - "Rating Standards"
+    - "Actuarial Standards"
+
+# Communication & Coordination
+communication:
+  # Shared Context Participation
+  shared_context_manager: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/shared-context-manager.py"
+  memory_interface: "/app/workspace/requirements/shared-infrastructure/intelligence-engines/agent-memory-interface.py"
+  
+  # Communication Patterns
+  sync_mode: "real_time"
+  sync_interval: "12 seconds"
+  conflict_resolution: "rating_authority"  # Program Manager has authority on rating matters
+  
+  # Program Manager Message Types
+  supported_messages:
+    - "requirement_assignment"
+    - "rating_coordination_request"
+    - "underwriting_coordination_request"
+    - "territory_coordination_request"
+    - "risk_assessment_request"
+    - "cross_domain_coordination_request"
+    - "pattern_sharing"
+    - "entity_discovery"
+    - "validation_request"
+    - "status_update"
+    - "error_notification"
+    - "rating_alert"
+
+# Performance & Monitoring
+performance:
+  # Performance Targets (Program Manager specific)
+  targets:
+    processing_time: "< 18 minutes per requirement"
+    pattern_recognition_accuracy: "> 80%"
+    entity_extraction_accuracy: "> 88%"
+    gr_compliance_accuracy: "> 95%"
+    coordination_overhead: "< 8%"
+    rating_accuracy: "> 95%"
+    underwriting_completeness: "> 90%"
+    territory_accuracy: "> 88%"
+  
+  # Metrics Collection
+  metrics:
+    processing_time_tracking: true
+    pattern_success_tracking: true
+    entity_accuracy_tracking: true
+    error_rate_tracking: true
+    coordination_efficiency_tracking: true
+    rating_workflow_metrics: true
+    underwriting_workflow_metrics: true
+    territory_workflow_metrics: true
+  
+  # Performance Optimization
+  optimization:
+    caching_enabled: true
+    pattern_indexing: true
+    entity_caching: true
+    batch_processing_optimization: true
+    rating_calculation_optimization: true
+    territory_lookup_optimization: true
+
+# Queue Management
+queue_management:
+  # Program Manager Queue Configuration
+  input_queue: "/app/workspace/requirements/processing-queues/program-manager/pending/"
+  processing_queue: "/app/workspace/requirements/processing-queues/program-manager/in-progress/"
+  completed_queue: "/app/workspace/requirements/processing-queues/program-manager/completed/"
+  intelligence_queue: "/app/workspace/requirements/processing-queues/program-manager/intelligence/"
+  cross_domain_queue: "/app/workspace/requirements/processing-queues/program-manager/cross-domain-batches/"
+  
+  # Processing Configuration
+  polling_interval: "30 seconds"
+  max_queue_size: 40
+  priority_processing: true
+  load_balancing: "balanced"
+  
+  # Queue Monitoring
+  queue_monitoring: true
+  alert_thresholds:
+    queue_size_warning: 28
+    queue_size_critical: 35
+    processing_time_warning: "13 minutes"
+    processing_time_critical: "18 minutes"
+
+# Program Manager Specific Configuration
+program_manager_config:
+  # Business Rules
+  business_rules:
+    rating_rules:
+      rate_factor_validation: "strict"
+      territory_validation: "geographic_service"
+      rate_calculation_precision: "4_decimal_places"
+      rate_filing_compliance: true
+    
+    underwriting_rules:
+      risk_assessment_requirements: "comprehensive"
+      automated_underwriting_thresholds: "configurable"
+      manual_review_triggers: "risk_based"
+      declination_rules: "documented"
+    
+    territory_rules:
+      geographic_validation: "precise"
+      territory_assignment_automation: true
+      territory_rate_consistency: "enforced"
+      territory_boundary_validation: true
+  
+  # Integration Specifications
+  external_integrations:
+    rating_engines:
+      primary_rating_engine:
+        integration_pattern: "api"
+        timeout: "10 seconds"
+        retry_policy: "2_retries_exponential"
+        caching: "aggressive"
+      
+      backup_rating_engine:
+        integration_pattern: "api"
+        timeout: "15 seconds"
+        retry_policy: "1_retry"
+        caching: "standard"
+        
+    geographic_services:
+      territory_service:
+        integration_pattern: "api"
+        timeout: "20 seconds"
+        retry_policy: "3_retries_linear"
+        caching: "long_term"
+        
+    actuarial_tools:
+      risk_modeling:
+        integration_pattern: "batch"
+        timeout: "300 seconds"
+        retry_policy: "manual_intervention"
+        security: "encrypted"
+  
+  # Workflow Customizations
+  workflow_customizations:
+    rating_workflow:
+      real_time_calculation: true
+      multi_factor_rating: true
+      competitive_analysis: true
+      rate_optimization: "automatic"
+      
+    underwriting_workflow:
+      automated_decision_engine: true
+      risk_stratification: true
+      manual_review_queues: true
+      declination_automation: "rule_based"
+      
+    territory_workflow:
+      geographic_validation: "real_time"
+      territory_optimization: true
+      boundary_management: "automated"
+      rate_territory_alignment: true
+
+# Error Handling & Recovery
+error_handling:
+  # Program Manager Specific Error Handling
+  domain_error_categories:
+    - "rating_calculation_error"
+    - "territory_validation_error"
+    - "underwriting_evaluation_error"
+    - "rate_factor_application_error"
+    - "geographic_service_error"
+    - "actuarial_model_error"
+    - "regulatory_compliance_error"
+  
+  # Error Management
+  error_tracking: true
+  error_categorization: true
+  automatic_retry: true
+  escalation_enabled: true
+  
+  # Retry Configuration
+  retry_policy:
+    max_retries: 3
+    retry_intervals: ["30s", "2m", "5m"]
+    backoff_strategy: "exponential"
+    retry_conditions: 
+      - "temporary_failure"
+      - "timeout"
+      - "rating_engine_error"
+      - "geographic_service_error"
+  
+  # Escalation Rules
+  escalation:
+    escalate_to: "system-orchestrator"
+    escalation_triggers:
+      - "3_consecutive_failures"
+      - "rating_accuracy_error"
+      - "regulatory_compliance_violation"
+      - "territory_validation_failure"
+    escalation_timeout: "5 minutes"
+  
+  # Recovery Procedures
+  recovery:
+    automatic_recovery: true
+    recovery_timeout: "4 minutes"
+    fallback_modes: 
+      - "simplified_rating"
+      - "manual_intervention"
+      - "backup_rating_engine"
+
+# Compliance & Audit
+compliance:
+  # Program Manager Specific Compliance
+  domain_compliance:
+    rate_filing_compliance: true
+    actuarial_standards_compliance: true
+    regulatory_reporting_compliance: true
+    fair_pricing_compliance: true
+    
+  # Regulatory Compliance
+  regulatory_requirements:
+    data_retention: "7 years"
+    audit_trail: "complete"
+    privacy_protection: "gdpr_compliant"
+    security_standards: "iso27001"
+    rate_filing_documentation: "complete"
+  
+  # Audit Configuration
+  audit:
+    audit_enabled: true
+    audit_level: "full"
+    audit_retention: "7 years"
+    audit_format: "structured_json"
+    rating_audit_tracking: true
+    territory_audit_tracking: true
+  
+  # Regulatory Controls
+  regulatory_controls:
+    rate_filing_tracking: true
+    competitive_analysis_documentation: true
+    actuarial_justification: "required"
+    regulatory_approval_tracking: true

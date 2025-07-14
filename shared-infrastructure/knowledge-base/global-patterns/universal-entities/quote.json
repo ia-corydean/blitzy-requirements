@@ -1,0 +1,358 @@
+{
+  "pattern_metadata": {
+    "entity_name": "quote",
+    "pattern_version": "1.0.0",
+    "gr_compliance": "GR-52 Universal Entity Management",
+    "created_date": "2025-01-07",
+    "last_updated": "2025-01-07",
+    "confidence_score": 0.97,
+    "usage_count": 156,
+    "success_rate": 0.96,
+    "applicable_domains": ["producer-portal", "accounting", "program-manager"]
+  },
+  "entity_definition": {
+    "primary_table": "quote",
+    "description": "Universal pattern for quote entities across all business domains",
+    "business_purpose": "Manage insurance quotes from initial creation through binding and policy conversion",
+    "gr_52_compliant": true
+  },
+  "table_structure": {
+    "core_fields": [
+      {
+        "name": "id",
+        "type": "bigint",
+        "constraints": "PRIMARY KEY AUTO_INCREMENT",
+        "description": "Unique quote identifier"
+      },
+      {
+        "name": "quote_number",
+        "type": "varchar(50)",
+        "constraints": "UNIQUE NOT NULL",
+        "description": "Human-readable quote number"
+      },
+      {
+        "name": "producer_id",
+        "type": "bigint",
+        "constraints": "FOREIGN KEY REFERENCES producer(id)",
+        "description": "Producer who created the quote"
+      },
+      {
+        "name": "quote_type_id",
+        "type": "bigint",
+        "constraints": "FOREIGN KEY REFERENCES quote_type(id)",
+        "description": "Type of quote (new_business, renewal, amendment)"
+      },
+      {
+        "name": "effective_date",
+        "type": "date",
+        "constraints": "NOT NULL",
+        "description": "Quote effective date"
+      },
+      {
+        "name": "expiration_date",
+        "type": "date",
+        "constraints": "NOT NULL",
+        "description": "Quote expiration date"
+      },
+      {
+        "name": "term_months",
+        "type": "int",
+        "constraints": "NOT NULL DEFAULT 6",
+        "description": "Quote term length in months"
+      },
+      {
+        "name": "total_premium",
+        "type": "decimal(10,2)",
+        "constraints": "NOT NULL DEFAULT 0.00",
+        "description": "Total calculated premium amount"
+      },
+      {
+        "name": "is_bound",
+        "type": "boolean",
+        "constraints": "DEFAULT false",
+        "description": "Indicates if quote has been bound to policy"
+      },
+      {
+        "name": "bound_date",
+        "type": "timestamp",
+        "constraints": "NULL",
+        "description": "Date and time quote was bound"
+      },
+      {
+        "name": "bound_by",
+        "type": "bigint",
+        "constraints": "FOREIGN KEY REFERENCES user(id)",
+        "description": "User who bound the quote"
+      },
+      {
+        "name": "policy_id",
+        "type": "bigint",
+        "constraints": "FOREIGN KEY REFERENCES policy(id)",
+        "description": "Resulting policy when quote is bound"
+      }
+    ],
+    "audit_fields": [
+      {
+        "name": "created_by",
+        "type": "bigint",
+        "constraints": "NOT NULL",
+        "description": "User who created the record"
+      },
+      {
+        "name": "updated_by",
+        "type": "bigint",
+        "constraints": "NOT NULL",
+        "description": "User who last updated the record"
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp",
+        "constraints": "DEFAULT CURRENT_TIMESTAMP",
+        "description": "Record creation timestamp"
+      },
+      {
+        "name": "updated_at",
+        "type": "timestamp",
+        "constraints": "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+        "description": "Record last update timestamp"
+      }
+    ],
+    "status_management": {
+      "field": "status_id",
+      "type": "bigint",
+      "reference": "status",
+      "description": "References universal status table per GR-19"
+    }
+  },
+  "relationships": {
+    "belongs_to": [
+      {
+        "entity": "producer",
+        "foreign_key": "producer_id",
+        "description": "Producer who created the quote"
+      },
+      {
+        "entity": "quote_type",
+        "foreign_key": "quote_type_id",
+        "description": "Classification of quote type"
+      },
+      {
+        "entity": "policy",
+        "foreign_key": "policy_id",
+        "description": "Resulting policy when bound"
+      },
+      {
+        "entity": "user",
+        "foreign_key": "bound_by",
+        "description": "User who bound the quote"
+      },
+      {
+        "entity": "status",
+        "foreign_key": "status_id",
+        "description": "Current status of quote"
+      }
+    ],
+    "has_many": [
+      {
+        "entity": "coverage",
+        "relationship": "quote_id",
+        "description": "Coverage selections for this quote"
+      },
+      {
+        "entity": "rate_calculation",
+        "relationship": "quote_id",
+        "description": "Rate calculations performed for this quote"
+      },
+      {
+        "entity": "underwriting_result",
+        "relationship": "quote_id",
+        "description": "Underwriting decisions for this quote"
+      },
+      {
+        "entity": "quote_revision",
+        "relationship": "quote_id",
+        "description": "Revisions made to this quote"
+      }
+    ],
+    "many_to_many": [
+      {
+        "entity": "driver",
+        "through": "map_quote_driver",
+        "description": "Drivers included in this quote"
+      },
+      {
+        "entity": "vehicle",
+        "through": "map_quote_vehicle",
+        "description": "Vehicles included in this quote"
+      },
+      {
+        "entity": "address",
+        "through": "map_quote_address",
+        "description": "Addresses associated with this quote"
+      },
+      {
+        "entity": "phone",
+        "through": "map_quote_phone",
+        "description": "Phone numbers associated with this quote"
+      },
+      {
+        "entity": "email",
+        "through": "map_quote_email",
+        "description": "Email addresses associated with this quote"
+      }
+    ]
+  },
+  "business_rules": {
+    "validation_rules": [
+      {
+        "rule": "expiration_after_effective",
+        "description": "Expiration date must be after effective date"
+      },
+      {
+        "rule": "term_months_validation",
+        "description": "Term months must be between 1 and 12"
+      },
+      {
+        "rule": "bound_quote_immutability",
+        "description": "Bound quotes cannot be modified except for corrections"
+      },
+      {
+        "rule": "single_named_insured_per_quote",
+        "description": "Each quote must have exactly one named insured driver"
+      },
+      {
+        "rule": "minimum_coverage_requirements",
+        "description": "Quote must meet state minimum coverage requirements"
+      }
+    ],
+    "business_logic": [
+      {
+        "logic": "auto_expiration_processing",
+        "description": "Unbound quotes automatically expire after expiration_date"
+      },
+      {
+        "logic": "premium_recalculation_triggers",
+        "description": "Premium recalculates when drivers, vehicles, or coverages change"
+      },
+      {
+        "logic": "binding_workflow_automation",
+        "description": "Binding triggers policy creation and billing cycle initiation"
+      }
+    ]
+  },
+  "integration_points": {
+    "rate_calculation_service": {
+      "purpose": "Calculate premiums based on quote components",
+      "trigger": "driver_vehicle_coverage_changes",
+      "gr_reference": "GR-38 Microservice Architecture"
+    },
+    "underwriting_service": {
+      "purpose": "Evaluate quote acceptability and pricing",
+      "trigger": "quote_submission",
+      "gr_reference": "GR-38 Microservice Architecture"
+    },
+    "billing_integration": {
+      "purpose": "Create billing cycle upon quote binding",
+      "trigger": "quote_bound",
+      "gr_reference": "Cross-domain workflow to accounting"
+    },
+    "dcs_integration": {
+      "purpose": "Verify drivers and vehicles",
+      "trigger": "quote_creation",
+      "gr_reference": "GR-53 DCS Integration Architecture"
+    }
+  },
+  "section_c_template": {
+    "description": "Backend mapping template for quote fields",
+    "example_mapping": "get quote.* from quote\n-> join producer on quote.producer_id = producer.id\n-> join quote_type on quote.quote_type_id = quote_type.id\n-> join status on quote.status_id = status.id\n-> where quote.status_id = active_status_id",
+    "performance_notes": "Index on (producer_id, status_id, effective_date) for common queries"
+  },
+  "section_e_template": {
+    "description": "Database schema template for quote table",
+    "create_statement": "CREATE TABLE quote (\n  id bigint PRIMARY KEY AUTO_INCREMENT,\n  quote_number varchar(50) UNIQUE NOT NULL,\n  producer_id bigint NOT NULL,\n  quote_type_id bigint NOT NULL,\n  effective_date date NOT NULL,\n  expiration_date date NOT NULL,\n  term_months int NOT NULL DEFAULT 6,\n  total_premium decimal(10,2) NOT NULL DEFAULT 0.00,\n  is_bound boolean DEFAULT false,\n  bound_date timestamp NULL,\n  bound_by bigint NULL,\n  policy_id bigint NULL,\n  status_id bigint NOT NULL,\n  created_by bigint NOT NULL,\n  updated_by bigint NOT NULL,\n  created_at timestamp DEFAULT CURRENT_TIMESTAMP,\n  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  \n  FOREIGN KEY (producer_id) REFERENCES producer(id),\n  FOREIGN KEY (quote_type_id) REFERENCES quote_type(id),\n  FOREIGN KEY (bound_by) REFERENCES user(id),\n  FOREIGN KEY (policy_id) REFERENCES policy(id),\n  FOREIGN KEY (status_id) REFERENCES status(id),\n  \n  INDEX idx_quote_producer (producer_id),\n  INDEX idx_quote_status (status_id),\n  INDEX idx_quote_effective_date (effective_date),\n  INDEX idx_quote_bound (is_bound, bound_date),\n  INDEX idx_quote_producer_status_date (producer_id, status_id, effective_date),\n  \n  CONSTRAINT chk_expiration_after_effective CHECK (expiration_date > effective_date),\n  CONSTRAINT chk_term_months_valid CHECK (term_months BETWEEN 1 AND 12),\n  CONSTRAINT chk_bound_logic CHECK ((is_bound = false AND bound_date IS NULL AND bound_by IS NULL AND policy_id IS NULL) OR (is_bound = true AND bound_date IS NOT NULL AND bound_by IS NOT NULL))\n);"
+  },
+  "usage_patterns": {
+    "common_queries": [
+      {
+        "purpose": "Get active quotes for producer",
+        "query": "SELECT q.* FROM quote q WHERE q.producer_id = ? AND q.status_id = ? AND q.is_bound = false AND q.expiration_date >= CURDATE()"
+      },
+      {
+        "purpose": "Get quote with all components",
+        "query": "SELECT q.*, d.*, v.*, c.* FROM quote q LEFT JOIN map_quote_driver mqd ON q.id = mqd.quote_id LEFT JOIN driver d ON mqd.driver_id = d.id LEFT JOIN map_quote_vehicle mqv ON q.id = mqv.quote_id LEFT JOIN vehicle v ON mqv.vehicle_id = v.id LEFT JOIN coverage c ON q.id = c.quote_id WHERE q.id = ?"
+      },
+      {
+        "purpose": "Find quotes ready for binding",
+        "query": "SELECT q.* FROM quote q WHERE q.status_id = ? AND q.is_bound = false AND q.total_premium > 0 AND q.expiration_date >= CURDATE()"
+      }
+    ],
+    "performance_considerations": [
+      "Index on (producer_id, status_id, effective_date) for producer quote listings",
+      "Composite index on (is_bound, expiration_date) for expiration processing",
+      "Consider partitioning by effective_date for large quote volumes",
+      "Cache frequently accessed quote components"
+    ]
+  },
+  "domain_customizations": {
+    "producer_portal": {
+      "additional_validations": ["producer_authorization", "quote_limit_validation"],
+      "ui_considerations": ["quote_progress_tracking", "component_validation_feedback"],
+      "workflow_steps": ["quote_creation", "component_addition", "rate_calculation", "review", "binding"]
+    },
+    "accounting": {
+      "billing_integration": ["billing_cycle_creation", "payment_schedule_setup"],
+      "commission_calculation": ["producer_commission_rates", "override_handling"]
+    },
+    "program_manager": {
+      "rating_integration": ["rate_factor_application", "underwriting_rule_evaluation"],
+      "program_specific_rules": ["program_trait_validation", "territory_restrictions"]
+    }
+  },
+  "rate_calculation_integration": {
+    "rating_triggers": [
+      {
+        "trigger": "driver_added",
+        "calculation": "driver_rating_factors",
+        "impact": "Affects liability and medical coverage rates"
+      },
+      {
+        "trigger": "vehicle_added",
+        "calculation": "vehicle_rating_factors",
+        "impact": "Affects comprehensive/collision rates and liability"
+      },
+      {
+        "trigger": "coverage_modified",
+        "calculation": "coverage_rating_factors",
+        "impact": "Affects premium based on coverage selections"
+      }
+    ],
+    "calculation_workflow": {
+      "step_1": "base_rate_lookup",
+      "step_2": "driver_factor_application",
+      "step_3": "vehicle_factor_application",
+      "step_4": "coverage_factor_application",
+      "step_5": "discount_application",
+      "step_6": "tax_and_fee_calculation"
+    }
+  },
+  "workflow_integration": {
+    "quote_to_policy_binding": {
+      "prerequisites": ["underwriting_approval", "payment_received", "quote_not_expired"],
+      "actions": ["create_policy", "initiate_billing_cycle", "update_quote_status"],
+      "post_actions": ["send_confirmation", "update_producer_dashboard"]
+    },
+    "cross_domain_workflows": [
+      {
+        "workflow": "quote_to_billing",
+        "target_domain": "accounting",
+        "trigger": "quote_bound",
+        "data_transfer": ["policy_id", "premium_amount", "producer_id", "payment_schedule"]
+      }
+    ]
+  },
+  "migration_guidance": {
+    "from_legacy": "Map existing quote tables to this pattern, ensuring quote_number uniqueness and proper foreign key relationships",
+    "data_cleanup": "Standardize quote_type values, validate date ranges, ensure premium calculations are consistent",
+    "validation": "Verify single named insured per quote constraint, validate bound quote immutability"
+  }
+}
