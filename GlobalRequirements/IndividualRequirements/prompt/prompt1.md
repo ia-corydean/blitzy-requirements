@@ -23,7 +23,6 @@ Aime/workspace/requirements/README.md
 docker database variables
 # GitHub Credentials
 GIT_USERNAME=ia-corydean
-GIT_TOKEN=REDACTED
 GIT_EMAIL=cory.dean@insurtechadvisor.com
 
 # Database Configuration
