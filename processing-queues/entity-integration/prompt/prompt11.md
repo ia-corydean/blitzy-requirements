@@ -1,0 +1,65 @@
+Aime/workspace/requirements/GlobalRequirements/IndividualRequirements/approaches
+- GlobalRequirements/IndividualRequirements/approaches/GR-10-updated-v2.md
+  - filing_status should be status_id
+  - communication_method
+    - channel shouldn't be here as communication_method and communication_method_type cover this.
+- GlobalRequirements/IndividualRequirements/approaches/GR-13-updated-v2.md
+  - entity_type
+    - this should be entity_type_id
+  - alert_configuration
+    - this should be in configuration with configuration_type, right?
+  - is_active
+    - status_id
+- GlobalRequirements/IndividualRequirements/approaches/GR-19-updated-v2.md
+  - is_active
+    - status_id
+  - communication_type
+    - default_channel
+      - thses should be records in here.
+  - entity_type
+    - this should be entity_type_id
+  - recipient_type
+    - entity_type_id
+  - policy_vehicle
+    - map_policy_vehicle
+- GlobalRequirements/IndividualRequirements/approaches/GR-37-updated-v2.md
+  - entity_type
+    - this should be entity_type_id
+- GlobalRequirements/IndividualRequirements/approaches/GR-41-updated-v2.md
+  - is_active BOOLEAN DEFAULT TRUE,
+    - should be status_id in place of this everywhere
+  - agency_id
+    - there is no agency_id
+  - entity_type
+    - entity_type_id
+  - driver_type
+    - driver_type_id
+  - quote_number
+    - quote_id
+  - status
+    - status_id
+  - claim
+    - loss
+  - policy_status_history
+    - this should be available without another table, right?
+  - filing_state
+    - filing_state_id
+  - filing_status
+    - status_id
+- GlobalRequirements/IndividualRequirements/approaches/GR-44-updated-v2.md
+  - channel
+    - this is communication_type, right?
+  - status
+    - status_id
+  - is_active
+    - status_id
+- GlobalRequirements/IndividualRequirements/approaches/GR-52-updated-v2.md
+- GlobalRequirements/IndividualRequirements/approaches/GR-53-updated-v2.md
+  - calculations can/sholud be tied to transaction and/or transaction_line, and/or rate, etc..
+- GlobalRequirements/IndividualRequirements/approaches/GR-64-updated-v2.md
+
+create an -updated-v3 file of each with these changes in mind.
+- ensure suggested changes apply accross all other requirements if they apply.
+  - example
+    - entity_type
+      - entity_type_id

@@ -1,0 +1,19 @@
+GlobalRequirements/IndividualRequirements/approaches/v5-changes-summary.md
+- map_policy_loss
+- any data fields that are specific to an entity should be in the entity table. map_ tables should try to be as simple as possible when joining entites together
+  - map_policy_vehicle.vehicle_use_id to vehicle
+  - map_policy_vehicle.garaging_address_id to vehicle
+  - map_quote_driver.driver_type_id
+  - map_quote_driver.relationship_to_insured_id
+  - etc..
+- ensure our global requirements include why we're choosing map_ tables for association, when to use them, and how to use them
+  - it is important to document all the reasons why we're choosing this vs other routes for future reference
+- map_driver_alert
+  - driver_id
+  - driver_alert_id
+- map_policy_alert
+  - policy_id
+  - policy_alert_id
+- remove map_communication_integration as communication_id is in integration_log
+- any enitites not defined in GlobalRequirements/IndividualRequirements/approaches/-additional-entities.md or shared-infrastructure/knowledge-base/universal-entity-catalog-v2-updated.json and are defined in our update-v3 files, should be provided in this summary for review to be added to GlobalRequirements/IndividualRequirements/approaches/-additional-entities.md.
+- create a v6-changes-summary file with your response and as an updated version of v5-changes-summary

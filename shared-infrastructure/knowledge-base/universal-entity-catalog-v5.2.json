@@ -1,0 +1,626 @@
+{
+  "catalog_metadata": {
+    "version": "5.2.0",
+    "created_date": "2025-07-21",
+    "last_updated": "2025-07-22",
+    "description": "Universal Entity Catalog v5.2 - Database schema corrections for IP273 Account Management",
+    "gr_compliance": "GR-52 Universal Entity Management, GR-41 Database Standards, GR-19 Table Relationships",
+    "total_entities": 168,
+    "database_state": "Complete v5.2 migration with full Account Management support",
+    "notes": "Added file management tables and enhanced existing tables with required fields for authentication and permissions",
+    "changes_from_v5_1": {
+      "approach": "Fixed database schema gaps identified in v4 analysis",
+      "tables_added": 2,
+      "tables_enhanced": 4,
+      "new_functionality": [
+        "File storage system (file, file_type)",
+        "Authentication fields (username, password)",
+        "Enhanced permission management",
+        "Complete name fields for persons"
+      ],
+      "tables_modified": [
+        "user - added username, password fields",
+        "permission - added code, name, description, category fields",
+        "role - added code, name, description fields",
+        "name - added first_name, last_name, middle_name fields"
+      ]
+    }
+  },
+  "database_summary": {
+    "total_tables": 168,
+    "categories": {
+      "foundation_services": 16,
+      "core_insurance": 24,
+      "financial_transactions": 18,
+      "process_management": 8,
+      "configuration_rating": 10,
+      "claims_loss": 10,
+      "communication_documents": 8,
+      "geographic_reference": 6,
+      "system_infrastructure": 20,
+      "session_security": 6,
+      "sr22_sr26": 6,
+      "integration": 4,
+      "mapping_tables": 19,
+      "distribution_management": 4,
+      "navigation_dashboard": 5,
+      "policy_management": 5,
+      "quote_management": 2,
+      "resource_management": 4,
+      "user_management": 1
+    },
+    "naming_patterns": {
+      "main_tables": "singular snake_case (e.g., policy, quote)",
+      "type_tables": "main_table + _type suffix",
+      "map_tables": "map_ prefix + entity1 + entity2",
+      "foreign_keys": "fk_[table]_[referenced_table]",
+      "indexes": "idx_[table]_[column(s)]"
+    },
+    "standard_columns": {
+      "all_tables": ["id", "created_at", "updated_at"],
+      "business_tables": ["status_id", "created_by", "updated_by"],
+      "type_tables": ["code", "name", "description", "is_default"],
+      "exceptions": {
+        "geographic_tables": "No status_id or audit user fields",
+        "reason_tables": "No status_id field"
+      }
+    }
+  },
+  "foundation_services": {
+    "status": {
+      "entity_id": "status",
+      "entity_name": "Status",
+      "domains": ["all"],
+      "universal_pattern": "Universal status management (GR-19)",
+      "table_count": 2,
+      "tables": {
+        "primary": "status",
+        "type": "status_type"
+      },
+      "key_fields": ["status_type_id", "code", "name", "is_active", "is_terminal"],
+      "relationships": ["All business tables reference status"],
+      "v5_usage": "Maximized reuse - eliminated redundant status tables"
+    },
+    "name": {
+      "entity_id": "name",
+      "entity_name": "Name",
+      "domains": ["all"],
+      "universal_pattern": "Person/business name management",
+      "table_count": 2,
+      "tables": {
+        "primary": "name",
+        "type": "name_type"
+      },
+      "key_fields": ["name_type_id", "first_name", "last_name", "middle_name", "business_name"],
+      "relationships": ["driver", "producer", "user"],
+      "v5_enhancements": ["suffix", "business_name", "is_business"],
+      "v5_2_enhancements": ["first_name", "last_name", "middle_name"]
+    },
+    "address": {
+      "entity_id": "address",
+      "entity_name": "Address",
+      "domains": ["all"],
+      "universal_pattern": "Geographic location management",
+      "table_count": 2,
+      "tables": {
+        "primary": "address",
+        "type": "address_type"
+      },
+      "key_fields": ["address_type_id", "line1", "city", "state_code", "zip_code"],
+      "relationships": ["vehicle.garaging_address_id"],
+      "v5_enhancements": ["county_id", "country_id", "is_validated", "validation_date", "latitude", "longitude"]
+    },
+    "communication_method": {
+      "entity_id": "communication_method",
+      "entity_name": "Communication Method",
+      "domains": ["all"],
+      "universal_pattern": "Phone, email, and other communication methods",
+      "table_count": 2,
+      "tables": {
+        "primary": "communication_method",
+        "type": "communication_method_type"
+      },
+      "key_fields": ["communication_method_type_id", "value"]
+    },
+    "license": {
+      "entity_id": "license",
+      "entity_name": "License",
+      "domains": ["all"],
+      "universal_pattern": "License information management",
+      "table_count": 2,
+      "tables": {
+        "primary": "license",
+        "type": "license_type"
+      },
+      "key_fields": ["license_type_id", "license_number", "state_code"],
+      "relationships": ["driver.license_id", "producer.license_id"]
+    },
+    "language": {
+      "entity_id": "language",
+      "entity_name": "Language",
+      "domains": ["all"],
+      "universal_pattern": "Multi-language support",
+      "table_count": 2,
+      "tables": {
+        "primary": "language",
+        "type": "language_type"
+      },
+      "key_fields": ["language_type_id", "code", "name", "native_name", "is_default"],
+      "relationships": ["user.language_preference_id"],
+      "v5_1_addition": "Added for IP273 Account Management"
+    }
+  },
+  "core_insurance": {
+    "program": {
+      "entity_id": "program",
+      "entity_name": "Program",
+      "domains": ["all"],
+      "universal_pattern": "Insurance program definitions",
+      "table_count": 2,
+      "tables": {
+        "primary": "program",
+        "type": "program_type"
+      },
+      "key_fields": ["program_type_id", "code", "name", "effective_date"],
+      "relationships": ["policy.program_id", "quote.program_id", "map_program_producer"],
+      "v5_enhancements": ["policy_number_prefix_id", "name", "description", "effective_date", "expiration_date"]
+    },
+    "policy": {
+      "entity_id": "policy",
+      "entity_name": "Policy",
+      "domains": ["all"],
+      "universal_pattern": "Insurance policy records",
+      "table_count": 2,
+      "tables": {
+        "primary": "policy",
+        "type": "policy_type"
+      },
+      "key_fields": ["policy_type_id", "policy_number", "program_id", "effective_date", "expiration_date"],
+      "relationships": ["map_policy_driver", "map_policy_vehicle", "quote_id", "producer_id"],
+      "v5_enhancements": [
+        "policy_number", "program_id", "quote_id", "producer_id", "effective_date", "expiration_date", 
+        "premium", "bound_date", "cancellation_date", "cancellation_reason_id", "reinstatement_date",
+        "non_renewal_date", "non_renewal_reason_id", "total_vehicles", "total_drivers", "payment_plan_id",
+        "down_payment", "paid_to_date", "total_paid", "balance_due"
+      ]
+    },
+    "quote": {
+      "entity_id": "quote",
+      "entity_name": "Quote",
+      "domains": ["all"],
+      "universal_pattern": "Insurance quote records",
+      "table_count": 2,
+      "tables": {
+        "primary": "quote",
+        "type": "quote_type"
+      },
+      "key_fields": ["quote_type_id", "quote_number", "program_id", "effective_date"],
+      "relationships": ["map_quote_driver", "map_quote_vehicle", "producer_id"],
+      "v5_enhancements": [
+        "quote_number", "program_id", "producer_id", "policy_id", "effective_date", "expiration_date",
+        "premium", "bound_date", "version_number", "is_renewal", "renewal_policy_id", 
+        "distribution_channel_id", "external_reference", "total_vehicles", "total_drivers"
+      ]
+    },
+    "driver": {
+      "entity_id": "driver",
+      "entity_name": "Driver",
+      "domains": ["all"],
+      "universal_pattern": "Driver information with PII",
+      "table_count": 2,
+      "tables": {
+        "primary": "driver",
+        "type": "driver_type"
+      },
+      "key_fields": ["driver_type_id", "name_id", "license_id", "date_of_birth"],
+      "relationships": ["map_policy_driver", "map_quote_driver", "map_driver_violation"],
+      "v5_enhancements": [
+        "name_id", "license_id", "date_of_birth", "gender_id", "marital_status_id",
+        "driver_type_id", "years_licensed", "relationship_to_insured_id", "is_named_insured",
+        "violations_count", "accidents_count"
+      ]
+    },
+    "vehicle": {
+      "entity_id": "vehicle",
+      "entity_name": "Vehicle",
+      "domains": ["all"],
+      "universal_pattern": "Vehicle information",
+      "table_count": 2,
+      "tables": {
+        "primary": "vehicle",
+        "type": "vehicle_type"
+      },
+      "key_fields": ["vehicle_type_id", "vin", "year", "make", "model"],
+      "relationships": ["map_policy_vehicle", "map_quote_vehicle"],
+      "v5_enhancements": [
+        "vin", "year", "make", "model", "vehicle_use_id", "garaging_address_id",
+        "vehicle_type_id", "body_style", "fuel_type", "annual_mileage", "vehicle_ownership_type_id",
+        "primary_driver_id", "vin_verified"
+      ]
+    },
+    "producer": {
+      "entity_id": "producer",
+      "entity_name": "Producer",
+      "domains": ["all"],
+      "universal_pattern": "Agent/producer records",
+      "table_count": 2,
+      "tables": {
+        "primary": "producer",
+        "type": "producer_type"
+      },
+      "key_fields": ["producer_type_id", "producer_code", "name_id"],
+      "relationships": ["policy.producer_id", "quote.producer_id", "map_program_producer", "map_producer_suspense"],
+      "v5_enhancements": ["producer_code", "name_id", "license_id", "commission_id", "tax_identification_id"]
+    },
+    "coverage": {
+      "entity_id": "coverage",
+      "entity_name": "Coverage",
+      "domains": ["all"],
+      "universal_pattern": "Insurance coverage definitions",
+      "table_count": 2,
+      "tables": {
+        "primary": "coverage",
+        "type": "coverage_type"
+      },
+      "key_fields": ["coverage_type_id", "limit_id", "deductible_id"],
+      "relationships": ["map_program_coverage", "map_quote_coverage"],
+      "v5_enhancements": ["limit_id", "deductible_id", "premium_amount", "is_required", "is_selected"]
+    }
+  },
+  "communication_documents": {
+    "document": {
+      "entity_id": "document",
+      "entity_name": "Document",
+      "domains": ["all"],
+      "universal_pattern": "Document metadata management",
+      "table_count": 2,
+      "tables": {
+        "primary": "document",
+        "type": "document_type"
+      },
+      "key_fields": ["document_type_id", "file_id", "is_signed", "signed_at", "expiration_date"],
+      "relationships": ["file.id", "map_entity_document"],
+      "v5_enhancements": ["file_id", "is_signed", "signed_at", "expiration_date"]
+    },
+    "file": {
+      "entity_id": "file",
+      "entity_name": "File",
+      "domains": ["all"],
+      "universal_pattern": "Physical file storage",
+      "table_count": 2,
+      "tables": {
+        "primary": "file",
+        "type": "file_type"
+      },
+      "key_fields": ["file_type_id", "name", "path", "size", "mime_type", "hash"],
+      "relationships": ["document.file_id"],
+      "v5_2_addition": "Added for IP273 document storage",
+      "metadata_support": "JSON field for extensible file metadata"
+    }
+  },
+  "session_security": {
+    "user": {
+      "entity_id": "user",
+      "entity_name": "User",
+      "domains": ["all"],
+      "universal_pattern": "System user management",
+      "table_count": 2,
+      "tables": {
+        "primary": "user",
+        "type": "user_type"
+      },
+      "key_fields": ["user_type_id", "username", "password", "email", "name_id", "role_id"],
+      "relationships": ["session.user_id", "signature.user_id", "language.id"],
+      "v5_enhancements": [
+        "name_id", "role_id", "email", "phone", "mfa_enabled", "mfa_secret",
+        "email_verified", "phone_verified", "last_login_at", "failed_login_attempts",
+        "locked_until", "password_changed_at"
+      ],
+      "v5_1_enhancements": [
+        "signature_id", "language_preference_id", "password_reset_token", "password_reset_expires"
+      ],
+      "v5_2_enhancements": [
+        "username", "password"
+      ],
+      "authentication_features": "Full authentication support with username/password, MFA, account locking, password reset"
+    },
+    "role": {
+      "entity_id": "role",
+      "entity_name": "Role",
+      "domains": ["all"],
+      "universal_pattern": "User role definitions",
+      "table_count": 2,
+      "tables": {
+        "primary": "role",
+        "type": "role_type"
+      },
+      "key_fields": ["role_type_id", "code", "name", "description"],
+      "relationships": ["user.role_id", "map_user_role", "map_role_permission"],
+      "v5_2_enhancements": ["code", "name", "description"]
+    },
+    "permission": {
+      "entity_id": "permission",
+      "entity_name": "Permission",
+      "domains": ["all"],
+      "universal_pattern": "System permission definitions",
+      "table_count": 2,
+      "tables": {
+        "primary": "permission",
+        "type": "permission_type"
+      },
+      "key_fields": ["permission_type_id", "code", "name", "description", "category"],
+      "relationships": ["map_role_permission"],
+      "v5_2_enhancements": ["code", "name", "description", "category"]
+    }
+  },
+  "resource_management": {
+    "resource": {
+      "entity_id": "resource",
+      "entity_name": "Resource",
+      "domains": ["producer_portal"],
+      "universal_pattern": "External and internal resource links",
+      "table_count": 2,
+      "tables": {
+        "primary": "resource",
+        "type": "resource_type"
+      },
+      "key_fields": ["resource_type_id", "code", "name", "url", "display_order"],
+      "relationships": ["map_resource_group"],
+      "v5_1_addition": "Added for IP272 Resources"
+    },
+    "resource_group": {
+      "entity_id": "resource_group",
+      "entity_name": "Resource Group",
+      "domains": ["producer_portal"],
+      "universal_pattern": "Resource categorization",
+      "table_count": 1,
+      "key_fields": ["code", "name", "display_order"],
+      "relationships": ["map_resource_group"],
+      "v5_1_addition": "Added for IP272 Resources"
+    }
+  },
+  "user_management": {
+    "signature": {
+      "entity_id": "signature",
+      "entity_name": "Signature",
+      "domains": ["all"],
+      "universal_pattern": "Digital signature storage",
+      "table_count": 1,
+      "key_fields": ["user_id", "signature_data", "initials_data", "signature_adopted_name", "signature_adopted_at"],
+      "relationships": ["user.signature_id"],
+      "v5_1_addition": "Added for IP273 Account Management"
+    }
+  },
+  "new_v5_entities": {
+    "distribution_management": {
+      "distribution_channel_type": {
+        "entity_id": "distribution_channel_type",
+        "entity_name": "Distribution Channel Type",
+        "domains": ["quote_management"],
+        "universal_pattern": "Channel type categorization",
+        "table_count": 1,
+        "key_fields": ["code", "name", "description", "is_default"],
+        "relationships": ["distribution_channel.distribution_channel_type_id"]
+      },
+      "distribution_channel": {
+        "entity_id": "distribution_channel",
+        "entity_name": "Distribution Channel",
+        "domains": ["quote_management"],
+        "universal_pattern": "Sales distribution channels",
+        "table_count": 1,
+        "key_fields": ["distribution_channel_type_id", "code", "name"],
+        "relationships": ["quote.distribution_channel_id"]
+      },
+      "vehicle_ownership_type": {
+        "entity_id": "vehicle_ownership_type",
+        "entity_name": "Vehicle Ownership Type",
+        "domains": ["vehicle_management"],
+        "universal_pattern": "Vehicle ownership categorization",
+        "table_count": 1,
+        "key_fields": ["code", "name", "description"],
+        "relationships": ["vehicle.vehicle_ownership_type_id"]
+      }
+    },
+    "violation_management": {
+      "violation_type": {
+        "entity_id": "violation_type",
+        "entity_name": "Violation Type",
+        "domains": ["driver_management"],
+        "universal_pattern": "Driver violation categorization",
+        "table_count": 1,
+        "key_fields": ["code", "name", "severity_level", "points", "is_major"],
+        "relationships": ["violation.violation_type_id"]
+      },
+      "violation": {
+        "entity_id": "violation",
+        "entity_name": "Violation",
+        "domains": ["driver_management"],
+        "universal_pattern": "Driver violation records",
+        "table_count": 1,
+        "key_fields": ["violation_type_id", "violation_date", "description"],
+        "relationships": ["map_driver_violation.violation_id"]
+      }
+    },
+    "cancellation_management": {
+      "cancellation_reason": {
+        "entity_id": "cancellation_reason",
+        "entity_name": "Cancellation Reason",
+        "domains": ["policy_management"],
+        "universal_pattern": "Policy cancellation reasons",
+        "table_count": 1,
+        "key_fields": ["code", "name", "category", "requires_documentation"],
+        "relationships": ["policy.cancellation_reason_id"]
+      }
+    }
+  },
+  "mapping_tables": {
+    "relationships": {
+      "entity_id": "mapping",
+      "entity_name": "Entity Relationships",
+      "domains": ["all"],
+      "universal_pattern": "Many-to-many relationship management",
+      "table_count": 14,
+      "existing_tables": [
+        "map_policy_driver", "map_policy_vehicle", "map_quote_driver", "map_quote_vehicle",
+        "map_user_role", "map_role_permission", "map_program_producer", "map_entity_document"
+      ],
+      "new_v5_tables": [
+        "map_driver_violation", "map_program_coverage", "map_program_deductible", 
+        "map_program_limit", "map_quote_coverage", "map_integration_configuration"
+      ],
+      "new_v5_1_tables": [
+        "map_resource_group"
+      ],
+      "standard_fields": ["entity1_id", "entity2_id", "status_id", "created_by", "created_at"],
+      "cascade_behavior": "ON DELETE CASCADE for entity references"
+    }
+  },
+  "enhanced_existing_entities": {
+    "alert": {
+      "entity_id": "alert",
+      "entity_name": "Alert",
+      "domains": ["navigation"],
+      "universal_pattern": "System alerts and notifications",
+      "v5_enhancements": ["alert_type_id", "user_id", "title", "message"],
+      "relationships": ["alert_type.id", "user.id"]
+    },
+    "alert_type": {
+      "entity_id": "alert_type",
+      "entity_name": "Alert Type",
+      "domains": ["navigation"],
+      "universal_pattern": "Alert categorization",
+      "v5_enhancements": ["category", "priority", "auto_resolve", "resolution_route", "display_order"]
+    },
+    "suspense": {
+      "entity_id": "suspense",
+      "entity_name": "Suspense",
+      "domains": ["task_management"],
+      "universal_pattern": "Task and workflow management",
+      "v5_enhancements": ["route_path"]
+    },
+    "suspense_type": {
+      "entity_id": "suspense_type",
+      "entity_name": "Suspense Type",
+      "domains": ["task_management"],
+      "universal_pattern": "Task categorization",
+      "v5_enhancements": ["category", "priority"]
+    }
+  },
+  "integration_management": {
+    "map_integration_configuration": {
+      "entity_id": "map_integration_configuration",
+      "entity_name": "Integration Configuration Mapping",
+      "domains": ["integration"],
+      "universal_pattern": "Program-specific integration settings",
+      "table_count": 1,
+      "key_fields": ["program_id", "integration_type_id", "configuration_id", "is_active"],
+      "relationships": ["program.id", "integration_type.id", "configuration.id"]
+    }
+  },
+  "v5_2_implementation_summary": {
+    "migration_approach": "Fixed database schema gaps for complete Account Management support",
+    "tables_before_update": 166,
+    "tables_after_update": 168,
+    "new_tables_added": 2,
+    "tables_added_detail": {
+      "file_management": ["file", "file_type"]
+    },
+    "table_modifications": {
+      "user": {
+        "new_columns": ["username", "password"],
+        "purpose": "Enable authentication with username/password login"
+      },
+      "permission": {
+        "new_columns": ["code", "name", "description", "category"],
+        "purpose": "Complete permission management with descriptive fields"
+      },
+      "role": {
+        "new_columns": ["code", "name", "description"],
+        "purpose": "Complete role definitions with descriptive fields"
+      },
+      "name": {
+        "new_columns": ["first_name", "last_name", "middle_name"],
+        "purpose": "Support complete person name management"
+      }
+    },
+    "schema_completeness": [
+      "All authentication fields now present",
+      "Permission and role tables fully functional",
+      "File storage system implemented",
+      "Name table supports both person and business names"
+    ],
+    "implementation_notes": [
+      "All tables use INT(11) for id fields to match existing schema",
+      "Foreign key constraints properly established",
+      "Unique constraints added to code fields",
+      "All required indexes created"
+    ]
+  },
+  "v5_1_implementation_summary": {
+    "migration_approach": "Added Producer Portal requirements to v5 foundation",
+    "tables_before_update": 159,
+    "tables_after_update": 166,
+    "new_tables_added": 7,
+    "tables_added_detail": {
+      "resource_management": ["resource", "resource_type", "resource_group", "map_resource_group"],
+      "language_support": ["language", "language_type"],
+      "user_management": ["signature"]
+    },
+    "table_modifications": {
+      "user": {
+        "new_columns": ["signature_id", "language_preference_id", "password_reset_token", "password_reset_expires"],
+        "purpose": "Support digital signatures, language preferences, and password reset functionality"
+      }
+    },
+    "producer_portal_features": [
+      "Resource library with categorization (IP272)",
+      "Digital signature management (IP273)",
+      "Multi-language preference support (IP273)",
+      "Enhanced password reset capability (IP273)"
+    ]
+  },
+  "v5_implementation_summary": {
+    "migration_approach": "Maximum reuse of existing tables with targeted enhancements",
+    "tables_before_migration": 135,
+    "tables_after_migration": 159,
+    "new_tables_added": 24,
+    "core_table_enhancements": {
+      "program": "5 new columns for program management",
+      "producer": "5 new columns for producer details",
+      "policy": "13 new columns for complete policy lifecycle",
+      "quote": "8 new columns for quote management",
+      "driver": "11 new columns for comprehensive driver info",
+      "vehicle": "9 new columns for vehicle details",
+      "user": "12 new columns for authentication and security",
+      "address": "6 new columns for enhanced location data",
+      "coverage": "5 new columns for coverage configuration"
+    },
+    "eliminated_redundancies": [
+      "Removed separate alert_status, suspense_status, quote_status tables",
+      "Eliminated user preference and dashboard caching tables",
+      "Consolidated status management into existing status table",
+      "Removed redundant tracking and history tables"
+    ],
+    "new_functionality_areas": [
+      "Producer portal navigation and dashboard",
+      "Distribution channel management",
+      "Driver violation tracking and mapping",
+      "Program configuration for limits, deductibles, and coverage",
+      "Integration configuration management",
+      "Enhanced policy lifecycle management",
+      "Comprehensive user authentication and security"
+    ],
+    "performance_optimizations": [
+      "Strategic indexing on new columns",
+      "Foreign key constraints with proper cascade behavior",
+      "Optimized mapping table structures"
+    ]
+  },
+  "compliance_validation": {
+    "gr_41_compliance": "All new tables follow proper naming conventions",
+    "gr_52_compliance": "Universal entity patterns maintained and enhanced",
+    "gr_19_compliance": "Table relationships properly structured with foreign keys",
+    "data_integrity": "All new columns include proper constraints and defaults",
+    "audit_trail": "Standard audit fields applied to all new business tables"
+  }
+}

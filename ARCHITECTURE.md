@@ -25,7 +25,7 @@ This document provides comprehensive technical details of the simplified 5-agent
 ### Architectural Simplifications
 
 #### 1. Reduced Agent Count
-- **From 11 to 5 agents**: 55% reduction in system complexity
+- **Streamlined to 5 agents**: Optimized for clarity and efficiency
 - **Clear responsibilities**: Each agent has a single, well-defined purpose
 - **No overlapping functionality**: Eliminates confusion and redundancy
 - **Sequential flow**: Simple, predictable processing path
@@ -160,22 +160,44 @@ graph TD
 - **Outputs**: Validation report, compliance checklist
 - **Checks**: GR compliance, pattern consistency, quality standards
 
-### Simplified Infrastructure
+### Active Shared Infrastructure
+
+The shared-infrastructure directory contains actively maintained components that are essential to the system's operation:
 
 #### Context Store
 ```
 /shared-infrastructure/context-store/
-├── domain-contexts/        # Domain-specific knowledge
-├── pattern-applications.json    # Applied patterns log
-├── simplification-decisions.json # Simplification history
-└── approval-history.json        # User feedback and decisions
+├── domain-contexts/        # Domain-specific knowledge (actively used)
+├── pattern-applications.json    # Applied patterns log (updated per requirement)
+├── simplification-decisions.json # Simplification history (grows over time)
+└── approval-history.json        # User feedback and decisions (audit trail)
 ```
 
 #### Templates
 ```
 /shared-infrastructure/templates/
-├── approach-template.md    # For -approach.md files
-└── requirement-template.md # For final requirements
+├── approach-template.md    # For -approach.md files (enhanced with validation sections)
+└── requirement-template.md # For final requirements (standardized output)
+```
+
+#### Agent Configurations
+```
+/shared-infrastructure/agent-configurations/
+├── prompt-analyzer.yaml         # Current 5-agent system config
+├── pattern-matcher.yaml         # Current 5-agent system config
+├── simplification-enforcer.yaml # Current 5-agent system config
+├── implementation-generator.yaml # Current 5-agent system config
+├── quality-validator.yaml       # Current 5-agent system config
+└── archived-11-agent-system/    # Historical reference only
+```
+
+#### Knowledge Base
+```
+/shared-infrastructure/knowledge-base/
+├── entity-catalogs/        # Reusable entity definitions
+├── pattern-libraries/      # Common pattern implementations
+├── relationship-mappings/  # Entity relationship templates
+└── architecture-decisions/ # ADRs and design choices
 ```
 
 #### Processing Queues
@@ -470,6 +492,92 @@ Each requirement generates an approach file for approval:
 4. **Review Period**: User reviews at their pace
 5. **Decision Recording**: User updates approval section
 6. **System Response**: Based on decision, system proceeds or revises
+
+## Validation Architecture
+
+### Multi-Layer Validation Strategy
+The system implements comprehensive validation through enhanced approach files that serve multiple stakeholder needs:
+
+```mermaid
+graph TD
+    A[Approach File] --> B[Business Validation]
+    A --> C[Technical Validation]
+    A --> D[Data Model Validation]
+    A --> E[Success Criteria Validation]
+    
+    B --> F[Stakeholder Review]
+    C --> G[Developer Review]
+    D --> H[Architect Review]
+    E --> I[QA Review]
+```
+
+### Validation Sections in Approach Files
+
+#### 1. Business Summary for Stakeholders
+```markdown
+## Business Summary for Stakeholders
+### What We're Building
+[Plain English explanation without technical jargon]
+
+### Why It's Needed
+[Business value and problem being solved]
+
+### Expected Outcomes
+[What success looks like from business perspective]
+```
+**Purpose**: Enables non-technical stakeholders to validate business alignment
+
+#### 2. Technical Summary for Developers
+```markdown
+## Technical Summary for Developers
+### Key Technical Decisions
+- Architecture Pattern: [e.g., microservice, API-driven]
+- Technology Choices: [frameworks, libraries]
+- Integration Approach: [APIs, events, direct DB]
+
+### Implementation Guidelines
+- Critical code patterns to follow
+- Performance considerations
+- Security requirements
+- Error handling approach
+```
+**Purpose**: Provides developers with clear implementation guidance
+
+#### 3. Suggested Tables and Schemas
+```markdown
+## Suggested Tables and Schemas
+- **Table 1**: [purpose, key fields, relationships]
+- **Table 2**: [purpose, key fields, relationships]
+- **Key Indexes**: [performance-critical indexes]
+- **Constraints**: [foreign keys, unique constraints]
+```
+**Purpose**: Enables database architects to validate data model design
+
+#### 4. Validation Criteria
+```markdown
+## Validation Criteria
+### Pre-Implementation Checkpoints
+- [ ] Business requirements clearly understood
+- [ ] Technical approach aligns with standards
+- [ ] Database schema follows conventions
+- [ ] Pattern reuse maximized (85%+ target)
+
+### Success Metrics
+- [ ] [Specific measurable outcome 1]
+- [ ] [Performance target if applicable]
+- [ ] [Quality threshold if applicable]
+```
+**Purpose**: Provides clear, measurable success criteria for QA validation
+
+### Validation Flow Through System
+
+1. **Prompt Analyzer**: Initial validation of requirement completeness
+2. **Pattern Matcher**: Validates pattern reuse opportunities
+3. **Simplification Enforcer**: Validates complexity reduction
+4. **Approach Generation**: Creates comprehensive validation document
+5. **User Review**: Multi-stakeholder validation checkpoint
+6. **Implementation Generator**: Validates approach adherence
+7. **Quality Validator**: Final validation against all criteria
 
 ## Context Preservation Strategy
 

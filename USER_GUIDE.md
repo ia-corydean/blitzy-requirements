@@ -139,6 +139,10 @@ After submitting a requirement, the system generates an approach file:
 3. **Simplification**: Is the solution as simple as possible?
 4. **Completeness**: Does the approach cover all your needs?
 5. **Trade-offs**: Are the trade-offs acceptable?
+6. **Business Summary**: Is this what stakeholders expect?
+7. **Technical Summary**: Do the technical decisions make sense?
+8. **Database Schema**: Does the data model follow our standards?
+9. **Validation Criteria**: Are the success metrics clear and measurable?
 
 **Example Approach File:**
 ```markdown
@@ -176,6 +180,18 @@ System will add underwriting questions to the quote flow with:
 - Low risk: Using proven patterns
 - Medium risk: New table needs migration
 - Mitigation: Follow GR-41 standards
+
+## Suggested Tables and Schemas
+[Expected database structure with tables and relationships]
+
+## Business Summary for Stakeholders
+[Plain English explanation of what's being built and why]
+
+## Technical Summary for Developers
+[Key technical decisions and implementation guidance]
+
+## Validation Criteria
+[Pre-implementation checkpoints and success metrics]
 
 ## Approval Section
 **Decision**: [ ] APPROVED [ ] REVISE [ ] REJECT [ ] DEFER
@@ -627,12 +643,16 @@ Similar to the export feature in the commission report
 
 ### Effective Approval Reviews
 
-**Quick Approval Checklist:**
+**Enhanced Approval Checklist:**
 1. ✓ Requirement understood correctly?
 2. ✓ Existing patterns being reused (85%+ target)?
 3. ✓ Solution simplified appropriately?
 4. ✓ Trade-offs acceptable?
 5. ✓ All needs covered?
+6. ✓ **NEW: Business summary accurate for stakeholders?**
+7. ✓ **NEW: Technical approach clear for developers?**
+8. ✓ **NEW: Database schema follows standards?**
+9. ✓ **NEW: Validation criteria measurable?**
 
 **Good Feedback Examples:**
 

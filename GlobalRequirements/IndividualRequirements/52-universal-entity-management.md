@@ -274,3 +274,432 @@ INSERT INTO security_group (code, name, description) VALUES
 - Encryption: All credentials and sensitive data at rest
 - Access control: Component-based permissions with role separation
 - Privacy: Support for consumer data rights and deletion requests
+
+## V4 Shared Entity Model
+
+### Core Shared Entities
+The system implements a shared entity model where driver, vehicle, and insured entities are used across both quotes and policies, eliminating the need for separate quote_driver/policy_driver tables.
+
+### Shared Entity Tables
+```sql
+-- Shared driver entity (replaces quote_driver and policy_driver)
+CREATE TABLE driver (
+    driver_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    middle_name VARCHAR(100),
+    date_of_birth DATE NOT NULL,
+    license_number VARCHAR(50),
+    license_state VARCHAR(2),
+    license_status VARCHAR(20),
+    gender VARCHAR(10),
+    marital_status VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    metadata JSON,
+    INDEX idx_license (license_number, license_state),
+    INDEX idx_name (last_name, first_name)
+);
+
+-- Shared vehicle entity (replaces quote_vehicle and policy_vehicle)
+CREATE TABLE vehicle (
+    vehicle_id INT AUTO_INCREMENT PRIMARY KEY,
+    vin VARCHAR(17) NOT NULL,
+    year INT NOT NULL,
+    make VARCHAR(50) NOT NULL,
+    model VARCHAR(50) NOT NULL,
+    trim VARCHAR(50),
+    vehicle_type VARCHAR(30),
+    usage_type VARCHAR(30),
+    annual_mileage INT,
+    ownership_type VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    metadata JSON,
+    UNIQUE KEY uk_vin (vin),
+    INDEX idx_year_make_model (year, make, model)
+);
+
+-- Shared insured entity (V4: renamed from 'customer')
+CREATE TABLE insured (
+    insured_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    middle_name VARCHAR(100),
+    email VARCHAR(255),
+    phone VARCHAR(20),
+    address_line1 VARCHAR(255),
+    address_line2 VARCHAR(255),
+    city VARCHAR(100),
+    state VARCHAR(2),
+    zip_code VARCHAR(10),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    metadata JSON,
+    INDEX idx_email (email),
+    INDEX idx_name (last_name, first_name)
+);
+```
+
+### Map Table Relationships
+```sql
+-- Quote to driver mapping
+CREATE TABLE quote_driver_map (
+    quote_id INT NOT NULL,
+    driver_id INT NOT NULL,
+    is_primary_driver BOOLEAN DEFAULT FALSE,
+    driver_type VARCHAR(20), -- PRIMARY, ADDITIONAL, EXCLUDED
+    assigned_vehicle_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (quote_id, driver_id),
+    FOREIGN KEY (quote_id) REFERENCES quote(quote_id),
+    FOREIGN KEY (driver_id) REFERENCES driver(driver_id),
+    FOREIGN KEY (assigned_vehicle_id) REFERENCES vehicle(vehicle_id),
+    INDEX idx_driver (driver_id)
+);
+
+-- Quote to vehicle mapping
+CREATE TABLE quote_vehicle_map (
+    quote_id INT NOT NULL,
+    vehicle_id INT NOT NULL,
+    coverage_type VARCHAR(30),
+    deductible_amount DECIMAL(10,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (quote_id, vehicle_id),
+    FOREIGN KEY (quote_id) REFERENCES quote(quote_id),
+    FOREIGN KEY (vehicle_id) REFERENCES vehicle(vehicle_id),
+    INDEX idx_vehicle (vehicle_id)
+);
+
+-- Policy to driver mapping (shares same driver records)
+CREATE TABLE policy_driver_map (
+    policy_id INT NOT NULL,
+    driver_id INT NOT NULL,
+    is_primary_driver BOOLEAN DEFAULT FALSE,
+    driver_type VARCHAR(20),
+    assigned_vehicle_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (policy_id, driver_id),
+    FOREIGN KEY (policy_id) REFERENCES policy(policy_id),
+    FOREIGN KEY (driver_id) REFERENCES driver(driver_id),
+    FOREIGN KEY (assigned_vehicle_id) REFERENCES vehicle(vehicle_id),
+    INDEX idx_driver (driver_id)
+);
+
+-- Policy to vehicle mapping (shares same vehicle records)
+CREATE TABLE policy_vehicle_map (
+    policy_id INT NOT NULL,
+    vehicle_id INT NOT NULL,
+    coverage_type VARCHAR(30),
+    deductible_amount DECIMAL(10,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (policy_id, vehicle_id),
+    FOREIGN KEY (policy_id) REFERENCES policy(policy_id),
+    FOREIGN KEY (vehicle_id) REFERENCES vehicle(vehicle_id),
+    INDEX idx_vehicle (vehicle_id)
+);
+```
+
+### Entity Service Implementation
+```php
+namespace App\Services\Entity;
+
+class SharedEntityService
+{
+    /**
+     * Create or update a driver entity
+     */
+    public function upsertDriver(array $driverData): Driver
+    {
+        // Check if driver already exists
+        $existingDriver = Driver::where('license_number', $driverData['license_number'])
+            ->where('license_state', $driverData['license_state'])
+            ->first();
+            
+        if ($existingDriver) {
+            // Update existing driver
+            $existingDriver->update($driverData);
+            return $existingDriver;
+        }
+        
+        // Create new driver
+        return Driver::create($driverData);
+    }
+    
+    /**
+     * Attach driver to quote
+     */
+    public function attachDriverToQuote(int $quoteId, int $driverId, array $mappingData): void
+    {
+        QuoteDriverMap::updateOrCreate(
+            [
+                'quote_id' => $quoteId,
+                'driver_id' => $driverId,
+            ],
+            $mappingData
+        );
+    }
+    
+    /**
+     * Copy quote entities to policy
+     */
+    public function copyQuoteEntitiesToPolicy(Quote $quote, Policy $policy): void
+    {
+        // Copy driver mappings
+        foreach ($quote->drivers as $driver) {
+            PolicyDriverMap::create([
+                'policy_id' => $policy->id,
+                'driver_id' => $driver->id,
+                'is_primary_driver' => $driver->pivot->is_primary_driver,
+                'driver_type' => $driver->pivot->driver_type,
+                'assigned_vehicle_id' => $driver->pivot->assigned_vehicle_id,
+            ]);
+        }
+        
+        // Copy vehicle mappings
+        foreach ($quote->vehicles as $vehicle) {
+            PolicyVehicleMap::create([
+                'policy_id' => $policy->id,
+                'vehicle_id' => $vehicle->id,
+                'coverage_type' => $vehicle->pivot->coverage_type,
+                'deductible_amount' => $vehicle->pivot->deductible_amount,
+            ]);
+        }
+    }
+}
+```
+
+## V4 Transaction Consolidation
+
+### Single Transaction Table
+All financial operations use the consolidated transaction/transaction_line structure defined in GR-70, eliminating the need for separate tables for different transaction types.
+
+```php
+// Example: Using unified transaction table for all operations
+class TransactionService
+{
+    public function createTransaction(string $type, array $data): Transaction
+    {
+        return DB::transaction(function () use ($type, $data) {
+            // All transaction types use same table
+            $transaction = Transaction::create([
+                'transaction_type' => $type, // QUOTE, BIND, PAYMENT, etc.
+                'reference_type' => $data['reference_type'],
+                'reference_id' => $data['reference_id'],
+                'total_amount' => $data['amount'],
+                'status_id' => Status::PENDING,
+                'created_by' => auth()->id(),
+                'metadata' => $data['metadata'] ?? [],
+            ]);
+            
+            // Create transaction lines
+            foreach ($data['lines'] as $line) {
+                TransactionLine::create([
+                    'transaction_id' => $transaction->id,
+                    'line_number' => $line['line_number'],
+                    'account_type' => $line['account_type'],
+                    'account_code' => $line['account_code'],
+                    'component_type' => $line['component_type'],
+                    'debit_amount' => $line['debit_amount'] ?? 0,
+                    'credit_amount' => $line['credit_amount'] ?? 0,
+                    'description' => $line['description'],
+                ]);
+            }
+            
+            return $transaction;
+        });
+    }
+}
+```
+
+## V4 Simplified Versioning
+
+### Action Table Only Versioning
+The system uses only the action table for all versioning needs, eliminating separate version tables for each entity type.
+
+```sql
+-- Universal action table for all versioning
+CREATE TABLE action (
+    action_id INT AUTO_INCREMENT PRIMARY KEY,
+    entity_type VARCHAR(50) NOT NULL, -- driver, vehicle, policy, quote, etc.
+    entity_id INT NOT NULL,
+    action_type VARCHAR(50) NOT NULL, -- CREATE, UPDATE, DELETE, STATUS_CHANGE
+    field_name VARCHAR(100), -- Specific field changed
+    old_value TEXT, -- Previous value (JSON for complex types)
+    new_value TEXT, -- New value (JSON for complex types)
+    reason VARCHAR(255), -- Reason for change
+    user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    metadata JSON, -- Additional context
+    INDEX idx_entity (entity_type, entity_id),
+    INDEX idx_user (user_id),
+    INDEX idx_created (created_at)
+);
+```
+
+### Versioning Service
+```php
+namespace App\Services\Versioning;
+
+class ActionVersioningService
+{
+    /**
+     * Record any entity change in action table
+     */
+    public function recordChange(
+        string $entityType,
+        int $entityId,
+        string $actionType,
+        array $changes,
+        ?string $reason = null
+    ): void {
+        foreach ($changes as $field => $values) {
+            Action::create([
+                'entity_type' => $entityType,
+                'entity_id' => $entityId,
+                'action_type' => $actionType,
+                'field_name' => $field,
+                'old_value' => $this->serializeValue($values['old']),
+                'new_value' => $this->serializeValue($values['new']),
+                'reason' => $reason,
+                'user_id' => auth()->id(),
+                'metadata' => [
+                    'ip_address' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ],
+            ]);
+        }
+    }
+    
+    /**
+     * Get entity history from action table
+     */
+    public function getEntityHistory(string $entityType, int $entityId): Collection
+    {
+        return Action::where('entity_type', $entityType)
+            ->where('entity_id', $entityId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+    
+    /**
+     * Reconstruct entity state at specific point in time
+     */
+    public function getEntityStateAt(
+        string $entityType,
+        int $entityId,
+        Carbon $timestamp
+    ): array {
+        // Get all actions up to timestamp
+        $actions = Action::where('entity_type', $entityType)
+            ->where('entity_id', $entityId)
+            ->where('created_at', '<=', $timestamp)
+            ->orderBy('created_at')
+            ->get();
+            
+        // Reconstruct state by applying changes
+        $state = [];
+        foreach ($actions as $action) {
+            if ($action->action_type === 'DELETE') {
+                return ['deleted' => true, 'deleted_at' => $action->created_at];
+            }
+            
+            if ($action->field_name) {
+                $state[$action->field_name] = $this->deserializeValue($action->new_value);
+            }
+        }
+        
+        return $state;
+    }
+    
+    private function serializeValue($value): string
+    {
+        return is_array($value) || is_object($value) 
+            ? json_encode($value) 
+            : (string) $value;
+    }
+    
+    private function deserializeValue(string $value)
+    {
+        $decoded = json_decode($value, true);
+        return json_last_error() === JSON_ERROR_NONE ? $decoded : $value;
+    }
+}
+```
+
+### Model Integration
+```php
+// Trait for automatic versioning
+trait TracksChanges
+{
+    protected static function bootTracksChanges()
+    {
+        static::updating(function ($model) {
+            $changes = [];
+            foreach ($model->getDirty() as $field => $newValue) {
+                $changes[$field] = [
+                    'old' => $model->getOriginal($field),
+                    'new' => $newValue,
+                ];
+            }
+            
+            if (!empty($changes)) {
+                app(ActionVersioningService::class)->recordChange(
+                    $model->getTable(),
+                    $model->getKey(),
+                    'UPDATE',
+                    $changes
+                );
+            }
+        });
+        
+        static::created(function ($model) {
+            app(ActionVersioningService::class)->recordChange(
+                $model->getTable(),
+                $model->getKey(),
+                'CREATE',
+                ['created' => ['old' => null, 'new' => $model->toArray()]]
+            );
+        });
+        
+        static::deleted(function ($model) {
+            app(ActionVersioningService::class)->recordChange(
+                $model->getTable(),
+                $model->getKey(),
+                'DELETE',
+                ['deleted' => ['old' => $model->toArray(), 'new' => null]]
+            );
+        });
+    }
+}
+
+// Usage in models
+class Driver extends Model
+{
+    use TracksChanges;
+    // Model implementation
+}
+```
+
+## Benefits of V4 Architecture
+
+### Shared Entity Model Benefits
+1. **Data Consistency**: Single source of truth for driver/vehicle data
+2. **Reduced Duplication**: No copying data between quote and policy tables
+3. **Simpler Relationships**: Clear mapping through dedicated junction tables
+4. **Better Performance**: Less data to manage and sync
+5. **Easier Updates**: Update driver once, reflected everywhere
+
+### Simplified Versioning Benefits
+1. **Single Versioning System**: One action table for all entities
+2. **Consistent History**: Same pattern for tracking all changes
+3. **Flexible Reconstruction**: Can rebuild any entity state
+4. **Reduced Complexity**: No entity-specific version tables
+5. **Better Auditing**: Complete audit trail in one location
+
+### Transaction Consolidation Benefits
+1. **Unified Financial Model**: All transactions in one structure
+2. **Consistent Processing**: Same flow for all transaction types
+3. **Simplified Reporting**: Single source for financial data
+4. **Better Integration**: Easier to connect with GL systems
+5. **Cleaner Architecture**: Follows GR-70 standards

@@ -69,7 +69,7 @@ Version 10 refines the accounting requirements by incorporating detailed reinsta
 The system must support multiple payment methods through Paysafe tokenization:
 - **Credit Card**: Real-time processing with zero-dollar authorization
 - **ACH (Insured E-Check)**: Electronic check processing with bank validation
-- **Agent E-Check (Sweep)**: Agency account sweep payments
+- **Agent E-Check (Sweep)**: Agency account sweep payments (batch-capable during outages)
 - **Mailed-In Payment**: Physical check and money order processing (single check posting only)
 
 #### What We Store Locally
@@ -111,6 +111,15 @@ When payment equals or exceeds the billed invoice amount:
 - **Overpayment Handling**: Excess amounts redistribute across remaining installments
 - **Equity-Based Redistribution**: Overpayments may eliminate final installments
 - **Per-Policy Basis**: All premium payments processed independently per policy
+
+##### Payment Gateway Outage Handling
+When all payment gateways are unavailable:
+- **Agent Sweep Only Mode**: System restricts payment methods to agent sweep exclusively
+- **Batch Queue Management**: Agent sweep payments queued for later processing
+- **Customer Payment Blocking**: Direct customer payments temporarily disabled
+- **Clear Communication**: Customers and agents notified of payment restrictions
+- **Automatic Recovery**: Queued payments process automatically when gateway restored
+- **Audit Trail**: Complete logging of outage periods and queued transactions
 
 ### Check Printing Capabilities
 
@@ -321,6 +330,12 @@ Based on Program Manager requirements, fees must be applied in this specific ord
 - **Manual Override**: Ability to manually switch gateways
 - **Failure Tracking**: Monitor gateway performance and failures
 - **Alert Mechanisms**: Notify administrators of gateway issues
+- **Agent Sweep Priority**: When primary gateway is down and no backup gateway available:
+  - Only allow agent sweep payments (batched for later processing)
+  - Block direct customer card/ACH payments to prevent failures
+  - Queue agent sweep payments for bulk processing when gateway restored
+  - Display clear messaging about payment restrictions
+  - Maintain system stability during complete outage
 
 #### Alternative Payment Methods
 Gateway architecture must support future payment innovations:
@@ -551,9 +566,14 @@ All cancellation rules are configured at the program level:
 
 ### Payment Processing
 1. **Payment Reversals/Chargebacks**: How should the system handle payment reversals and chargebacks? What accounting entries are required?
-2. **Payment Plan Modifications**: What rules govern changes to payment plans mid-term? Can installment counts be changed?
-3. **Payment Retry Logic**: For failed electronic payments, how many retry attempts and at what intervals?
-4. **Payment Method Changes**: Can customers change payment methods mid-term? What restrictions apply?
+2. **Payment Gateway Outage Preferences**:
+   - Should agent sweep be the only allowed payment method during complete outages?
+   - What notification messages should customers see during outages?
+   - How long should sweep payments be queued before manual intervention?
+   - Should there be a maximum queue size for sweep payments?
+3. **Payment Plan Modifications**: What rules govern changes to payment plans mid-term? Can installment counts be changed?
+4. **Payment Retry Logic**: For failed electronic payments, how many retry attempts and at what intervals?
+5. **Payment Method Changes**: Can customers change payment methods mid-term? What restrictions apply?
 
 ### Commission Management
 1. **Commission Adjustments**: What are the rules for commission adjustments after policy changes (endorsements, cancellations)?

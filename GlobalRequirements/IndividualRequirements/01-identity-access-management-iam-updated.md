@@ -54,6 +54,8 @@ class TenantAuthenticationService
         // Generate tenant-specific tokens
         $scopes = $this->getTenantSpecificScopes($user);
         $accessToken = $user->createToken('insurance-app', $scopes);
+        $accessToken->token->expires_at = now()->addHour(); // V4: 1-hour expiration
+        $accessToken->token->save();
         
         // Create comprehensive audit trail
         AuditTrail::create([
@@ -65,7 +67,8 @@ class TenantAuthenticationService
             'metadata' => [
                 'scopes' => $scopes,
                 'token_type' => 'passport',
-                'expires_at' => $accessToken->token->expires_at
+                'expires_at' => $accessToken->token->expires_at,
+                'portal_type' => $this->detectPortal(request())
             ]
         ]);
 
@@ -682,6 +685,376 @@ class DynamicPermissionService
             'permissions_assigned' => $permissions->toArray(),
             'assigned_at' => now(),
             'context' => 'dynamic_assignment'
+        ]);
+    }
+}
+```
+
+## Producer Portal Specific Roles (V4 Update)
+
+### Producer Portal Role Definitions
+```php
+// ProducerPortalRoles.php - Specific roles for producer portal
+class ProducerPortalRoles
+{
+    const PRODUCER_ROLES = [
+        'producer_admin' => [
+            'description' => 'Full access to agency settings and all operations',
+            'permissions' => [
+                'agency.settings.manage',
+                'user.manage',
+                'quote.*',
+                'policy.*',
+                'report.*',
+                'commission.*',
+                'shared_account.manage',
+            ]
+        ],
+        'producer_agent' => [
+            'description' => 'Standard agent with quote/policy operations',
+            'permissions' => [
+                'quote.create',
+                'quote.read.own',
+                'quote.update.own',
+                'policy.read.own',
+                'report.read.own',
+                'customer.read.assigned',
+                'shared_account.use',
+            ]
+        ],
+        'producer_support' => [
+            'description' => 'Support role with read access and quote assistance',
+            'permissions' => [
+                'quote.read.all',
+                'policy.read.all',
+                'quote.assist',
+                'report.basic',
+                'shared_account.access',
+            ],
+            'restrictions' => [
+                'no_binding',
+                'no_payment_processing',
+            ]
+        ],
+        'producer_readonly' => [
+            'description' => 'Analytics and reporting only',
+            'permissions' => [
+                'quote.read.metrics',
+                'policy.read.metrics',
+                'report.generate',
+                'analytics.view',
+            ],
+            'pii_access' => 'masked_only', // No unmask capability
+        ]
+    ];
+}
+```
+
+### PII Access Control Matrix (V4 Update)
+```php
+// PIIAccessControl.php - Updated with viewable DL/DOB fields
+class PIIAccessControl
+{
+    /**
+     * V4 Update: DL and DOB are viewable by default for authorized users
+     */
+    const PII_ACCESS_MATRIX = [
+        'system_admin' => [
+            'ssn' => ['display' => 'masked', 'unmask' => true],
+            'driver_license' => ['display' => 'viewable'],
+            'date_of_birth' => ['display' => 'viewable'],
+            'bank_account' => ['display' => 'never'],
+            'credit_card' => ['display' => 'never'],
+        ],
+        'producer_admin' => [
+            'ssn' => ['display' => 'masked', 'unmask' => true],
+            'driver_license' => ['display' => 'viewable'],
+            'date_of_birth' => ['display' => 'viewable'],
+            'bank_account' => ['display' => 'never'],
+            'credit_card' => ['display' => 'never'],
+        ],
+        'producer_agent' => [
+            'ssn' => ['display' => 'masked', 'unmask' => true],
+            'driver_license' => ['display' => 'viewable'],
+            'date_of_birth' => ['display' => 'viewable'],
+            'bank_account' => ['display' => 'never'],
+            'credit_card' => ['display' => 'never'],
+        ],
+        'producer_support' => [
+            'ssn' => ['display' => 'masked', 'unmask' => false],
+            'driver_license' => ['display' => 'viewable'],
+            'date_of_birth' => ['display' => 'viewable'],
+            'bank_account' => ['display' => 'never'],
+            'credit_card' => ['display' => 'never'],
+        ],
+        'producer_readonly' => [
+            'ssn' => ['display' => 'never'],
+            'driver_license' => ['display' => 'never'],
+            'date_of_birth' => ['display' => 'viewable'],
+            'bank_account' => ['display' => 'never'],
+            'credit_card' => ['display' => 'never'],
+        ],
+    ];
+    
+    public function checkPIIAccess(User $user, string $field, string $action = 'view'): bool
+    {
+        $role = $user->primary_role;
+        $access = self::PII_ACCESS_MATRIX[$role][$field] ?? null;
+        
+        if (!$access) {
+            return false;
+        }
+        
+        // Log all PII access with display type
+        PIIAccessLog::create([
+            'user_id' => $user->id,
+            'field' => $field,
+            'action' => $action,
+            'display_type' => $access['display'],
+            'entity_type' => request()->input('entity_type'),
+            'entity_id' => request()->input('entity_id'),
+            'ip_address' => request()->ip(),
+            'timestamp' => now(),
+        ]);
+        
+        if ($action === 'view') {
+            return $access['display'] !== 'never';
+        }
+        
+        if ($action === 'unmask') {
+            return $access['unmask'] ?? false;
+        }
+        
+        return false;
+    }
+}
+```
+
+## Portal-Specific Security (V4 Update)
+
+### Authentication Requirements by Portal Type
+```php
+// PortalSecurityConfiguration.php - Different security per portal
+class PortalSecurityConfiguration
+{
+    const PORTAL_CONFIGS = [
+        'producer' => [
+            'mfa_required' => false,
+            'shared_accounts' => true,
+            'session_timeout' => 3600, // 1 hour
+            'concurrent_sessions' => true,
+            'ip_security' => 'mandatory',
+            'password_complexity' => 'standard',
+        ],
+        'policy' => [
+            'mfa_required' => true,
+            'shared_accounts' => false,
+            'session_timeout' => 3600, // 1 hour
+            'concurrent_sessions' => false,
+            'ip_security' => 'optional',
+            'password_complexity' => 'high',
+        ],
+        'claims' => [
+            'mfa_required' => true,
+            'shared_accounts' => false,
+            'session_timeout' => 3600, // 1 hour
+            'concurrent_sessions' => false,
+            'ip_security' => 'optional',
+            'password_complexity' => 'high',
+        ],
+        'insured' => [
+            'mfa_required' => true,
+            'shared_accounts' => false,
+            'session_timeout' => 3600, // 1 hour
+            'concurrent_sessions' => false,
+            'ip_security' => 'optional',
+            'password_complexity' => 'standard',
+        ],
+    ];
+    
+    public function enforcePortalSecurity(Request $request, User $user): void
+    {
+        $portal = $this->detectPortal($request);
+        $config = self::PORTAL_CONFIGS[$portal];
+        
+        // Enforce MFA if required
+        if ($config['mfa_required'] && !$user->mfa_verified) {
+            throw new MFARequiredException();
+        }
+        
+        // Check shared account restrictions
+        if (!$config['shared_accounts'] && $user->account_type === 'shared') {
+            throw new SharedAccountNotAllowedException();
+        }
+        
+        // Enforce session rules
+        if (!$config['concurrent_sessions'] && $this->hasActiveSessions($user)) {
+            throw new ConcurrentSessionException();
+        }
+        
+        // Apply IP security
+        if ($config['ip_security'] === 'mandatory') {
+            $this->enforceIPSecurity($user, $request->ip());
+        }
+    }
+}
+```
+
+### Session Management Updates (V4)
+```php
+// SessionManagementService.php - 1-hour expiration and portal rules
+class SessionManagementService
+{
+    /**
+     * Create session with portal-specific rules
+     */
+    public function createSession(User $user, string $portal): array
+    {
+        $config = PortalSecurityConfiguration::PORTAL_CONFIGS[$portal];
+        
+        // Generate JWT with 1-hour expiration
+        $token = $user->createToken('app', $this->getPortalScopes($portal));
+        $token->token->expires_at = now()->addHour(); // V4: 1-hour expiration
+        $token->token->save();
+        
+        // Track session for shared accounts
+        if ($user->account_type === 'shared') {
+            SharedAccountSession::create([
+                'account_id' => $user->id,
+                'session_id' => $token->token->id,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'portal' => $portal,
+                'expires_at' => $token->token->expires_at,
+            ]);
+        }
+        
+        return [
+            'access_token' => $token->accessToken,
+            'expires_in' => 3600, // 1 hour in seconds
+            'refresh_token' => $this->generateRefreshToken($user),
+        ];
+    }
+}
+```
+
+## Payment Permission Hierarchy (V4 Update)
+
+### Granular Payment Permissions
+```php
+// PaymentPermissions.php - Detailed payment operation permissions
+class PaymentPermissions
+{
+    const PAYMENT_PERMISSIONS = [
+        // Viewing Permissions
+        'payment.view.summary' => 'View payment totals only',
+        'payment.view.history' => 'View transaction history',
+        'payment.view.method' => 'View masked payment methods',
+        'payment.view.details' => 'View full payment details',
+        
+        // Processing Permissions
+        'payment.process.card' => 'Process credit card payments',
+        'payment.process.ach' => 'Process ACH payments',
+        'payment.process.cash' => 'Record cash payments',
+        'payment.process.check' => 'Record check payments',
+        'payment.validate.card' => 'Perform $0 card validation',
+        
+        // Management Permissions
+        'payment.refund.create' => 'Issue refunds',
+        'payment.refund.approve' => 'Approve refunds > $1000',
+        'payment.void.create' => 'Void payments',
+        'payment.method.manage' => 'Add/remove payment methods',
+        'payment.nsf.override' => 'Override NSF blocks',
+    ];
+    
+    const HIERARCHICAL_RULES = [
+        'payment.refund.approve' => ['requires' => ['payment.refund.create']],
+        'payment.process.*' => ['requires' => ['payment.view.history']],
+        'payment.method.manage' => ['requires' => ['payment.view.*']],
+    ];
+    
+    public function validatePaymentPermission(User $user, string $permission, float $amount = 0): bool
+    {
+        // Check base permission
+        if (!$user->hasPermissionTo($permission)) {
+            return false;
+        }
+        
+        // Check hierarchical requirements
+        if (isset(self::HIERARCHICAL_RULES[$permission])) {
+            foreach (self::HIERARCHICAL_RULES[$permission]['requires'] as $required) {
+                if (!$user->hasPermissionTo($required)) {
+                    return false;
+                }
+            }
+        }
+        
+        // Check amount-based restrictions
+        if ($permission === 'payment.refund.approve' && $amount <= 1000) {
+            // Regular refund.create is sufficient for amounts <= $1000
+            return $user->hasPermissionTo('payment.refund.create');
+        }
+        
+        return true;
+    }
+}
+```
+
+## Enhanced Audit Requirements (V4)
+
+### Comprehensive Audit Logging
+```php
+// EnhancedAuditService.php - V4 audit requirements
+class EnhancedAuditService
+{
+    public function logAuthentication(User $user, string $event, array $context = []): void
+    {
+        AuthenticationAudit::create([
+            'user_id' => $user->id,
+            'event' => $event,
+            'portal_type' => $this->detectPortal(),
+            'account_type' => $user->account_type,
+            'session_id' => session()->getId(),
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'success' => $context['success'] ?? true,
+            'mfa_used' => $context['mfa_used'] ?? false,
+            'metadata' => $context,
+            'timestamp' => now(),
+        ]);
+    }
+    
+    public function logPIIAccess(User $user, string $field, string $action, array $context = []): void
+    {
+        PIIAccessAudit::create([
+            'user_id' => $user->id,
+            'field_name' => $field,
+            'action' => $action,
+            'display_type' => $context['display_type'], // direct/masked/unmasked
+            'entity_type' => $context['entity_type'],
+            'entity_id' => $context['entity_id'],
+            'duration' => $context['duration'] ?? null,
+            'copy_attempt' => $context['copy_attempt'] ?? false,
+            'export_operation' => $context['export'] ?? false,
+            'ip_address' => request()->ip(),
+            'session_id' => session()->getId(),
+            'timestamp' => now(),
+        ]);
+    }
+    
+    public function logPaymentOperation(User $user, string $operation, array $details): void
+    {
+        PaymentAudit::create([
+            'user_id' => $user->id,
+            'operation' => $operation,
+            'amount' => $details['amount'] ?? 0,
+            'payment_method_type' => $details['method_type'],
+            'gateway' => $details['gateway'],
+            'success' => $details['success'],
+            'reference_id' => $details['reference_id'],
+            'metadata' => $details,
+            'ip_address' => request()->ip(),
+            'timestamp' => now(),
         ]);
     }
 }

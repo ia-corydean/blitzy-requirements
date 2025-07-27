@@ -1,0 +1,49 @@
+Aime/workspace/requirements/GlobalRequirements/IndividualRequirements/approaches
+- GlobalRequirements/IndividualRequirements/approaches/GR-10-updated-v3.md
+- GlobalRequirements/IndividualRequirements/approaches/GR-13-updated-v3.md
+- GlobalRequirements/IndividualRequirements/approaches/GR-19-updated-v3.md
+- GlobalRequirements/IndividualRequirements/approaches/GR-37-updated-v3.md
+- GlobalRequirements/IndividualRequirements/approaches/GR-41-updated-v3.md
+- GlobalRequirements/IndividualRequirements/approaches/GR-44-updated-v3.md
+- GlobalRequirements/IndividualRequirements/approaches/GR-52-updated-v3.md
+- GlobalRequirements/IndividualRequirements/approaches/GR-53-updated-v3.md
+- GlobalRequirements/IndividualRequirements/approaches/GR-64-updated-v3.md
+  - apply these changes for all of the above in -v4 files
+    - communication_type vs communication_method vs communication_channel
+      - we need to decide on wha the differences here are and find out if we can consolidate
+    - correlation_id
+      - what does this refer to?
+    - level
+      - notification_level
+    - what if quote had program_id as well policy_id for when it's bound
+      - would these give the ability to remove map tables?
+    - what if policy had program_id
+      - would these give the ability to remove map tables?
+    - what if driver had entity_type_id and entity_id for quote and policy stages.
+      - would these give the ability to remove map tables?
+    - what if vehicle had entity_type_id and entity_id for quote and policy stages.
+      - would these give the ability to remove map tables?
+    - what if loss had policy_id
+      - would these give the ability to remove map tables?
+    - we need a relationship_to_insured table
+      - each driver will have an associated id to this table
+    - Every table MUST include these fields:
+      - include status_id
+    - add coverage and coverage_type table
+    - remove reference of agency_id
+    - there needs to be better seperation of data that goes into entity, entity_type and configuration
+    - configuration
+      - should include entity_type_id and entity_id to mitigate map tables
+    - we need integration and integration_type table for third party integrations
+        - entity_type_id and entity_id
+        - types like
+          - criminal_history
+          - household_driver
+          - household_vehicle
+          - payment_gateway
+          - sms
+          - email
+    - need better understanding for transaction, transaction_line, and calculation
+
+go through these and see where updates need to take place and what changes would be reflected in the -v4 files.
+- output a detailed -summary file in GlobalRequirements/IndividualRequirements/approaches for review and approval before you make the -v4 files.

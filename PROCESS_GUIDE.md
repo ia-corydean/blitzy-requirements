@@ -40,6 +40,13 @@ graph TD
 5. **Implementation**: Only begins after explicit approval
 6. **Validation**: Final quality checks before completion
 
+### Active Infrastructure Components
+The system leverages actively maintained shared infrastructure:
+- **Templates**: Standardized templates in `/shared-infrastructure/templates/`
+- **Context Store**: Maintains context in `/shared-infrastructure/context-store/`
+- **Agent Configs**: 5-agent configurations in `/shared-infrastructure/agent-configurations/`
+- **Knowledge Base**: Patterns and catalogs in `/shared-infrastructure/knowledge-base/`
+
 ### Detailed Process Steps
 
 #### 1. Requirement Submission
@@ -54,9 +61,10 @@ graph TD
 - **Complexity Assessment**: Initial complexity evaluation
 
 #### 3. Pattern Discovery (Pattern Matcher)
-- **GlobalRequirements Search**: Finds applicable GRs
-- **Codebase Reference**: Searches blitzy-requirements for examples
-- **Reuse Identification**: Maximizes pattern reuse
+- **GlobalRequirements Search**: Finds applicable GRs for requirements
+- **Pattern Reference**: Searches blitzy-requirements for proven patterns
+- **Greenfield Selection**: Chooses best patterns for new implementation
+- **Future Standards**: Establishes patterns for ongoing requirements
 - **Implementation Examples**: Provides concrete references
 
 #### 4. Simplification Review (Simplification Enforcer)
@@ -70,6 +78,8 @@ graph TD
 - **Template Usage**: Uses standard approach template
 - **Clear Proposal**: Makes implementation plan explicit
 - **Decision Points**: Highlights key choices made
+- **Database Design Review**: Evaluates JSON vs normalized structures
+- **Scalability Analysis**: Projects data growth across 5 dimensions
 
 #### 6. User Approval (MANDATORY STOP)
 - **Review Period**: User reviews -approach.md file
@@ -113,13 +123,14 @@ knowledge_base:
 
 ### Agent 2: Pattern Matcher (PM)
 
-**Purpose**: Find and apply reusable patterns from GlobalRequirements and codebase
+**Purpose**: Find and select patterns for greenfield implementation from GlobalRequirements and blitzy-requirements
 
 **Responsibilities:**
-- Search GlobalRequirements for applicable patterns
-- Find similar implementations in blitzy-requirements
-- Identify reusable components
-- Map patterns to new requirement
+- Search GlobalRequirements for requirements and standards
+- Reference blitzy-requirements for proven pattern examples
+- Select best patterns for greenfield build
+- Establish patterns as templates for future requirements
+- Ensure BR informs but doesn't constrain choices
 
 **Key Outputs:**
 - Applicable Global Requirements list
@@ -274,7 +285,9 @@ The approval workflow ensures quality by requiring human review before implement
 #### Step 1: Approach Generation
 After analysis by Prompt Analyzer, Pattern Matcher, and Simplification Enforcer:
 - System generates `-approach.md` file
-- File placed in `/in-progress/approaches/`
+- Creates subdirectory `/in-progress/approaches/{requirement-id}/`
+- Places approach file in the subdirectory
+- Enables iterative versioning (-v2, -v3) within subdirectory
 - User notified of ready approach
 
 #### Step 2: User Review
@@ -303,6 +316,32 @@ When user requests revisions:
 2. Agents re-process with new constraints
 3. Updated -approach.md generated
 4. Review cycle repeats
+
+### Validation Through Enhanced Approach Files
+The approach file now serves as a comprehensive validation checkpoint with:
+
+#### Business Validation
+- **Business Summary**: Plain English explanation for stakeholder validation
+- **Expected Outcomes**: Clear success criteria from business perspective
+- **Value Proposition**: Why this requirement matters to the business
+
+#### Technical Validation
+- **Technical Summary**: Implementation guidance for developer validation
+- **Architecture Decisions**: Key technical choices and patterns
+- **Integration Points**: How this fits with existing systems
+- **Database Design Validation**: JSON vs normalized analysis with performance implications
+- **Scalability Projections**: Data growth estimates and query pattern analysis
+- **Migration Path Planning**: Future-proofing schema evolution strategies
+
+#### Data Model Validation
+- **Suggested Tables**: Expected database structure
+- **Relationships**: How entities connect
+- **Performance Considerations**: Indexes and optimization
+
+#### Success Validation
+- **Pre-Implementation Checkpoints**: Ensure readiness before coding
+- **Success Metrics**: Measurable outcomes to track
+- **Quality Thresholds**: Standards that must be met
 
 ## Simplification Process
 
@@ -419,6 +458,15 @@ After pattern matching:
 - [ ] Similar implementations found
 - [ ] Reuse opportunities documented
 - [ ] Gaps clearly noted
+
+### Database Design Checkpoint
+For requirements with data persistence:
+- [ ] Evaluated JSON vs normalized trade-offs
+- [ ] Projected data growth (5 dimensions)
+- [ ] Identified query patterns and performance requirements
+- [ ] Considered reporting and analytics needs
+- [ ] Planned migration path for schema evolution
+- [ ] Applied "Start Normalized, Add JSON Later" principle
 
 ### Simplification Checkpoint
 After simplification review:

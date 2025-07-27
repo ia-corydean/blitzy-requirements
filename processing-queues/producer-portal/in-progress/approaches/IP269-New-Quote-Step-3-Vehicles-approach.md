@@ -1,260 +1,210 @@
-# IP269-New-Quote-Step-3-Vehicles - Updated Approach
+# IP269-New-Quote-Step-3-Vehicles - Implementation Approach
 
-## Cross-Requirement Decisions Incorporated
+## Requirement Understanding
+The Vehicles step enables users to add and manage vehicles for the insurance quote through automatic lookup based on the primary insured's address, manual VIN entry, or year/make/model search. The system must handle vehicle verification, usage type assignment, garaging address management, and ensure vehicle owners are included in the policy. This step is critical for accurate premium calculation and risk assessment.
 
-### ✅ **From Primary Insured Step:**
-- **Quote Creation**: Quote entity already created in Step 1 (immediate creation)
-- **DCS Integration**: DCS search patterns established (household drivers completed)
-- **Producer Context**: Producer always attached to quote
-- **Data Persistence**: Store and propagate results across models (no caching needed)
-- **External Integration**: DCS-first approach established
+## Domain Classification
+- Primary Domain: Producer Portal / Quote Management
+- Cross-Domain Impact: Yes - Affects coverage selection, premium calculation
+- Complexity Level: High
 
-### ✅ **From Named Insured Step:**
-- **Data Review Pattern**: Focus on reviewing and enriching DCS-populated data
-- **Read-only vs Manual**: Clear distinction between DCS data and manual entry
-- **Verification Workflow**: Additional verification triggers established
-- **Business Rules**: Cross-field validation patterns implemented
+## Pattern Analysis
 
-### ✅ **From Drivers Step:**
-- **Driver Selection Complete**: Driver include/exclude status assigned
-- **Driver Data Available**: Full driver roster for vehicle assignment
-- **Manual Addition Patterns**: Established workflow for data not found in DCS
-- **Business Rule Validation**: Marriage rule and criminal eligibility patterns
+### Reusable Patterns Identified
+- [GR-69]: Producer Portal Architecture - Vehicle management patterns
+- [GR-52]: Universal Entity Management - Vehicle entity reuse
+- [GR-53]: DCS Integration - Vehicle verification services
+- [GR-41]: Database Standards - Consistent field naming
+- [GR-44]: Communication Architecture - Third-party data integration
 
-### 🔄 **Impact on Vehicles Step:**
-- This step builds on **completed driver selection** from Step 2
-- **Vehicle-to-driver assignment** leveraging existing driver data
-- **DCS vehicle lookup** following established integration patterns
-- **Owner verification** against existing driver roster
-- **Enhanced data collection** for vehicles not found via household lookup
+### Domain-Specific Needs
+- Vehicle lookup by address association
+- VIN decoding and verification
+- Year/Make/Model search functionality
+- License plate capture
+- Vehicle owner validation
+- Usage type classification
+- Garaging address management
+- Manual entry fallback options
 
-## Questions Requiring Clarification
+## Proposed Implementation
 
-### Business Logic Questions  
-1. **Vehicle-Driver Assignment**:
-   - How should primary driver assignment work with the completed driver roster from Step 2?
-   - Can excluded drivers be assigned as vehicle owners?
-   - What happens when vehicle owner is not in the driver roster?
-2. **DCS Vehicle Integration**:
-   - Should DCS vehicle lookup use the same household address patterns as Step 1 drivers?
-   - How does vehicle lookup integrate with the established DCS workflow?
-3. **Usage Types**:
-   - What are all available vehicle usage types?
-   - Do usage types affect coverage options or premiums?
-   - Are certain usage types restricted by program?
-4. **Garaging Address**:
-   - Can garaging address differ from primary insured address?
-   - Multiple garaging addresses for fleet policies?
-   - Validation requirements for garaging ZIP?
-5. **Vehicle Matching**:
-   - When searching by Year/Make/Model, how close must the match be?
-   - How are vehicle variants/trims handled?
-6. **Owner Addition Workflow**:
-   - When vehicle owner not found in driver roster, should this trigger Step 2 driver addition workflow?
+### Simplification Approach
+- Current Complexity: Multiple lookup methods, owner validation, missing plate fields
+- Simplified Solution: Enhance vehicle table, leverage verification services
+- Trade-offs: Need to add license plate fields to vehicle table
 
-### Technical Questions
-1. **DCS Vehicle API Integration**:
-   - Should DCS vehicle lookup follow the same patterns established in Step 1?
-   - How does vehicle API integrate with existing DCS authentication?
-2. **VIN Decoding Service**:
-   - Which service for VIN decoding (DCS, third-party)?
-   - What data points are returned?
-   - Handling of invalid/undecodable VINs?
-3. **License Plate Validation**:
-   - Format validation by state?
-   - Uniqueness checking?
-4. **Performance**:
-   - Expected volume of vehicles per household?
-   - Pagination for large vehicle lists?
-5. **Driver Integration**:
-   - How to efficiently assign vehicles to drivers from Step 2 data?
+### Technical Approach
+1. **Phase 1**: Vehicle Lookup
+   - [ ] Query third-party service by address
+   - [ ] Display returned vehicles
+   - [ ] Show vehicle details for review
+   - [ ] Enable add/remove actions
+   - [ ] Store lookup results
 
-### Edge Cases and Validation Rules
-1. What if VIN decode conflicts with Year/Make/Model entry?
-2. Maximum vehicles allowed per policy?
-3. Commercial vs personal vehicle handling?
-4. Salvage/rebuilt title restrictions?
-5. Out-of-state vehicle registration?
+2. **Phase 2**: Add from Lookup
+   - [ ] Open side panel for vehicle
+   - [ ] Capture usage type
+   - [ ] Validate required fields
+   - [ ] Save to map_quote_vehicle
+   - [ ] Update vehicle list display
 
-## Updated Implementation Approach
+3. **Phase 3**: Manual VIN Entry
+   - [ ] Build VIN entry form
+   - [ ] Add license plate fields to vehicle
+   - [ ] Call VIN decode service
+   - [ ] Populate vehicle details
+   - [ ] Handle decode failures
 
-### Overview (Based on Cross-Requirement Decisions)
-Implement vehicle management that builds on completed driver selection (Step 2) and established DCS integration patterns (Step 1). The system leverages existing driver data for vehicle assignment and follows proven data persistence patterns.
+4. **Phase 4**: Year/Make/Model Search
+   - [ ] Build Y/M/M search interface
+   - [ ] Query vehicle database
+   - [ ] Display matching options
+   - [ ] Capture plate information
+   - [ ] Save selected vehicle
 
-### Entity Strategy
-**Entities to reuse from infrastructure:**
-- `vehicle` - Core vehicle information (existing model with modal typo)
-- `address` - For garaging address  
-- `map_quote_vehicle` - Quote-vehicle association
-- All vehicle reference tables (make, model, usage_type)
+5. **Phase 5**: Owner Validation
+   - [ ] Check vehicle ownership
+   - [ ] Prompt to add missing owners
+   - [ ] Route to driver addition
+   - [ ] Validate owner on policy
+   - [ ] Block if owner not added
 
-**New entities needed:**
-- `vehicle_owner` - Track registered owners  
-- `map_vehicle_owner` - Vehicle-owner relationships
-- `map_vehicle_driver` - Vehicle-to-driver assignments (primary driver)
-- `vehicle_lookup_result` - Cache DCS lookup results
+6. **Phase 6**: Data Management
+   - [ ] Track garaging addresses
+   - [ ] Manage vehicle use types
+   - [ ] Store verification status
+   - [ ] Link to quote properly
 
-**Driver integration:**
-- Link vehicles to drivers from Step 2 completed roster
-- Vehicle ownership verification against existing drivers
-- Primary driver assignment from available driver pool
+## Risk Assessment
+- **Risk 1**: Incomplete vehicle data → Mitigation: Add license plate fields
+- **Risk 2**: Third-party service failures → Mitigation: Manual entry fallback
+- **Risk 3**: VIN decode accuracy → Mitigation: Allow manual override
+- **Risk 4**: Owner validation complexity → Mitigation: Clear workflow guidance
+- **Risk 5**: Performance with lookups → Mitigation: Async processing, caching
 
-### Integration Approach (Based on Established Patterns)
-**External services building on Step 1:**
-1. **DCS Vehicle Lookup** (GR-53)
-   - Use same household address from Step 1 driver search
-   - Follow established DCS authentication patterns
-   - Return VIN, year, make, model with same data persistence approach
-   
-2. **VIN Decoder Service** 
-   - Full vehicle specifications using Universal Entity Management (GR-52)
-   - Validate VIN format
-   - Cache results following no-caching clarification from stakeholders
-   
-3. **Vehicle History Service** (Optional)
-   - Accident/claim history
-   - Title status  
-   - Ownership transfers
+## Context Preservation
+- Key Decisions: Enhance vehicle table, use external verification, enforce ownership
+- Dependencies: Vehicle verification services, driver management, address system
+- Future Impact: Foundation for coverage selection, premium calculation
 
-**Integration patterns consistent with previous steps:**
-- DCS household lookup following Step 1 patterns
-- Direct entity storage (no caching per stakeholder decision)
-- Manual addition workflow when DCS doesn't find all vehicles
+## Database Requirements Summary
+- **New Tables**: 0 tables need to be created
+- **Existing Tables**: 10+ tables will be reused
+- **Modified Tables**: 1 existing table needs modifications (vehicle)
 
-### Workflow Considerations (Cross-Step Integration)
-**State transitions building on previous steps:**
-1. From DRIVERS_COMPLETE (Step 2 completed with driver roster)
-2. DCS vehicle lookup using Step 1 address data
-3. Vehicle selection and driver assignment from Step 2 roster
-4. Owner validation against existing drivers
-5. Manual vehicle addition when DCS incomplete
-6. Update to VEHICLES_COMPLETE
+## Database Schema Requirements
 
-**Validation points:**
-- VIN format and checksum
-- Owner verification against Step 2 driver roster
-- Primary driver assignment from available drivers
-- Usage type required
-- Garaging address validation
-- License plate format by state
+### Tables to Enhance
 
-**Error handling consistent with previous steps:**
-- Clear messages for invalid VINs
-- Owner addition triggers Step 2-style driver addition workflow
-- Graceful handling of DCS lookup failures with manual fallback
+#### vehicle (Need License Plate Fields)
+Add plate information:
+```sql
+ALTER TABLE vehicle
+ADD COLUMN license_plate_number VARCHAR(20) AFTER vin_verified,
+ADD COLUMN license_plate_state_id INT(11) AFTER license_plate_number,
+ADD COLUMN registered_owner_driver_id INT(11) AFTER license_plate_state_id,
+ADD COLUMN lookup_source VARCHAR(50) AFTER registered_owner_driver_id,
+ADD CONSTRAINT fk_vehicle_plate_state FOREIGN KEY (license_plate_state_id) REFERENCES state(id),
+ADD CONSTRAINT fk_vehicle_owner FOREIGN KEY (registered_owner_driver_id) REFERENCES driver(id),
+ADD INDEX idx_license_plate (license_plate_number),
+ADD INDEX idx_plate_state (license_plate_state_id);
+```
 
-## Detailed Game Plan
+### Existing Tables to Use
 
-### Step 1: Entity Analysis
-1. Design vehicle owner tracking
-2. Determine garaging address approach
-3. Plan vehicle lookup caching
-4. Review existing vehicle schema adequacy
+1. **vehicle**: Core vehicle information
+   - Has VIN, Y/M/M, usage, garaging
+   - Ready for enhancement
 
-### Step 2: Global Requirements Alignment
-**Primary GRs to apply:**
-- **GR-53**: DCS Integration (vehicle lookup)
-- **GR-52**: Universal Entity Management (VIN decoder)
-- **GR-04**: Validation & Data Handling (VIN/plate validation)
-- **GR-18**: Workflow Requirements (owner addition flow)
-- **GR-07**: Reusable Components (vehicle cards, search)
-- **GR-20**: Application Business Logic (usage rules)
+2. **map_quote_vehicle**: Links vehicles to quotes
+   - Tracks vehicles per quote
 
-### Step 3: Backend Implementation (Section C)
-1. **Vehicle Lookup API Building on Step 1**
-   - GET /api/v1/quotes/{id}/vehicle-lookup
-   - Use household address from Step 1 DCS data
-   - Return vehicle list with DCS integration patterns
-   
-2. **VIN Decoder API**
-   - POST /api/v1/vehicles/decode-vin
-   - Full vehicle specifications
-   - Direct storage (no caching per stakeholder decision)
-   
-3. **Add Vehicle APIs with Driver Integration**
-   - POST /api/v1/quotes/{id}/vehicles
-   - Support VIN and YMM entry
-   - Validate ownership against Step 2 driver roster
-   
-4. **Driver Assignment Management**
-   - PUT /api/v1/quotes/{id}/vehicles/{vehicleId}/driver
-   - Assign primary driver from Step 2 roster
-   - Trigger driver addition workflow if owner not found
+3. **vehicle_type**: Vehicle categorization
+   - Car, truck, motorcycle, etc.
 
-### Step 4: Database Schema (Section E)
-1. **New Tables:**
-   - `vehicle_owner` with name, relationship  
-   - `map_vehicle_owner` associations
-   - `map_vehicle_driver` for primary driver assignments (links to Step 2 drivers)
-   - `vehicle_lookup_result` for DCS results (direct storage per stakeholder)
-   
-2. **Modifications:**
-   - Fix `modal` typo to `model` in existing vehicle table
-   - Add usage_type_id to map_quote_vehicle
-   - Add garaging_address_id
-   - Ensure vehicle has all decode fields
+4. **vehicle_use**: Usage types
+   - Personal, business, farm, etc.
 
-3. **Driver Integration:**
-   - Link vehicle ownership to Step 2 driver roster
-   - Primary driver assignment from completed driver data
-   - Owner validation against existing drivers
+5. **vehicle_use_type**: Usage categories
+   - Commute, pleasure, etc.
 
-### Step 5: Quality Validation
-1. Test VIN decoder accuracy
-2. Verify owner validation flow
-3. Test address-based lookup
-4. Validate YMM search functionality
-5. Confirm all usage types
+6. **vehicle_ownership_type**: Ownership status
+   - Owned, leased, financed
 
-## Risk Considerations
+7. **address**: Garaging addresses
+   - Links to vehicle locations
 
-### Technical Risks
-1. **VIN Decoder Reliability**: Multiple decoder sources recommended
-2. **Address Matching Accuracy**: May miss vehicles at nearby addresses
-3. **Owner Data Quality**: Registration data may be outdated
+8. **state**: License plate states
+   - For plate registration
 
-### Business Risks
-1. **Missing Vehicles**: Household lookup incomplete
-2. **Ownership Disputes**: Complex ownership scenarios
-3. **Coverage Gaps**: Vehicles not properly added
+9. **driver**: Vehicle owners
+   - Links registered owners
 
-### Mitigation Strategies
-- Allow manual override for all lookups
-- Clear ownership documentation requirements
-- Comprehensive vehicle search options
-- Audit trail for all additions
+10. **verification**: External lookups
+    - Track verification sources
 
-## Dependencies
-- VIN decoder service selection
-- Complete usage type definitions
-- Owner validation rules
-- Address matching algorithm
-- License plate format rules by state
+### Lookup Integration
+- Store lookup_source (address, VIN, manual)
+- Track verification status in vin_verified
+- Link owners via registered_owner_driver_id
 
-## Updated Recommendation
+## Business Summary for Stakeholders
+### What We're Building
+A comprehensive vehicle management system that automatically discovers vehicles associated with the insured's address, enables manual vehicle addition through VIN or year/make/model search, validates vehicle ownership, and captures all necessary information for accurate insurance quotes. The system ensures all vehicles and their owners are properly documented.
 
-**Proceed with cross-step integrated vehicle management approach:**
+### Why It's Needed
+Accurate vehicle information is essential for proper premium calculation and coverage determination. Missing or incorrect vehicle data leads to pricing errors and potential coverage gaps. This system streamlines vehicle data collection while ensuring completeness through multiple entry methods and ownership validation.
 
-1. **Build on completed driver selection** from Step 2 for vehicle assignments
-2. **Use established DCS integration patterns** from Step 1 for vehicle lookup
-3. **Implement driver-vehicle assignment workflow** leveraging existing driver data
-4. **Create owner verification against driver roster** with addition workflow when needed
-5. **Maintain data persistence pattern** established across previous steps
+### Expected Outcomes
+- Reduced vehicle data entry time by 70% through automatic lookup
+- Improved accuracy with VIN verification
+- Complete vehicle owner capture preventing coverage issues
+- Flexible entry options accommodating various scenarios
+- Better risk assessment through proper vehicle classification
 
-**Architecture Decision**: Leverage existing vehicle model (with typo fix) and Step 2 driver data while adding DCS vehicle lookup using Step 1 patterns. Integrate tightly with completed driver management for vehicle-driver assignments.
+## Technical Summary for Developers
+### Key Technical Decisions
+- **Architecture Pattern**: Enhance vehicle table with plate/owner fields
+- **Lookup Strategy**: Address-based with VIN/YMM fallbacks
+- **Verification Approach**: External service with local caching
+- **Owner Validation**: Required driver record before vehicle addition
+- **State Management**: Quote-scoped vehicle collection
 
-**Integration Strategy**: DCS household vehicle lookup using Step 1 address data, direct storage per stakeholder decision, manual addition workflow for vehicles not found, and seamless driver assignment from Step 2 roster.
+### Implementation Guidelines
+- Extend vehicle model with new fields
+- Build vehicle lookup service integration
+- Implement VIN decoder service
+- Create YMM search functionality
+- Build owner validation workflow
+- Use database transactions
+- Cache lookup results
+- Handle service failures gracefully
 
-**Cross-Step Consistency**: This step builds directly on quote creation (Step 1), DCS integration patterns (Step 1), and completed driver selection (Step 2) while preparing for coverage selection in later steps.
+## Validation Criteria
+### Pre-Implementation Checkpoints
+- [x] Vehicle table exists with core fields
+- [x] Vehicle use types defined
+- [x] Address system ready
+- [x] State reference table exists
+- [ ] Vehicle table needs plate fields
+- [x] External services identified
 
-**Key architectural decisions based on cross-requirement analysis:**
-1. **Driver Integration**: Use Step 2 completed driver roster for all vehicle assignments
-2. **DCS Consistency**: Follow Step 1 DCS patterns for vehicle lookup
-3. **Data Persistence**: Direct storage approach per stakeholder clarification
-4. **Owner Workflow**: Trigger Step 2-style driver addition when owner not found
+### Success Metrics
+- [ ] Address lookup returns vehicles
+- [ ] VIN decode populates details
+- [ ] YMM search finds matches
+- [ ] License plate captures correctly
+- [ ] Owner validation enforces rules
+- [ ] Usage types save properly
+- [ ] Garaging addresses link
+- [ ] Continue enables when valid
 
-**Next Steps**: 
-1. **Clarify vehicle-driver assignment workflow** with Step 2 integration
-2. **Define DCS vehicle lookup scope** using Step 1 address patterns
-3. **Specify owner addition workflow** integration with driver management
-4. **Proceed to implementation** once vehicle management workflow clarified
+## Approval Section
+**Status**: Ready for Review  
+**Database Changes**: Add 4 fields to vehicle table (plate, owner, source)  
+**Pattern Reuse**: 95% - Leveraging existing vehicle infrastructure  
+**Risk Level**: Medium - External service dependencies but fallbacks exist  
+**Next Steps**: Review approach, approve vehicle table changes, implement  
+**Reviewer Comments**: [Pending]  
+**Decision**: [ ] APPROVED [ ] REVISE [ ] REJECT [ ] DEFER

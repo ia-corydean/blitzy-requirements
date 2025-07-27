@@ -9,6 +9,8 @@ This is a simplified, approval-based requirements generation system that ensures
 - **Accounting** - Billing, payments, ACH processing, commission reconciliation  
 - **ProgramManager** - Rate factors, underwriting rules, program configuration
 - **ProgramTraits** - Program-specific business rules (Aguila Dorada specialization)
+- **PolicyManager** - Policy lifecycle management, renewals, cancellations, endorsements
+- **LossManager** - Claims processing, loss adjusting, settlement workflows
 - **EntityIntegration** - External API integrations (DCS for verification)
 - **Reinstatement** - Policy reinstatement with lapse processing
 - **Sr22** - SR22/SR26 financial responsibility filing
@@ -17,7 +19,7 @@ This is a simplified, approval-based requirements generation system that ensures
 - **90%+ first-approach accuracy** through deep analysis and pattern matching
 - **85%+ pattern reuse** leveraging existing Global Requirements and codebase
 - **Mandatory approval workflow** ensures quality before implementation
-- **Simplified 5-agent system** reduces complexity by 55%
+- **Simplified 5-agent system** streamlines the generation process
 
 ## Quick Start
 
@@ -62,19 +64,25 @@ graph LR
 
 ### Simplified 5-Agent Architecture
 - **Prompt Analyzer**: Deep requirement analysis and initial approach generation
-- **Pattern Matcher**: Finds reusable patterns from GlobalRequirements and codebase
+- **Pattern Matcher**: Finds reusable patterns from GlobalRequirements and blitzy-requirements for greenfield implementation
 - **Simplification Enforcer**: Ensures solutions remain simple and maintainable
 - **Implementation Generator**: Creates detailed requirements after approval
 - **Quality Validator**: Final validation against all standards
 
-### Key Infrastructure
-- **Templates**: Standardized templates in `/shared-infrastructure/templates/`
-- **Context Store**: Maintains context throughout the process
+### Key Infrastructure (Active Components)
+- **Templates**: Two distinct templates in `/shared-infrastructure/templates/`
+  - `approach-template.md`: For technical analysis in `/in-progress/approaches/`
+  - `completed-requirement-template.md`: For final requirements in `/completed/`
+- **Context Store**: Maintains processing context in `/shared-infrastructure/context-store/`
+- **Knowledge Base**: Entity catalogs and patterns in `/shared-infrastructure/knowledge-base/`
+- **Agent Configurations**: 5-agent system configs in `/shared-infrastructure/agent-configurations/`
 - **Processing Queues**: Domain-specific and multi-domain queues
 - **Blitzy-Requirements**: Reference-only codebase (NEVER modify)
 
 ### Global Requirements Integration
 Leverages 64+ existing Global Requirements including:
+- **⚠️ GR-68**: Pattern Reuse Guidelines (PRIORITY - 85%+ reuse target)
+- **GR-69**: Producer Portal Architecture (23 core features)
 - **GR-52**: Universal Entity Management (90% faster development)
 - **GR-44**: Communication Architecture (unified messaging)
 - **GR-41**: Database Standards (consistent naming and relationships)
@@ -93,6 +101,10 @@ requirements/
 │   │   ├── pending/             # Waiting for processing
 │   │   ├── in-progress/         
 │   │   │   ├── approaches/      # 📋 REVIEW -approach.md FILES HERE
+│   │   │   │   └── {requirement-id}/  # Subdirectory for each requirement
+│   │   │   │       ├── *-approach.md  # Original approach file
+│   │   │   │       ├── *-approach-v2.md # Revised versions
+│   │   │   │       └── *-approach-v3.md # Further iterations
 │   │   │   └── implementations/ # Active implementation work
 │   │   └── completed/           # Finished requirements
 │   └── multi-domain/            # For cross-domain requirements
@@ -113,6 +125,13 @@ requirements/
 - **Revision Support**: Iterate on approaches based on feedback
 - **Full Transparency**: See exactly what will be implemented
 
+### Enhanced Validation Process
+Approach files now include comprehensive validation sections:
+- **Business Summaries**: Non-technical explanations for stakeholder validation
+- **Technical Summaries**: Implementation guidance for developer validation
+- **Database Schemas**: Data model suggestions for architecture validation
+- **Success Criteria**: Measurable outcomes for quality validation
+
 ### Simplification Focus
 - **Pattern Reuse**: Leverages existing patterns from GlobalRequirements
 - **Codebase Reference**: Checks blitzy-requirements for implementations
@@ -124,6 +143,19 @@ requirements/
 - **Decision History**: All choices and rationale preserved
 - **Domain Knowledge**: Specialized templates for each domain
 - **Cross-References**: Links between related requirements
+
+### Database Standards (GR-41)
+All tables in the system must follow these standards:
+- **Status Management**: Use `status_id` (FK to status table) instead of boolean `is_active` fields
+- **Status Tables**: Implement `status_type` and `status` tables for lifecycle management
+- **Audit Fields**: Every table must include:
+  - `created_by` (BIGINT UNSIGNED NOT NULL, FK to user)
+  - `created_at` (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+  - `updated_by` (BIGINT UNSIGNED, FK to user)
+  - `updated_at` (TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)
+- **Naming Convention**: Use singular nouns for tables, `map_` prefix for junction tables
+- **Foreign Keys**: Always define proper foreign key constraints
+- **Indexes**: Add indexes for foreign keys and commonly queried fields
 
 ## Documentation
 
@@ -150,6 +182,8 @@ Available domains:
 - `accounting` - Billing and payments
 - `program-manager` - Rate and rule configuration
 - `program-traits` - Program-specific features
+- `policy-manager` - Policy lifecycle management
+- `loss-manager` - Claims processing and loss adjusting
 - `entity-integration` - External API integrations
 - `reinstatement` - Policy reinstatement
 - `sr22` - Financial responsibility filing
@@ -181,6 +215,13 @@ Place your file in: `/processing-queues/{domain}/prompt/`
 - **Purpose**: Reference existing implementations
 - **Access**: Read-only - NEVER modify
 - **Usage**: Find patterns and examples
+
+### Pattern Selection for Greenfield Implementation
+- **Pre-Production System**: Building new system without existing data
+- **BR as Reference**: Proven patterns inform but don't constrain our choices
+- **PE as Requirements**: Global Requirements define what must be built
+- **Pattern Reconciliation**: Aligning approaches, not migrating data
+- **Future Standards**: Our pattern choices establish templates for ongoing requirements
 
 ### Simplification Philosophy
 "Make everything as simple as possible, but not simpler."

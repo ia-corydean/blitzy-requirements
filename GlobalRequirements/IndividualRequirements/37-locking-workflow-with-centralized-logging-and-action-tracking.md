@@ -8,21 +8,22 @@
         - status_id – Indicates whether the action is active, expired, or released.
         - timestamps – Records when the action occurred.
         - user references – Identifies who performed the action.
-    - User references must be recorded for all actions, whether performed by:
-        - A real user (user_id).
-        - A system process (system_user_id).
-        - A scheduler job (scheduler_user_id).
+    - User references must be recorded for all actions using a single user_id field:
+        - Real users are identified by user_id with their user_type (e.g., 'agent', 'admin', 'customer')
+        - System processes use a dedicated system user account with user_type = 'system'
+        - Scheduler jobs use a dedicated scheduler user account with user_type = 'scheduler'
     - Each lock operation must be logged in the lock table to ensure that every locked record has a corresponding action record, which tracks:
         - The type of lock applied (lock_type_id).
         - The entity that was locked (entity_type_id).
-        - The user responsible for the lock (created_by, updated_by).
+        - The user responsible for the lock (user_id in the lock record).
 2. Linking Locks and Actions to Records
     - action.record_id must link each action to the specific record it affects.
     - map_lock_action must ensure that every lock is tied to an action, maintaining consistency between the locking mechanism and the audit log.
 3. User Accountability and Permissions
-    - All locks and actions must store who performed them (created_by, updated_by), ensuring full traceability.
-    - System-driven or scheduled operations must use a user reference that points to either a system user or a scheduler user in the user table.
-    - Access to locked records must be controlled based on user roles:
+    - All locks and actions must store who performed them using user_id, ensuring full traceability.
+    - The user's context and permissions are determined by their user_type_id reference.
+    - System-driven or scheduled operations use dedicated user accounts with appropriate user_types.
+    - Access to locked records must be controlled based on user_type and associated permissions:
         - Administrators or managers may override a lock.
         - Regular users may only view locked records in read-only mode.
 4. Lock Types and Status Management
@@ -52,12 +53,12 @@
             - lock_type_id – The type of lock applied.
             - entity_type_id – The entity category being locked.
             - record_id – The specific record being locked.
-            - created_by – The user who initiated the lock.
+            - user_id – The user who initiated the lock.
     3. Insert Action Record
         - Create a corresponding action record, with action_type_id referencing lock creation.
     4. Map Lock to Record
         - Insert a row in map_lock_action, linking the lock and action records to the specific record.id.
-        - If the lock is system-driven, the created_by field must reference the system user.
+        - If the lock is system-driven, the user_id field must reference the system user account.
 2. Read/View a Locked Record
     - Check if the record is locked in lock.
     - If locked, restrict editing and allow only read-only access.
@@ -92,7 +93,8 @@
 
 1. Entity Lock Table (lock)
     - Tracks active and expired locks on records.
-    - Links to user for accountability.
+    - Links to user table via user_id for accountability.
+    - User context determined by joining with user_type table.
 2. Lock Type Table (lock_type)
     - Defines different lock mechanisms, including:
         - User lock (manual).
@@ -161,6 +163,36 @@ To support comprehensive audit trails for policy reinstatement processes (GR-64)
     - Lock duration: Automatic release upon completion or failure
     - Lock override: Allow administrative override for exceptional circumstances
 
+### 37.5 User Type Pattern Implementation
+
+1. **User Type Definition**
+    - All user tracking uses a single user_id field that references the user table
+    - User context is determined by the user_type_id field in the user table
+    - Standard user types include:
+        - 'customer' - Policy holders and applicants
+        - 'agent' - Insurance agents and brokers
+        - 'admin' - System administrators
+        - 'manager' - Supervisors with override capabilities
+        - 'system' - Automated system processes
+        - 'scheduler' - Scheduled job execution
+        - 'api' - External API integrations
+
+2. **Action Table User Tracking**
+    - The action table contains only user_id (not multiple user fields)
+    - User type context is obtained by joining: action → user → user_type
+    - This provides complete context for who performed each action
+
+3. **Lock Table User Tracking**
+    - The lock table contains only user_id for lock ownership
+    - No separate fields for different user contexts
+    - Lock ownership and permissions checked via user_type
+
+4. **Benefits of Unified Pattern**
+    - Simplified foreign key relationships
+    - Consistent user tracking across all tables
+    - Flexible user type expansion without schema changes
+    - Clear audit trail with user context
+
 ## Cross-References
 
 ### Related Global Requirements
@@ -168,3 +200,5 @@ To support comprehensive audit trails for policy reinstatement processes (GR-64)
 - **GR-18**: Workflow Requirements - Integration with workflow event tracking
 - **GR-20**: Business Logic Standards - Service-level action logging patterns
 - **GR-41**: Table Schema Requirements - Database schema for action tracking
+- **GR-36**: Authentication User Groups Permissions - User type and permission patterns
+- **GR-02**: Database Migrations - Standard audit field patterns

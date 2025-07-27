@@ -1,360 +1,285 @@
 # 02.0 Database Migrations - Updated
 
-## Multi-Tenant Migration Strategy
+## Database Migration Strategy
 
 ### Database Architecture Overview
-- **Multi-Tenant Isolation**: Namespace-based tenant isolation with shared infrastructure
-- **Primary Database**: MariaDB 12.x LTS for transactional data with row-level security
-- **Cache Layer**: Redis 7.x for session management and application caching
-- **Search Engine**: Elasticsearch 8.x for full-text search and analytics
-- **File Storage**: AWS S3 with tenant-specific bucket organization
+- **Primary Database**: MariaDB for transactional data
+- **Single Database**: For containing all application tables
+- **Type-Based Architecture**: Each entity has corresponding _type tables
+- **Standard Audit Fields**: All tables include audit tracking
 
 ### Technology Stack Integration
-- **Laravel Version**: 12.x+ with modern migration features
-- **PHP Version**: 8.4+ for enhanced database connectivity and security
+- **Laravel Migration Framework**: Standard Laravel migrations
 - **Database Driver**: Laravel's native MariaDB driver with connection pooling
-- **Migration Engine**: Laravel's schema builder with tenant-aware extensions
+- **Migration Engine**: Laravel's schema builder
 
 ## Core Migration Framework
 
-### Multi-Tenant Database Structure
+### Base Migration Class
 ```php
-// TenantAwareMigration.php - Base class for tenant-aware migrations
-abstract class TenantAwareMigration extends Migration
+// BaseMigration.php - Base class for standard migrations
+abstract class BaseMigration extends Migration
 {
     /**
-     * Run migrations with tenant context
+     * Add standard audit fields to any table
      */
+    protected function addAuditFields(Blueprint $table): void
+    {
+        $table->integer('created_by')->nullable();
+        $table->integer('updated_by')->nullable();
+        $table->timestamp('created_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+        $table->timestamp('updated_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+        
+        // Add indexes
+        $table->index('created_at');
+    }
+    
+    /**
+     * Add status field with foreign key
+     */
+    protected function addStatusField(Blueprint $table): void
+    {
+        $table->integer('status_id')->nullable();
+        $table->foreign('status_id')->references('id')->on('status');
+        $table->index('status_id');
+    }
+    
+    /**
+     * Add type reference pattern
+     */
+    protected function addTypeReference(Blueprint $table, string $typeName): void
+    {
+        $typeField = $typeName . '_type_id';
+        $table->integer($typeField);
+        $table->foreign($typeField)->references('id')->on($typeName . '_type');
+        $table->index($typeField);
+    }
+}
+```
+
+### Database Patterns
+
+#### Type Table Pattern
+Every major entity has a corresponding type table:
+```php
+// Example: Create Entity Type Table
+class CreateEntityTypeTable extends Migration
+{
     public function up()
     {
-        // Create tenant-isolated table with automatic tenant_id column
-        Schema::create($this->getTableName(), function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('tenant_id')->index();
+        Schema::create('entity_type', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->string('code', 50)->unique();
+            $table->string('name', 100);
+            $table->text('description')->nullable();
+            $table->boolean('is_default')->default(false);
+            $table->integer('status_id')->nullable();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
+            $table->timestamp('created_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             
-            // Call child migration specific schema
-            $this->defineSchema($table);
+            // Indexes
+            $table->index('code');
+            $table->index('status_id');
             
-            $table->timestamps();
-            $table->softDeletes();
-            
-            // Add tenant isolation foreign key
-            $table->foreign('tenant_id')
-                  ->references('id')
-                  ->on('tenants')
-                  ->onDelete('cascade');
-            
-            // Add tenant-specific unique constraints
-            $this->addTenantConstraints($table);
+            // Foreign keys
+            $table->foreign('status_id')->references('id')->on('status');
         });
-        
-        // Add row-level security policies
-        $this->addRowLevelSecurity();
     }
     
-    /**
-     * Define tenant-specific schema (implemented by child classes)
-     */
-    abstract protected function defineSchema(Blueprint $table): void;
-    
-    /**
-     * Add tenant-specific constraints
-     */
-    protected function addTenantConstraints(Blueprint $table): void
+    public function down()
     {
-        // Override in child classes for custom constraints
+        Schema::dropIfExists('entity_type');
+    }
+}
+```
+
+#### Main Entity Table Pattern
+```php
+// Example: Create Entity Table
+class CreateEntityTable extends BaseMigration
+{
+    public function up()
+    {
+        Schema::create('entity', function (Blueprint $table) {
+            $table->integer('id', true);
+            
+            // Type reference
+            $this->addTypeReference($table, 'entity');
+            
+            // Standard fields
+            $this->addStatusField($table);
+            $this->addAuditFields($table);
+            
+            // Additional indexes
+            $table->index('created_at');
+        });
     }
     
-    /**
-     * Add row-level security for tenant isolation
-     */
-    protected function addRowLevelSecurity(): void
+    public function down()
     {
-        $tableName = $this->getTableName();
-        
-        // Create RLS policy for tenant isolation
-        DB::statement("
-            CREATE POLICY tenant_isolation_policy ON {$tableName}
-            FOR ALL
-            TO app_user
-            USING (tenant_id = current_setting('app.current_tenant_id')::bigint)
-            WITH CHECK (tenant_id = current_setting('app.current_tenant_id')::bigint)
-        ");
-        
-        // Enable RLS on the table
-        DB::statement("ALTER TABLE {$tableName} ENABLE ROW LEVEL SECURITY");
+        Schema::dropIfExists('entity');
+    }
+}
+```
+
+#### Map Table Pattern
+For many-to-many relationships:
+```php
+// Example: Create Map Table
+class CreateMapPolicyDriverTable extends Migration
+{
+    public function up()
+    {
+        Schema::create('map_policy_driver', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('policy_id');
+            $table->integer('driver_id');
+            $table->boolean('is_primary_driver')->default(false);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
+            $table->timestamp('created_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            
+            // Indexes
+            $table->index('policy_id');
+            $table->index('driver_id');
+            $table->unique(['policy_id', 'driver_id']);
+            
+            // Foreign keys
+            $table->foreign('policy_id')->references('id')->on('policy');
+            $table->foreign('driver_id')->references('id')->on('driver');
+        });
     }
     
-    /**
-     * Get table name (can be overridden by child classes)
-     */
-    protected function getTableName(): string
+    public function down()
     {
-        return $this->table ?? Str::snake(class_basename(static::class));
+        Schema::dropIfExists('map_policy_driver');
     }
 }
 ```
 
 ### Core Insurance Domain Migrations
 
-#### Tenant Management Migration
+#### User Management Migration
 ```php
-// 2024_01_01_000001_create_tenants_table.php
-class CreateTenantsTable extends Migration
+// Create Users Table
+class CreateUserTable extends BaseMigration
 {
     public function up()
     {
-        Schema::create('tenants', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 100)->index();
-            $table->string('domain', 50)->unique();
-            $table->string('database_name', 50)->unique();
-            $table->json('configuration')->nullable();
-            $table->json('feature_flags')->nullable();
-            $table->enum('status', ['active', 'suspended', 'inactive'])->default('active');
-            $table->timestamp('trial_ends_at')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
+        Schema::create('user', function (Blueprint $table) {
+            $table->integer('id', true);
             
-            // Performance indexes
-            $table->index(['status', 'created_at']);
-            $table->index('domain');
+            // Type reference
+            $this->addTypeReference($table, 'user');
+            
+            // User fields
+            $table->integer('name_id')->nullable();
+            $table->integer('role_id')->nullable();
+            $table->string('email', 255)->unique()->nullable();
+            $table->string('username', 100)->unique()->nullable();
+            $table->string('password', 255)->nullable();
+            $table->string('phone', 20)->nullable();
+            $table->boolean('mfa_enabled')->default(false);
+            $table->string('mfa_secret', 255)->nullable();
+            $table->boolean('email_verified')->default(false);
+            $table->boolean('phone_verified')->default(false);
+            $table->timestamp('last_login_at')->nullable();
+            $table->integer('failed_login_attempts')->default(0);
+            $table->timestamp('locked_until')->nullable();
+            $table->timestamp('password_changed_at')->nullable();
+            $table->integer('signature_id')->nullable();
+            $table->integer('language_preference_id')->nullable();
+            $table->string('password_reset_token', 255)->nullable();
+            $table->timestamp('password_reset_expires')->nullable();
+            
+            // Standard fields
+            $this->addStatusField($table);
+            $this->addAuditFields($table);
+            
+            // Indexes
+            $table->index('email');
+            $table->index('role_id');
+            $table->index('name_id');
+            
+            // Foreign keys
+            $table->foreign('name_id')->references('id')->on('name');
+            $table->foreign('role_id')->references('id')->on('role');
+            $table->foreign('signature_id')->references('id')->on('signature');
+            $table->foreign('language_preference_id')->references('id')->on('language');
         });
     }
     
     public function down()
     {
-        Schema::dropIfExists('tenants');
-    }
-}
-```
-
-#### User Authentication Migration
-```php
-// 2024_01_01_000002_create_users_table.php
-class CreateUsersTable extends TenantAwareMigration
-{
-    protected function defineSchema(Blueprint $table): void
-    {
-        $table->string('email', 100)->index();
-        $table->timestamp('email_verified_at')->nullable();
-        $table->string('password');
-        $table->string('first_name', 50);
-        $table->string('last_name', 50);
-        $table->string('phone', 20)->nullable();
-        $table->json('preferences')->nullable();
-        $table->string('mfa_secret')->nullable();
-        $table->json('mfa_recovery_codes')->nullable();
-        $table->timestamp('last_login_at')->nullable();
-        $table->ipAddress('last_login_ip')->nullable();
-        $table->boolean('is_active')->default(true);
-        $table->rememberToken();
-    }
-    
-    protected function addTenantConstraints(Blueprint $table): void
-    {
-        // Unique email per tenant
-        $table->unique(['tenant_id', 'email'], 'users_tenant_email_unique');
-        
-        // Performance indexes
-        $table->index(['tenant_id', 'email', 'is_active']);
-        $table->index(['tenant_id', 'last_login_at']);
+        Schema::dropIfExists('user');
     }
 }
 ```
 
 #### Policy Management Migration
 ```php
-// 2024_01_01_000003_create_policies_table.php
-class CreatePoliciesTable extends TenantAwareMigration
+// Create Policy Table
+class CreatePolicyTable extends BaseMigration
 {
-    protected function defineSchema(Blueprint $table): void
+    public function up()
     {
-        $table->string('policy_number', 20)->index();
-        $table->unsignedBigInteger('policyholder_id');
-        $table->unsignedBigInteger('agent_id')->nullable();
-        $table->enum('type', ['auto', 'home', 'business', 'life', 'health']);
-        $table->enum('status', ['quote', 'bound', 'active', 'cancelled', 'expired']);
-        $table->decimal('premium_amount', 10, 2);
-        $table->decimal('coverage_amount', 12, 2);
-        $table->date('effective_date');
-        $table->date('expiration_date');
-        $table->json('coverage_details');
-        $table->json('risk_factors')->nullable();
-        $table->decimal('deductible', 8, 2)->nullable();
-        $table->text('notes')->nullable();
-        $table->timestamp('bound_at')->nullable();
-        $table->timestamp('cancelled_at')->nullable();
-        $table->string('cancellation_reason')->nullable();
-    }
-    
-    protected function addTenantConstraints(Blueprint $table): void
-    {
-        // Unique policy number per tenant
-        $table->unique(['tenant_id', 'policy_number'], 'policies_tenant_number_unique');
-        
-        // Foreign key constraints
-        $table->foreign(['tenant_id', 'policyholder_id'])
-              ->references(['tenant_id', 'id'])
-              ->on('users')
-              ->onDelete('cascade');
-              
-        $table->foreign(['tenant_id', 'agent_id'])
-              ->references(['tenant_id', 'id'])
-              ->on('users')
-              ->onDelete('set null');
-        
-        // Performance indexes
-        $table->index(['tenant_id', 'status', 'effective_date']);
-        $table->index(['tenant_id', 'type', 'status']);
-        $table->index(['tenant_id', 'agent_id', 'status']);
-        $table->index(['tenant_id', 'expiration_date']);
-    }
-}
-```
-
-#### Claims Management Migration
-```php
-// 2024_01_01_000004_create_claims_table.php
-class CreateClaimsTable extends TenantAwareMigration
-{
-    protected function defineSchema(Blueprint $table): void
-    {
-        $table->string('claim_number', 20)->index();
-        $table->unsignedBigInteger('policy_id');
-        $table->unsignedBigInteger('claimant_id');
-        $table->unsignedBigInteger('adjuster_id')->nullable();
-        $table->enum('status', ['reported', 'investigating', 'processing', 'approved', 'denied', 'closed']);
-        $table->enum('type', ['collision', 'comprehensive', 'liability', 'property', 'injury', 'other']);
-        $table->date('incident_date');
-        $table->text('description');
-        $table->decimal('claimed_amount', 10, 2);
-        $table->decimal('approved_amount', 10, 2)->nullable();
-        $table->decimal('paid_amount', 10, 2)->default(0);
-        $table->json('incident_details');
-        $table->json('supporting_documents')->nullable();
-        $table->timestamp('reported_at');
-        $table->timestamp('closed_at')->nullable();
-        $table->text('adjuster_notes')->nullable();
-    }
-    
-    protected function addTenantConstraints(Blueprint $table): void
-    {
-        // Unique claim number per tenant
-        $table->unique(['tenant_id', 'claim_number'], 'claims_tenant_number_unique');
-        
-        // Foreign key constraints
-        $table->foreign(['tenant_id', 'policy_id'])
-              ->references(['tenant_id', 'id'])
-              ->on('policies')
-              ->onDelete('cascade');
-              
-        $table->foreign(['tenant_id', 'claimant_id'])
-              ->references(['tenant_id', 'id'])
-              ->on('users')
-              ->onDelete('cascade');
-              
-        $table->foreign(['tenant_id', 'adjuster_id'])
-              ->references(['tenant_id', 'id'])
-              ->on('users')
-              ->onDelete('set null');
-        
-        // Performance indexes
-        $table->index(['tenant_id', 'status', 'incident_date']);
-        $table->index(['tenant_id', 'policy_id', 'status']);
-        $table->index(['tenant_id', 'adjuster_id', 'status']);
-        $table->index(['tenant_id', 'reported_at']);
-    }
-}
-```
-
-## Advanced Migration Features
-
-### Data Encryption Migration
-```php
-// EncryptedFieldsMigration.php - Handle encrypted sensitive data
-abstract class EncryptedFieldsMigration extends TenantAwareMigration
-{
-    /**
-     * Add encrypted fields to table
-     */
-    protected function addEncryptedFields(Blueprint $table, array $fields): void
-    {
-        foreach ($fields as $field => $type) {
-            switch ($type) {
-                case 'text':
-                    $table->text($field . '_encrypted')->nullable();
-                    break;
-                case 'string':
-                    $table->string($field . '_encrypted', 500)->nullable();
-                    break;
-                case 'json':
-                    $table->text($field . '_encrypted')->nullable();
-                    break;
-            }
+        Schema::create('policy', function (Blueprint $table) {
+            $table->integer('id', true);
             
-            // Add field hash for searchability
-            $table->string($field . '_hash', 64)->nullable()->index();
-        }
+            // Type reference
+            $this->addTypeReference($table, 'policy');
+            
+            // Policy fields
+            $table->string('policy_number', 50)->unique()->nullable();
+            $table->integer('program_id')->nullable();
+            $table->integer('quote_id')->nullable();
+            $table->integer('producer_id')->nullable();
+            $table->date('effective_date')->nullable();
+            $table->date('expiration_date')->nullable();
+            $table->decimal('premium', 10, 2)->nullable();
+            $table->timestamp('bound_date')->nullable();
+            $table->date('cancellation_date')->nullable();
+            $table->integer('cancellation_reason_id')->nullable();
+            $table->date('reinstatement_date')->nullable();
+            $table->date('non_renewal_date')->nullable();
+            $table->integer('non_renewal_reason_id')->nullable();
+            $table->integer('total_vehicles')->default(0);
+            $table->integer('total_drivers')->default(0);
+            $table->integer('payment_plan_id')->nullable();
+            $table->decimal('down_payment', 10, 2)->nullable();
+            $table->date('paid_to_date')->nullable();
+            $table->decimal('total_paid', 10, 2)->default(0.00);
+            $table->decimal('balance_due', 10, 2)->default(0.00);
+            
+            // Standard fields
+            $this->addStatusField($table);
+            $this->addAuditFields($table);
+            
+            // Indexes
+            $table->index('policy_number');
+            $table->index('program_id');
+            $table->index('quote_id');
+            $table->index('producer_id');
+            $table->index('effective_date');
+            $table->index('cancellation_date');
+            $table->index('paid_to_date');
+            
+            // Foreign keys
+            $table->foreign('program_id')->references('id')->on('program');
+            $table->foreign('quote_id')->references('id')->on('quote');
+            $table->foreign('producer_id')->references('id')->on('producer');
+            $table->foreign('cancellation_reason_id')->references('id')->on('cancellation_reason');
+            $table->foreign('non_renewal_reason_id')->references('id')->on('non_renewal_type');
+            $table->foreign('payment_plan_id')->references('id')->on('payment_plan');
+        });
     }
     
-    /**
-     * Create encrypted data trigger
-     */
-    protected function createEncryptionTrigger(string $tableName, array $fields): void
+    public function down()
     {
-        foreach ($fields as $field => $type) {
-            DB::statement("
-                CREATE TRIGGER encrypt_{$tableName}_{$field}_trigger
-                BEFORE INSERT OR UPDATE ON {$tableName}
-                FOR EACH ROW
-                BEGIN
-                    IF NEW.{$field} IS NOT NULL THEN
-                        SET NEW.{$field}_encrypted = AES_ENCRYPT(NEW.{$field}, UNHEX(SHA2(@encryption_key, 256)));
-                        SET NEW.{$field}_hash = SHA2(NEW.{$field}, 256);
-                        SET NEW.{$field} = NULL;
-                    END IF;
-                END;
-            ");
-        }
-    }
-}
-```
-
-### Audit Trail Migration
-```php
-// 2024_01_01_000010_create_audit_trails_table.php
-class CreateAuditTrailsTable extends TenantAwareMigration
-{
-    protected function defineSchema(Blueprint $table): void
-    {
-        $table->string('auditable_type', 100);
-        $table->unsignedBigInteger('auditable_id');
-        $table->string('event', 50);
-        $table->unsignedBigInteger('user_id')->nullable();
-        $table->json('old_values')->nullable();
-        $table->json('new_values')->nullable();
-        $table->ipAddress('ip_address')->nullable();
-        $table->string('user_agent', 500)->nullable();
-        $table->string('session_id', 100)->nullable();
-        $table->json('metadata')->nullable();
-    }
-    
-    protected function addTenantConstraints(Blueprint $table): void
-    {
-        // Composite index for auditable entity
-        $table->index(['tenant_id', 'auditable_type', 'auditable_id']);
-        
-        // Performance indexes
-        $table->index(['tenant_id', 'event', 'created_at']);
-        $table->index(['tenant_id', 'user_id', 'created_at']);
-        $table->index(['tenant_id', 'created_at']);
-        
-        // Foreign key for user
-        $table->foreign(['tenant_id', 'user_id'])
-              ->references(['tenant_id', 'id'])
-              ->on('users')
-              ->onDelete('set null');
+        Schema::dropIfExists('policy');
     }
 }
 ```
@@ -366,7 +291,7 @@ class CreateAuditTrailsTable extends TenantAwareMigration
 // MigrationTestCase.php - Base test class for migration testing
 abstract class MigrationTestCase extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
     
     /**
      * Test migration up and down
@@ -390,104 +315,50 @@ abstract class MigrationTestCase extends TestCase
     }
     
     /**
-     * Test tenant isolation
+     * Test standard fields exist
      */
-    public function test_tenant_isolation(): void
+    public function test_standard_fields_exist(): void
     {
-        $tenant1 = Tenant::factory()->create();
-        $tenant2 = Tenant::factory()->create();
+        $this->artisan('migrate', ['--path' => $this->getMigrationPath()])
+             ->assertExitCode(0);
         
-        // Create records for both tenants
-        $this->createTenantRecord($tenant1);
-        $this->createTenantRecord($tenant2);
+        $columns = Schema::getColumnListing($this->getTableName());
         
-        // Verify tenant isolation
-        $this->assertTenantIsolation($tenant1, $tenant2);
-    }
-    
-    /**
-     * Test row-level security
-     */
-    public function test_row_level_security(): void
-    {
-        $tenant = Tenant::factory()->create();
+        // Verify audit fields
+        $this->assertContains('created_by', $columns);
+        $this->assertContains('updated_by', $columns);
+        $this->assertContains('created_at', $columns);
+        $this->assertContains('updated_at', $columns);
         
-        // Set tenant context
-        DB::statement("SET app.current_tenant_id = ?", [$tenant->id]);
-        
-        // Create and verify record
-        $record = $this->createTenantRecord($tenant);
-        $this->assertDatabaseHas($this->getTableName(), ['id' => $record->id]);
-        
-        // Switch tenant context
-        $otherTenant = Tenant::factory()->create();
-        DB::statement("SET app.current_tenant_id = ?", [$otherTenant->id]);
-        
-        // Verify record is not accessible
-        $this->assertDatabaseMissing($this->getTableName(), ['id' => $record->id]);
+        // Verify status field if applicable
+        if ($this->hasStatusField()) {
+            $this->assertContains('status_id', $columns);
+        }
     }
     
     abstract protected function getMigrationPath(): string;
     abstract protected function getTableName(): string;
     abstract protected function assertTableStructure(): void;
-    abstract protected function createTenantRecord(Tenant $tenant);
-}
-```
-
-### Migration Performance Testing
-```php
-// MigrationPerformanceTest.php - Performance testing for large datasets
-class MigrationPerformanceTest extends TestCase
-{
-    use RefreshDatabase;
-    
-    /**
-     * Test migration performance with large dataset
-     */
-    public function test_migration_performance_large_dataset(): void
-    {
-        // Create test data
-        $this->createLargeDataset();
-        
-        // Measure migration time
-        $startTime = microtime(true);
-        
-        $this->artisan('migrate', ['--path' => 'database/migrations/performance'])
-             ->assertExitCode(0);
-        
-        $migrationTime = microtime(true) - $startTime;
-        
-        // Assert performance requirements
-        $this->assertLessThan(30, $migrationTime, 'Migration took too long');
-        
-        // Verify data integrity
-        $this->assertDataIntegrity();
-    }
-    
-    /**
-     * Test concurrent migration safety
-     */
-    public function test_concurrent_migration_safety(): void
-    {
-        $processes = [];
-        
-        // Start multiple migration processes
-        for ($i = 0; $i < 3; $i++) {
-            $processes[] = $this->startMigrationProcess();
-        }
-        
-        // Wait for all processes to complete
-        foreach ($processes as $process) {
-            $this->waitForProcess($process);
-        }
-        
-        // Verify only one migration succeeded
-        $this->assertSingleMigrationSuccess();
-    }
+    abstract protected function hasStatusField(): bool;
 }
 ```
 
 ## Environment-Specific Migration Strategies
+
+### Development Environment
+```bash
+# Run all migrations
+php artisan migrate
+
+# Run specific migration
+php artisan migrate --path=database/migrations/2024_01_01_000001_create_status_table.php
+
+# Rollback migrations
+php artisan migrate:rollback --step=1
+
+# Fresh migration (drop all tables and re-run)
+php artisan migrate:fresh
+```
 
 ### Production Migration Safety
 ```php
@@ -513,20 +384,19 @@ class ProductionMigrationCommand extends Command
             return;
         }
         
-        // Validate migration safety
-        $this->validateMigrationSafety();
-        
         // Execute migrations with monitoring
         $this->executeWithMonitoring();
     }
     
-    private function validateMigrationSafety(): void
+    private function createBackup(): void
     {
-        $pendingMigrations = $this->getMigrator()->getPendingMigrations();
+        $this->info('Creating database backup...');
+        $filename = 'backup_' . date('Y_m_d_His') . '.sql';
         
-        foreach ($pendingMigrations as $migration) {
-            $this->validateMigration($migration);
-        }
+        $this->call('db:backup', [
+            '--filename' => $filename,
+            '--compress' => true
+        ]);
     }
     
     private function executeWithMonitoring(): void
@@ -552,99 +422,29 @@ class ProductionMigrationCommand extends Command
 }
 ```
 
-### Multi-Environment Migration Management
-```php
-// TenantMigrationManager.php - Manage migrations across tenants
-class TenantMigrationManager
-{
-    /**
-     * Run migrations for all tenants
-     */
-    public function migrateAllTenants(): void
-    {
-        $tenants = Tenant::where('status', 'active')->get();
-        
-        foreach ($tenants as $tenant) {
-            $this->migrateTenant($tenant);
-        }
-    }
-    
-    /**
-     * Run migrations for specific tenant
-     */
-    public function migrateTenant(Tenant $tenant): void
-    {
-        // Set tenant context
-        TenantContext::setCurrentTenant($tenant->id);
-        
-        try {
-            // Set database connection for tenant
-            $this->setTenantConnection($tenant);
-            
-            // Run tenant-specific migrations
-            Artisan::call('migrate', [
-                '--database' => "tenant_{$tenant->id}",
-                '--path' => 'database/migrations/tenant',
-                '--force' => true
-            ]);
-            
-            // Log successful migration
-            Log::info("Tenant migration completed", [
-                'tenant_id' => $tenant->id,
-                'tenant_name' => $tenant->name
-            ]);
-            
-        } catch (Exception $e) {
-            // Log migration failure
-            Log::error("Tenant migration failed", [
-                'tenant_id' => $tenant->id,
-                'error' => $e->getMessage()
-            ]);
-            
-            throw $e;
-        } finally {
-            // Reset tenant context
-            TenantContext::clearCurrentTenant();
-        }
-    }
-    
-    /**
-     * Rollback migrations for tenant
-     */
-    public function rollbackTenant(Tenant $tenant, int $steps = 1): void
-    {
-        TenantContext::setCurrentTenant($tenant->id);
-        
-        try {
-            $this->setTenantConnection($tenant);
-            
-            Artisan::call('migrate:rollback', [
-                '--database' => "tenant_{$tenant->id}",
-                '--step' => $steps,
-                '--force' => true
-            ]);
-            
-        } finally {
-            TenantContext::clearCurrentTenant();
-        }
-    }
-}
-```
-
 ## Migration Documentation and Standards
 
 ### Migration Naming Conventions
 - **Format**: `YYYY_MM_DD_HHMMSS_descriptive_migration_name.php`
-- **Tenant Tables**: Include "tenant_" prefix or use TenantAwareMigration base class
-- **Indexes**: Include purpose in index name (e.g., `policies_tenant_status_idx`)
+- **Table Creation**: `create_[table_name]_table.php`
+- **Table Modification**: `add_[field]_to_[table]_table.php`
+- **Indexes**: Include purpose in index name (e.g., `idx_policy_effective_date`)
 - **Foreign Keys**: Include referenced table in constraint name
 
 ### Migration Best Practices
 1. **Atomic Operations**: Each migration should be atomic and reversible
-2. **Performance**: Consider impact on large datasets and use chunking for data migrations
-3. **Security**: Implement row-level security for tenant isolation
-4. **Testing**: Comprehensive test coverage for all migration scenarios
-5. **Documentation**: Clear comments explaining complex migration logic
-6. **Backward Compatibility**: Ensure migrations don't break existing functionality
+2. **Performance**: Consider impact on large datasets
+3. **Testing**: Comprehensive test coverage for all migration scenarios
+4. **Documentation**: Clear comments explaining complex migration logic
+5. **Backward Compatibility**: Ensure migrations don't break existing functionality
+6. **Index Strategy**: Add indexes for foreign keys and commonly queried fields
 
-This enhanced database migration file provides comprehensive multi-tenant migration strategies with security, performance, and maintainability considerations for the insurance system's evolution from monolith to microservices architecture.
+### Standard Table Requirements
+All tables must include:
+1. Primary key field (`id`)
+2. Audit fields (created_by, updated_by, created_at, updated_at)
+3. Status field where applicable
+4. Appropriate indexes for performance
+5. Foreign key constraints with proper naming
+
+This database migration framework provides comprehensive single-database migration strategies with security, performance, and maintainability considerations for the insurance management system.

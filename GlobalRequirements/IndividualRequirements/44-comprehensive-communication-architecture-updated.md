@@ -7,11 +7,12 @@ The insurance management system implements a comprehensive communication infrast
 
 ### Technology Stack Integration
 - **Laravel Version**: 12.x+ with built-in notification system
-- **Email Provider**: SendGrid API for reliable email delivery
-- **SMS Provider**: Twilio API for SMS and voice communications
+- **Email Provider**: SendGrid API for reliable email delivery (single provider)
+- **SMS Provider**: Twilio API for SMS communications (voice future enhancement)
 - **Secret Management**: HashiCorp Vault for secure credential storage
 - **Queue System**: Laravel queues with Redis 7.x for asynchronous processing
 - **Template Engine**: Laravel Blade with dynamic content replacement
+- **Encryption**: AES-256-GCM for stored communication data (V4)
 
 ## Multi-Channel Communication Framework
 
@@ -584,6 +585,381 @@ class VerificationService extends CommunicationService
         ];
         
         return base64_encode(encrypt(json_encode($payload)));
+    }
+}
+```
+
+## Verification Code Delivery (V4 Update)
+
+### Code Generation and Delivery Requirements
+```php
+// VerificationCodeService.php - V4 specifications
+class VerificationCodeService
+{
+    const CODE_SPECIFICATIONS = [
+        'sms' => [
+            'length' => 6,
+            'type' => 'numeric',
+            'format' => '/^[0-9]{6}$/',
+            'example' => '123456',
+        ],
+        'email' => [
+            'length' => 8,
+            'type' => 'alphanumeric',
+            'format' => '/^[A-Z0-9]{8}$/',
+            'example' => 'AB3CD5F7',
+        ],
+        'voice' => [
+            'length' => 4,
+            'type' => 'numeric',
+            'format' => '/^[0-9]{4}$/',
+            'example' => '1234',
+            'future' => true, // V4: Not day 1
+        ],
+    ];
+    
+    const EXPIRATION_TIME = 10; // V4: All codes expire in 10 minutes
+    
+    public function generateVerificationCode(string $channel): VerificationCode
+    {
+        $spec = self::CODE_SPECIFICATIONS[$channel];
+        
+        if ($spec['type'] === 'numeric') {
+            $code = $this->generateNumericCode($spec['length']);
+        } else {
+            $code = $this->generateAlphanumericCode($spec['length']);
+        }
+        
+        return new VerificationCode(
+            code: $code,
+            channel: $channel,
+            expiresAt: now()->addMinutes(self::EXPIRATION_TIME),
+            singleUse: true // V4: All codes are single-use
+        );
+    }
+    
+    private function generateNumericCode(int $length): string
+    {
+        return str_pad(
+            (string) random_int(0, pow(10, $length) - 1),
+            $length,
+            '0',
+            STR_PAD_LEFT
+        );
+    }
+    
+    private function generateAlphanumericCode(int $length): string
+    {
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $code = '';
+        
+        for ($i = 0; $i < $length; $i++) {
+            $code .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+        
+        return $code;
+    }
+}
+```
+
+### Template Examples
+```php
+// SMS Template
+const SMS_VERIFICATION_TEMPLATE = "
+Your verification code is {code}. This code expires in 10 minutes. Do not share this code.
+";
+
+// Email Template
+const EMAIL_VERIFICATION_TEMPLATE = [
+    'subject' => 'Your Verification Code',
+    'body' => '
+        <h2>Verification Code</h2>
+        <p>Your verification code is: <strong>{code}</strong></p>
+        <p>This code will expire in 10 minutes.</p>
+        <p>If you did not request this code, please contact support immediately.</p>
+        <hr>
+        <p><small>This is an automated message. Please do not reply.</small></p>
+    '
+];
+```
+
+## Rate Limiting for Verification (V4 Update)
+
+### Request Rate Limits
+```php
+// RateLimitingService.php - V4 verification rate limits
+class VerificationRateLimiter
+{
+    const RATE_LIMITS = [
+        'code_request' => [
+            'per_phone' => ['limit' => 3, 'window' => 3600], // 3 per hour
+            'per_email' => ['limit' => 3, 'window' => 3600], // 3 per hour
+            'per_ip' => ['limit' => 20, 'window' => 3600], // 20 per hour
+        ],
+        'verification_attempt' => [
+            'per_code' => ['limit' => 5, 'window' => 600], // 5 attempts per code
+            'per_user' => ['limit' => 10, 'window' => 86400], // 10 failed per day
+        ],
+        'lockout' => [
+            'threshold' => 10, // Failed attempts before lockout
+            'duration' => 86400, // 24 hour lockout
+        ],
+    ];
+    
+    public function checkRateLimit(string $type, string $identifier): RateLimitResult
+    {
+        $key = "rate_limit:{$type}:{$identifier}";
+        $limit = self::RATE_LIMITS[$type];
+        
+        $attempts = Redis::incr($key);
+        
+        if ($attempts === 1) {
+            Redis::expire($key, $limit['window']);
+        }
+        
+        if ($attempts > $limit['limit']) {
+            $ttl = Redis::ttl($key);
+            return new RateLimitResult(
+                allowed: false,
+                remaining: 0,
+                resetsIn: $ttl,
+                message: $this->getRateLimitMessage($type, $ttl)
+            );
+        }
+        
+        return new RateLimitResult(
+            allowed: true,
+            remaining: $limit['limit'] - $attempts,
+            resetsIn: Redis::ttl($key)
+        );
+    }
+    
+    private function getRateLimitMessage(string $type, int $ttl): string
+    {
+        $minutes = ceil($ttl / 60);
+        
+        return match($type) {
+            'code_request' => "Too many requests. Please try again in {$minutes} minutes.",
+            'verification_attempt' => "Maximum attempts exceeded. Please request a new code.",
+            'lockout' => "Account temporarily locked. Contact support.",
+            default => "Rate limit exceeded. Please try again later."
+        };
+    }
+}
+```
+
+## Verification Audit Logging (V4 Update)
+
+### Comprehensive Verification Logging
+```php
+// VerificationAuditService.php - V4 audit requirements
+class VerificationAuditService
+{
+    public function logVerificationEvent(string $event, array $context): void
+    {
+        VerificationAuditLog::create([
+            'event_type' => $event,
+            'user_id' => $context['user_id'] ?? null,
+            'channel' => $context['channel'],
+            'recipient' => $this->hashRecipient($context['recipient']),
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'success' => $context['success'] ?? false,
+            'failure_reason' => $context['failure_reason'] ?? null,
+            'metadata' => $this->sanitizeMetadata($context),
+            'timestamp' => now(),
+        ]);
+    }
+    
+    private function hashRecipient(string $recipient): string
+    {
+        // Hash phone/email for privacy
+        return hash('sha256', $recipient . config('app.key'));
+    }
+    
+    private function sanitizeMetadata(array $context): array
+    {
+        // Remove actual codes from logs
+        unset($context['code'], $context['verification_code']);
+        return $context;
+    }
+}
+
+// Log retention policy
+const VERIFICATION_LOG_RETENTION = [
+    'successful_verifications' => 90, // days
+    'failed_attempts' => 365, // days
+    'rate_limit_violations' => 365, // days
+    'delivery_failures' => 30, // days
+];
+```
+
+## Communication Data Storage (V4 Update)
+
+### Encrypted Storage Requirements
+```php
+// CommunicationStorageService.php - V4 encrypted storage
+class CommunicationStorageService
+{
+    private EncryptionService $encryption;
+    
+    /**
+     * V4: Store request/response data encrypted
+     */
+    public function storeCommunicationData(Communication $communication, array $data): void
+    {
+        // Encrypt full payloads
+        $encryptedRequest = $this->encryption->encrypt(
+            json_encode($data['request']),
+            'communication_key'
+        );
+        
+        $encryptedResponse = $this->encryption->encrypt(
+            json_encode($data['response']),
+            'communication_key'
+        );
+        
+        CommunicationData::create([
+            'communication_id' => $communication->id,
+            'request_payload' => $encryptedRequest,
+            'response_payload' => $encryptedResponse,
+            'provider' => $data['provider'],
+            'status_code' => $data['status_code'],
+            'created_at' => now(),
+        ]);
+    }
+    
+    /**
+     * Decrypt for authorized debugging
+     */
+    public function getDecryptedData(int $communicationId): ?array
+    {
+        // Check permissions
+        if (!auth()->user()->can('debug_communications')) {
+            throw new UnauthorizedException('Insufficient permissions');
+        }
+        
+        // Log decryption access
+        AuditLog::create([
+            'action' => 'communication_data_decrypted',
+            'user_id' => auth()->id(),
+            'resource_id' => $communicationId,
+            'reason' => request()->input('reason'),
+            'ip_address' => request()->ip(),
+        ]);
+        
+        $data = CommunicationData::where('communication_id', $communicationId)->first();
+        
+        if (!$data) {
+            return null;
+        }
+        
+        return [
+            'request' => json_decode(
+                $this->encryption->decrypt($data->request_payload),
+                true
+            ),
+            'response' => json_decode(
+                $this->encryption->decrypt($data->response_payload),
+                true
+            ),
+        ];
+    }
+}
+
+// Encryption standards
+const COMMUNICATION_ENCRYPTION = [
+    'algorithm' => 'AES-256-GCM',
+    'key_rotation' => 90, // days
+    'key_source' => 'HSM', // or KMS
+    'separate_keys' => true, // Different keys for different data types
+];
+```
+
+## Single Provider Configuration (V4 Update)
+
+### Provider Management
+```php
+// ProviderConfiguration.php - V4 single provider setup
+class CommunicationProviderConfig
+{
+    const PROVIDERS = [
+        'email' => [
+            'primary' => 'sendgrid',
+            'failover' => null, // V4: No failover day 1
+        ],
+        'sms' => [
+            'primary' => 'twilio',
+            'failover' => null, // V4: No failover day 1
+        ],
+    ];
+    
+    const FUTURE_ENHANCEMENTS = [
+        'provider_failover' => 'Out of scope for day 1',
+        'multi_provider_routing' => 'Future enhancement',
+        'cost_based_routing' => 'Future enhancement',
+        'voice_verification' => 'Future enhancement',
+    ];
+    
+    public function getProvider(string $channel): string
+    {
+        return self::PROVIDERS[$channel]['primary'];
+    }
+    
+    public function handleProviderFailure(string $channel, Exception $e): void
+    {
+        // V4: Manual intervention for failures
+        $this->logProviderFailure($channel, $e);
+        $this->alertOperationsTeam($channel, $e);
+        $this->queueForManualRetry($channel);
+        
+        throw new ProviderFailureException(
+            "Communication provider failed. Operations team notified."
+        );
+    }
+}
+```
+
+## Event Publishing Integration (V4 Update)
+
+### Verification Events for GR-49
+```php
+// VerificationEventPublisher.php - Integration with event system
+class VerificationEventPublisher
+{
+    const VERIFICATION_EVENTS = [
+        'verification.code.generated' => [
+            'user_id',
+            'channel',
+            'expiration_time',
+        ],
+        'verification.code.sent' => [
+            'user_id',
+            'channel',
+            'delivery_status',
+        ],
+        'verification.attempt.success' => [
+            'user_id',
+            'attempt_number',
+            'channel',
+        ],
+        'verification.attempt.failed' => [
+            'user_id',
+            'attempt_number',
+            'failure_reason',
+        ],
+        'verification.code.expired' => [
+            'user_id',
+            'channel',
+        ],
+    ];
+    
+    public function publishVerificationEvent(string $event, array $data): void
+    {
+        Event::dispatch(new VerificationEvent($event, $data));
+        
+        // Also publish to message queue for downstream systems
+        Queue::push(new PublishEventJob($event, $data));
     }
 }
 ```

@@ -1,0 +1,18 @@
+GlobalRequirements/IndividualRequirements/approaches/v8-changes-summary.md
+- integration_credential and integration_credential_type
+  - this should be in one or some of these map_integration_configuration, map_entity_configuration, configuration, and configuration_type
+- circuit_breaker_configuration
+  - this should be in one or some of these map_integration_configuration, map_entity_configuration, configuration, and configuration_type
+- update shared-infrastructure/knowledge-base/universal-entity-catalog.json by doing the following:
+  - this should be reflective of decisions made in
+    - v8-changes-summary.md and my repsonse
+    - GlobalRequirements/IndividualRequirements/approaches/-additional-entities.md
+    - shared-infrastructure/knowledge-base/universal-entity-catalog-v2-updated.json
+  - update anything else in shared-infrastructure/knowledge-base that may need to reflect the updated universal-entity-catalog.json and decisions we've made in this process.
+- for each -updated-v3.md in GlobalRequirements/IndividualRequirements/approaches/
+  - create an -updated-v4.md
+    - update it according to v8-changes-summary.md and the updated universal-entity-catalog.json
+    - ensure to compare it with the cooresponding original requirement in GlobalRequirements/IndividualRequirements for ensuring we're not missing any important information
+    - create this file as if it were going to replace the orginal requirement just with more accurate information and it's pending approval for replacement.
+    - ensure our global requirements include why we're choosing map_ tables for association, when to use them, and how to use them
+      - it is important to document all the reasons why we're choosing this vs other routes for future reference

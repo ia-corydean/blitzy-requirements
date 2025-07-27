@@ -1,0 +1,53 @@
+Aime/workspace/requirements/GlobalRequirements/IndividualRequirements/approaches
+- GlobalRequirements/IndividualRequirements/approaches/GR-10-updated.md
+  - State-Specific Configuration
+    - these are more of program configurations
+  - SR22 Filing Table
+    - filing_state should reference state_id
+    - filing_method
+      - should refer to communication_method_id?
+    - filing_fee
+      - this should refer to fee_id
+        - Fees are defined in the program manager
+      - fee should be reflected in the transaction table.
+- GlobalRequirements/IndividualRequirements/approaches/GR-13-updated.md
+  - remove the actual code in this and create a requirement document that expresses the same concepts, but without the source code.
+    - tables and schemas are enough.
+- GlobalRequirements/IndividualRequirements/approaches/GR-19-updated.md
+  - This seems fine. Just ensure our process accounts for keeping this file in sync with the shared entity list.
+- GlobalRequirements/IndividualRequirements/approaches/GR-37-updated.md
+- GlobalRequirements/IndividualRequirements/approaches/GR-41-updated.md
+- GlobalRequirements/IndividualRequirements/approaches/GR-44-updated.md
+  - DCS does not do SR22.
+    - DCS Docs are here: Aime/workspace/requirements/EntityIntegration/Dcs
+      - Should DCS have it's own GlobalRequirement?
+- GlobalRequirements/IndividualRequirements/approaches/GR-52-updated.md
+- GlobalRequirements/IndividualRequirements/approaches/GR-53-updated.md
+- GlobalRequirements/IndividualRequirements/approaches/GR-64-updated.md
+
+- provide a file -additional-entites that outlines the changes you would make to the global requirements above and the Aime/workspace/requirements/shared-infrastructure/knowledge-base/universal-entity-catalog-v2.json
+  - rate
+  - rate_type
+  - rate_line
+  - rate_factor
+  - rate_factor_type
+  - rate_factor_group
+  - calculation
+  - calculation_type
+  - payment_plan
+  - payment_plan_type
+  - discount
+  - discount_type
+  - surcharge
+  - surcharge_type
+  - coverage
+  - coverage_type
+  - territory
+  - territory_type
+  - limit
+  - limit_type
+  - fee
+  - fee_type
+  - premium_type = collected, written, earned
+
+create an -updated-v2 file of each with these changes in mind.

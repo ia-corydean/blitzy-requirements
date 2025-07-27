@@ -86,6 +86,7 @@ Route::prefix('policies')->group(function () {
 
 ### Core Business Concepts
 - **Named Insured**: Primary person on the policy (driver with `is_named_insured = true`)
+- **Insured Entity**: V4 renamed from 'customer' - represents the policy holder
 - **Primary Driver**: Main driver of a vehicle (separate from named insured)
 - **Suspenses**: Tasks/requirements that must be resolved
 - **Requotes**: New quotes based on existing policies
@@ -122,6 +123,69 @@ Route::prefix('policies')->group(function () {
 - Map tables for associations: `map_quote_document`, etc.
 - File storage paths, not binary data
 
+
+## Producer Portal Architecture (GR-69)
+
+### Core Feature Set (23 Features)
+Based on **GR-69 Producer Portal Architecture**, the system implements 23 comprehensive features:
+
+#### Quote Management (Features 1-4)
+1. **Create New Quote** - Multi-step wizard with real-time calculation
+2. **View/Edit Existing Quotes** - Search, filter, and resume quotes
+3. **Convert Quote to Policy** - Bind with payment and document generation
+4. **Quote Comparison Tools** - Side-by-side coverage analysis
+
+#### Policy Management (Features 5-8)
+5. **View Policy Details** - Complete policy information and history
+6. **Make Policy Changes** - Endorsements with pro-rata calculations
+7. **Cancel/Reinstate Policies** - 30-day reinstatement window
+8. **Renewal Processing** - Automated renewal workflows
+
+#### Insured Management (Features 9-10)
+9. **Insured Search and Management** - Profile and policy grouping
+10. **Insured Communication History** - All communications tracked
+
+#### Reporting & Analytics (Features 11-14)
+11. **Production Reports** - New business and renewal tracking
+12. **Commission Statements** - Detailed payment breakdowns
+13. **Loss Ratio Reports** - Claims and profitability analysis
+14. **Book of Business Analytics** - Portfolio overview
+
+#### Financial Management (Features 15-17)
+15. **Payment Processing** - Multiple methods with NSF prevention
+16. **Commission Tracking** - Real-time calculations and chargebacks
+17. **Billing and Invoicing** - Agency and insured billing
+
+#### Document Management (Features 18-19)
+18. **Document Generation and Storage** - Policy docs and ID cards
+19. **E-signature Integration** - DocuSign routing and tracking
+
+#### Administrative (Features 20-23)
+20. **Agency Management** - User and role administration
+21. **User Access Control** - RBAC with audit logging
+22. **Multi-state Licensing Support** - Compliance tracking
+23. **API Integration** - RESTful APIs with webhooks
+
+### Portal Security Model (GR-69 + GR-01)
+- **Single-factor authentication** - Username/password only
+- **No MFA requirement** - Producer portal exception
+- **Shared accounts permitted** - With IP tracking
+- **1-hour JWT expiration** - All portals standardized
+- **IP-based session security** - Mandatory tracking
+- **Comprehensive audit logging** - All activities tracked
+
+### Performance Requirements (GR-69)
+- Quote creation: <3 seconds
+- Policy retrieval: <1 second  
+- Report generation: <5 seconds
+- 1000+ concurrent users
+- 10,000+ quotes/day capacity
+
+### PII Field Display (GR-69 + GR-12)
+- **SSN**: Masked display, viewable on demand with logging
+- **DL**: Direct display, encrypted storage  
+- **DOB**: Direct display, encrypted storage
+- **All viewing logged** for audit compliance
 
 ## Common Query Patterns
 

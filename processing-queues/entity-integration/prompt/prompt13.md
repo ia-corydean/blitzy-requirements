@@ -1,0 +1,54 @@
+GlobalRequirements/IndividualRequirements/approaches/v4-changes-summary.md
+- quote
+  - policy_id
+  - program_id
+- policy
+  - program_id
+- doing the entity_id and entity_type_id trick on tables like program, policy, loss, driver going to make it harder for reporting
+  - is this correct? what are your thoughts?
+  - maybe we should have map tables?
+    - map_policy_driver
+    - map_policy_vehicle
+    - map_policy_loss
+    - map_quote_driver
+    - map_quote_vehicle
+    - program is going to have the most map tables because it sets up what's available for everything to use and refernce and normally has multiple mappings.
+      - map_program_coverage
+      - map_program_discount
+      - map_program_surcharge
+      - map_program_fee
+      - map_program_payment_plan
+      - map_program_integration
+      - map_program_territory
+      - map_program_factor
+      - map_program_producer
+      - map_program_entity
+      - map_program_communication_preference
+      - map_communication_integration
+        - if integration stored all requests and responses this would have communication just be the table for the actual content of the communication
+      - map_program_configuration
+        - this would allow for clearer and better defined configuration with configuration.configuration_type
+      - etc..
+      - there can be multiple programs in the system and different iterations of these mappings per program.
+        - We are needing to be able to easily add update and maintain these types associations with workflows and user interfaces.
+      - map_entity_configuration
+        - this would allow for clearer and better defined configuration with configuration.configuration_type
+      - map_integration_configuration
+        - this would allow for clearer and better defined configuration with configuration.configuration_type
+      - map_entity_integration
+        - this would tie an entity to multiple integrations cleanly.
+    - although map_ tables increase the database, it seems to have advantages for our use case.
+      - we need to accomodate robust reporting down to the field level
+      - machine learning and ai will be in the future
+      - what's your suggestion on how to approash map_ files?
+        - are we making the right choice?
+        - what are the implications at scale?
+          - I feel like once all tables are clearly defined - which there will be a lot - the infrstructure shouldnt change much.
+            - if it does, it's should be easier to add things to entities without killing relationships
+            - it should be able to transfer polcies from producers
+            - although the database will be huge (as far as tables) data should be organized well and easier to maintain at scale
+- deductible and deductible_type need to be added
+- driver_alert and _type
+- policy_alert and _type
+- any enitites not defined in GlobalRequirements/IndividualRequirements/approaches/-additional-entities.md or shared-infrastructure/knowledge-base/universal-entity-catalog-v2-updated.json and are defined in our requirements, should be provided in this summary for review to be added to GlobalRequirements/IndividualRequirements/approaches/-additional-entities.md.
+- create a v5-changes-summary file with your response and as an updated version of v4-changes-summary

@@ -41,7 +41,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'expires_at' => now()->addHours(8)
+            'expires_at' => now()->addHour() // V4 Update: 1-hour expiration
         ]);
     }
     
@@ -55,11 +55,38 @@ class AuthController extends Controller
 }
 ```
 
-### Multi-Factor Authentication (MFA)
+### Portal-Specific MFA Requirements (V4 Update)
+```php
+// MFAConfiguration.php - Different requirements per portal
+class MFAConfiguration
+{
+    const PORTAL_MFA_REQUIREMENTS = [
+        'producer' => [
+            'required' => false,  // V4: No MFA for producer portal
+            'methods' => ['optional'],
+        ],
+        'policy' => [
+            'required' => true,   // V4: MFA mandatory
+            'methods' => ['totp', 'sms', 'biometric'],
+        ],
+        'claims' => [
+            'required' => true,   // V4: MFA mandatory
+            'methods' => ['totp', 'sms', 'biometric'],
+        ],
+        'insured' => [
+            'required' => true,   // V4: MFA mandatory
+            'methods' => ['totp', 'sms', 'email'],
+        ],
+    ];
+}
+```
+
+### Multi-Factor Authentication (MFA) Implementation
 - **TOTP Implementation**: Time-based One-Time Password using Google Authenticator
 - **SMS/Email Backup**: Secondary authentication methods
 - **Biometric Support**: Touch ID, Face ID for mobile applications
 - **Hardware Tokens**: Support for FIDO2/WebAuthn security keys
+- **Portal-Specific**: MFA enforced based on portal type (V4)
 
 ### Role-Based Access Control (RBAC)
 ```php
@@ -101,16 +128,136 @@ class PolicyPolicy
 }
 ```
 
-## Data Protection & Encryption
+## PCI DSS Compliance Architecture (V4 Update)
 
-### Encryption at Rest
+### Built-in PCI Compliance
 ```php
-// Field-level encryption for sensitive data
+// PCIComplianceService.php - Security by design for payment handling
+class PCIComplianceService
+{
+    /**
+     * V4: Dual compliance approach - continuous + periodic validation
+     */
+    const COMPLIANCE_STRATEGY = [
+        'continuous' => [
+            'automated_scanning' => 'daily',
+            'configuration_validation' => 'real-time',
+            'vulnerability_detection' => 'continuous',
+            'compliance_dashboard' => 'always available',
+        ],
+        'periodic' => [
+            'quarterly_assessment' => 'SAQ-D',
+            'annual_audit' => 'third-party',
+            'penetration_testing' => 'semi-annual',
+            'security_review' => 'monthly',
+        ],
+    ];
+
+    /**
+     * Six PCI DSS Requirements Implementation
+     */
+    public function validatePCICompliance(): ComplianceReport
+    {
+        $results = [];
+        
+        // 1. Build and Maintain Secure Network
+        $results['network'] = $this->validateNetworkSecurity();
+        
+        // 2. Protect Cardholder Data (We don't store any)
+        $results['data_protection'] = $this->validateNoCardStorage();
+        
+        // 3. Maintain Vulnerability Management Program
+        $results['vulnerability'] = $this->validateVulnerabilityManagement();
+        
+        // 4. Implement Strong Access Control
+        $results['access_control'] = $this->validateAccessControls();
+        
+        // 5. Monitor and Test Networks
+        $results['monitoring'] = $this->validateMonitoring();
+        
+        // 6. Maintain Information Security Policy
+        $results['policy'] = $this->validateSecurityPolicy();
+        
+        return new ComplianceReport($results);
+    }
+    
+    private function validateNoCardStorage(): array
+    {
+        // Scan all database tables for card patterns
+        $violations = DB::select("
+            SELECT table_name, column_name 
+            FROM information_schema.columns 
+            WHERE column_name LIKE '%card%' 
+               OR column_name LIKE '%cc%'
+               OR column_name LIKE '%credit%'
+        ");
+        
+        foreach ($violations as $column) {
+            // Check for actual card data patterns
+            $hasCardData = $this->scanForCardPatterns(
+                $column->table_name, 
+                $column->column_name
+            );
+            
+            if ($hasCardData) {
+                throw new PCIViolationException(
+                    "Card data found in {$column->table_name}.{$column->column_name}"
+                );
+            }
+        }
+        
+        return ['status' => 'compliant', 'message' => 'No card data storage detected'];
+    }
+}
+```
+
+### Payment Tokenization Only
+```php
+// TokenizationService.php - Never touch actual card data
+class TokenizationService
+{
+    private PaymentGateway $gateway;
+    
+    public function tokenizePaymentMethod(array $paymentData): string
+    {
+        // Card data goes directly to payment gateway
+        // We only receive and store tokens
+        $token = $this->gateway->tokenize($paymentData);
+        
+        // Store only token reference
+        PaymentMethod::create([
+            'user_id' => auth()->id(),
+            'token' => $token->id,
+            'last_four' => $token->last_four,
+            'brand' => $token->brand,
+            'exp_month' => $token->exp_month,
+            'exp_year' => $token->exp_year,
+        ]);
+        
+        // Log tokenization for audit
+        SecurityAudit::log('payment_tokenization', [
+            'user_id' => auth()->id(),
+            'token_created' => true,
+            'gateway' => $this->gateway->name,
+        ]);
+        
+        return $token->id;
+    }
+}
+```
+
+## Data Protection & Encryption (V4 Update)
+
+### Field-Level Encryption with Viewing Capability
+```php
+// V4: Updated encryption for viewable PII fields
 class EncryptedModel extends Model
 {
     protected $casts = [
-        'ssn' => 'encrypted',
-        'bank_account' => 'encrypted',
+        'ssn' => 'encrypted:reversible',
+        'driver_license' => 'encrypted:reversible', // V4: Viewable
+        'date_of_birth' => 'encrypted:reversible', // V4: Viewable
+        'bank_account' => 'encrypted:masked',
         'medical_records' => 'encrypted:json'
     ];
     
@@ -620,6 +767,266 @@ class SecurityScanCommand extends Command
 }
 ```
 
+## Comprehensive Audit Logging Requirements (V4 Update)
+
+### PII Access Audit Logging
+```php
+// PIIAuditService.php - V4 comprehensive PII access logging
+class PIIAuditService
+{
+    /**
+     * Log every PII field access with context
+     */
+    public function logPIIAccess(string $field, string $operation, array $context): void
+    {
+        PIIAccessLog::create([
+            'user_id' => auth()->id(),
+            'field_accessed' => $field,
+            'operation_type' => $operation, // view, update, delete, unmask
+            'display_type' => $this->getDisplayType($field), // V4: direct, masked, unmasked
+            'entity_type' => $context['entity_type'],
+            'entity_id' => $context['entity_id'],
+            'session_type' => auth()->user()->account_type, // shared or individual
+            'portal_type' => $this->detectPortal(),
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'timestamp' => now(),
+            'timezone' => config('app.timezone'),
+            'success' => $context['success'] ?? true,
+            'metadata' => $context,
+        ]);
+    }
+    
+    private function getDisplayType(string $field): string
+    {
+        // V4: DL and DOB are directly viewable
+        if (in_array($field, ['driver_license', 'date_of_birth'])) {
+            return 'direct';
+        }
+        
+        // SSN is masked by default
+        if ($field === 'ssn') {
+            return request()->input('unmask') ? 'unmasked' : 'masked';
+        }
+        
+        return 'encrypted';
+    }
+}
+```
+
+### Payment Operation Logging
+```php
+// PaymentAuditService.php - Comprehensive payment audit trail
+class PaymentAuditService
+{
+    public function logPaymentOperation(string $operation, array $details): void
+    {
+        PaymentAuditLog::create([
+            'transaction_reference' => $details['transaction_id'],
+            'operation_type' => $operation,
+            'amount' => $details['amount'] ?? 0,
+            'currency' => $details['currency'] ?? 'USD',
+            'payment_method_type' => $details['method_type'], // card, ach, check
+            'gateway_used' => $details['gateway'],
+            'user_id' => auth()->id(),
+            'portal_type' => $this->detectPortal(),
+            'result' => $details['success'] ? 'success' : 'failure',
+            'error_code' => $details['error_code'] ?? null,
+            'integration_response' => $details['gateway_response'] ?? null,
+            'ip_address' => request()->ip(),
+            'session_id' => session()->getId(),
+            'timestamp' => now(),
+        ]);
+        
+        // Additional NSF tracking if payment failed
+        if (!$details['success'] && $details['nsf_indicator']) {
+            $this->logNSFOccurrence($details);
+        }
+    }
+}
+```
+
+### Retention Requirements
+```php
+class AuditRetentionPolicy
+{
+    const RETENTION_PERIODS = [
+        'security_logs' => '1 year',
+        'pii_access_logs' => '7 years',
+        'payment_logs' => '7 years',
+        'failed_authentication' => '90 days',
+        'compliance_assessments' => '7 years',
+        'penetration_test_results' => '3 years',
+    ];
+}
+```
+
+## Compliance Validation Approach (V4 Update)
+
+### Dual Validation Strategy
+```php
+// ComplianceValidationService.php - Continuous + Periodic validation
+class ComplianceValidationService
+{
+    /**
+     * V4: Both continuous and periodic assessments required
+     */
+    public function runComplianceValidation(): ComplianceStatus
+    {
+        $results = [];
+        
+        // Continuous validation (automated daily)
+        $results['continuous'] = [
+            'security_monitoring' => $this->runSecurityMonitoring(),
+            'configuration_validation' => $this->validateConfigurations(),
+            'vulnerability_scanning' => $this->runVulnerabilityScans(),
+            'compliance_dashboard' => $this->updateComplianceDashboard(),
+        ];
+        
+        // Periodic assessments (scheduled)
+        $results['periodic'] = [
+            'quarterly_saq' => $this->getLastSAQStatus(),
+            'semi_annual_pentest' => $this->getLastPentestResults(),
+            'annual_pci_audit' => $this->getLastPCIAuditStatus(),
+            'monthly_vulnerability' => $this->getMonthlyVulnResults(),
+        ];
+        
+        return new ComplianceStatus($results);
+    }
+    
+    private function runSecurityMonitoring(): array
+    {
+        return [
+            'real_time_threat_detection' => $this->threatDetectionStatus(),
+            'anomaly_detection' => $this->anomalyDetectionStatus(),
+            'failed_auth_tracking' => $this->failedAuthAnalysis(),
+            'automated_remediation' => $this->remediationStatus(),
+        ];
+    }
+}
+```
+
+## Portal-Specific Security Requirements (V4 Update)
+
+### Security Configuration by Portal
+```php
+// PortalSecurityService.php - Different security per portal type
+class PortalSecurityService
+{
+    public function enforcePortalSecurity(string $portal, User $user): void
+    {
+        switch ($portal) {
+            case 'producer':
+                $this->enforceProducerSecurity($user);
+                break;
+            case 'policy':
+            case 'claims':
+            case 'insured':
+                $this->enforceStrictSecurity($user);
+                break;
+        }
+    }
+    
+    private function enforceProducerSecurity(User $user): void
+    {
+        // Producer portal specific
+        if ($user->account_type === 'shared') {
+            SharedAccountMonitor::trackActivity($user);
+        }
+        
+        // IP-based security mandatory
+        if (!$this->validateIPAccess($user)) {
+            throw new IPSecurityException('IP not authorized');
+        }
+        
+        // No MFA required for producer portal
+        // Enhanced activity logging instead
+        ActivityLogger::logProducerActivity($user);
+    }
+    
+    private function enforceStrictSecurity(User $user): void
+    {
+        // Other portals require MFA
+        if (!$user->mfa_verified) {
+            throw new MFARequiredException();
+        }
+        
+        // No shared accounts allowed
+        if ($user->account_type === 'shared') {
+            throw new SharedAccountException('Individual accounts only');
+        }
+        
+        // Single session enforcement
+        if ($this->hasOtherActiveSessions($user)) {
+            throw new ConcurrentSessionException();
+        }
+    }
+}
+```
+
+## Security Testing Standards (V4 Update)
+
+### Automated Security Testing in CI/CD
+```yaml
+# security-pipeline.yml - Security tests in every build
+name: Security Pipeline
+on: [push, pull_request]
+
+jobs:
+  static-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Static Security Analysis
+        run: |
+          # PHP security analysis
+          vendor/bin/psalm --taint-analysis
+          vendor/bin/phpstan analyse --level=max
+          
+          # JavaScript security analysis
+          npm audit
+          npm run eslint:security
+          
+      - name: Dependency Scanning
+        run: |
+          # Check for known vulnerabilities
+          composer audit
+          npm audit --production
+          
+      - name: Secret Scanning
+        uses: trufflesecurity/trufflehog@v3
+        with:
+          path: ./
+          base: main
+          
+  dynamic-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: OWASP ZAP Scan
+        uses: zaproxy/action-baseline@v0.7.0
+        with:
+          target: ${{ env.TEST_URL }}
+          
+      - name: PCI Compliance Check
+        run: |
+          # Run automated PCI compliance validation
+          ./scripts/pci-compliance-check.sh
+```
+
+### Manual Security Testing Requirements
+```php
+class SecurityTestingSchedule
+{
+    const TESTING_SCHEDULE = [
+        'penetration_testing' => 'quarterly',
+        'code_security_review' => 'with_each_feature',
+        'architecture_review' => 'new_components',
+        'incident_response_drill' => 'quarterly',
+        'pci_dss_assessment' => 'annually',
+        'vulnerability_assessment' => 'monthly',
+    ];
+}
+```
+
 ## Compliance & Regulatory Security
 
 ### Data Retention & Privacy
@@ -738,6 +1145,60 @@ trait Auditable
                 'user_agent' => request()->userAgent()
             ]);
         });
+    }
+}
+```
+
+## Security Incident Response (V4 Update)
+
+### Payment Data Breach Response
+```php
+// PaymentBreachResponse.php - PCI-compliant incident response
+class PaymentBreachResponse
+{
+    public function handlePaymentBreach(SecurityIncident $incident): void
+    {
+        // 1. Immediate containment (within 15 minutes)
+        $this->disableAffectedServices($incident);
+        $this->notifySecurityTeam($incident);
+        
+        // 2. Evidence preservation
+        $this->preserveEvidence($incident);
+        $this->startForensicCapture($incident);
+        
+        // 3. Notification (within 1 hour)
+        $this->notifyPaymentProcessor($incident);
+        $this->notifyManagement($incident);
+        
+        // 4. Investigation
+        $this->beginInvestigation($incident);
+        
+        // 5. PCI DSS requirements
+        $this->followPCIDSSProcedures($incident);
+    }
+}
+```
+
+### PII Exposure Response
+```php
+class PIIExposureResponse
+{
+    public function handlePIIExposure(array $affectedData): void
+    {
+        // 1. Identify scope
+        $scope = $this->identifyExposureScope($affectedData);
+        
+        // 2. Re-encrypt affected data
+        $this->reencryptData($scope);
+        
+        // 3. Audit access logs
+        $accessLogs = $this->auditDataAccess($scope);
+        
+        // 4. Notify affected users per regulations
+        $this->notifyAffectedUsers($scope, $accessLogs);
+        
+        // 5. Strengthen controls
+        $this->reviewAndStrengthenControls($scope);
     }
 }
 ```

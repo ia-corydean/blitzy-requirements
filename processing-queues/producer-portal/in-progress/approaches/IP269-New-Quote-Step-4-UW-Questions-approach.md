@@ -1,118 +1,198 @@
 # IP269-New-Quote-Step-4-UW-Questions - Implementation Approach
 
 ## Requirement Understanding
-
-The Underwriting Questions (UWQ) step is a critical risk assessment checkpoint in the quote flow. It dynamically presents program-specific underwriting questions to identify eligibility and flag high-risk profiles. The system must:
-
-- Render questions dynamically based on the insurance program
-- Provide Yes/No radio options for each question
-- Validate all required questions are answered
-- Identify disqualifying answers that may result in hard stops or warnings
-- Save responses with the quote for downstream processing
-- Support mobile-responsive design with error handling
-
-This requirement focuses on gathering structured risk assessment data while enforcing carrier-specific underwriting guidelines before quote continuation.
+The Underwriting Questions step serves as a critical risk assessment checkpoint that dynamically displays program-specific questions, validates responses, identifies disqualifying answers, and determines quote eligibility. The system must handle hard stops, warnings, conditional questions, and maintain response persistence while providing clear feedback on eligibility issues.
 
 ## Domain Classification
-- Primary Domain: ProducerPortal
-- Cross-Domain Impact: No
+- Primary Domain: Producer Portal / Quote Management
+- Cross-Domain Impact: Yes - Affects eligibility, rating, program selection
 - Complexity Level: Medium
 
 ## Pattern Analysis
 
 ### Reusable Patterns Identified
-
-**From Global Requirements:**
-- **[GR-04 - Validation & Data Handling]**: Multi-layer validation architecture with real-time feedback, custom validation rules, and Zod schema integration
-- **[GR-18 - Workflow Requirements]**: Underwriting workflow states with conditional transitions based on eligibility conditions
-- **[GR-20 - Application Business Logic]**: Business rule engine pattern for eligibility validation
-- **[GR-07 - Reusable Components]**: Form component patterns with consistent styling and validation
-- **[GR-11 - Accessibility]**: WCAG 2.1 AA compliance for form interactions
-
-**From Approved ProducerPortal Requirements:**
-- **[IP269-New-Quote-Step-2-Drivers]**: Pattern for handling eligibility flags and validation errors
-- **[IP269-Quotes-Search]**: Reference table approach for classification types
-
-**From Infrastructure Patterns:**
-- React Hook Form with Zod validation (seen in payment forms)
-- Conditional schema validation using discriminated unions
-- Real-time eligibility checking patterns (`usePaymentEligibility.ts`)
-- Laravel Form Request validation framework
+- [GR-69]: Producer Portal Architecture - Dynamic form patterns
+- [GR-18]: Workflow Requirements - Conditional logic patterns
+- [GR-41]: Database Standards - Question/answer storage
+- [GR-20]: Business Logic Standards - Rule evaluation
+- [GR-38]: Microservice Architecture - Underwriting service
 
 ### Domain-Specific Needs
-- **Program-specific question sets**: Questions vary by carrier/program
-- **Disqualification logic**: Hard stops vs warnings based on answers
-- **Risk assessment tracking**: Audit trail for underwriting decisions
-- **Dynamic question ordering**: Questions may appear/hide based on previous answers
+- Dynamic question loading by program
+- Yes/No radio button responses
+- Disqualifying answer detection
+- Hard stop vs warning differentiation
+- Conditional question display
+- Response persistence
+- Eligibility determination
 
 ## Proposed Implementation
 
 ### Simplification Approach
-- **Current Complexity**: Dynamic questionnaires with conditional logic, multiple validation layers, and complex eligibility rules
-- **Simplified Solution**: 
-  - Use a single `underwriting_question` table with JSON metadata for flexibility
-  - Implement a simple Yes/No radio pattern (no complex question types initially)
-  - Use reference tables for question types and disqualification rules
-  - Leverage existing validation patterns from approved requirements
-- **Trade-offs**: 
-  - Gain: Faster implementation, reusable patterns, maintainable code
-  - Lose: Advanced question types (text input, multi-select) - can be added later if needed
+- Current Complexity: Dynamic questions with complex validation rules
+- Simplified Solution: Use existing comprehensive underwriting_question table
+- Trade-offs: None - table structure supports all requirements
 
 ### Technical Approach
+1. **Phase 1**: Question Loading
+   - [ ] Query map_program_underwriting_question
+   - [ ] Load questions for quote's program
+   - [ ] Order by display_order field
+   - [ ] Check for existing answers
+   - [ ] Build question form dynamically
 
-#### Phase 1: Database Schema Design
-- [ ] Create `underwriting_question` table with program-specific questions
-- [ ] Create `underwriting_question_type` reference table
-- [ ] Create `map_quote_underwriting_response` for storing answers
-- [ ] Create `underwriting_disqualification_rule` for eligibility logic
-- [ ] Add necessary indexes for performance
+2. **Phase 2**: Question Display
+   - [ ] Render Yes/No radio buttons
+   - [ ] Show question_text and help_text
+   - [ ] Handle conditional questions
+   - [ ] Check parent_question_id logic
+   - [ ] Show/hide based on parent_answer
 
-#### Phase 2: Backend Implementation
-- [ ] Create `UnderwritingQuestionService` for business logic
-- [ ] Implement `UnderwritingQuestionRequest` validation class
-- [ ] Create API endpoints for fetching questions and saving responses
-- [ ] Implement eligibility checking logic with hard stop/warning differentiation
-- [ ] Add audit logging for all underwriting decisions
+3. **Phase 3**: Response Handling
+   - [ ] Capture radio button selections
+   - [ ] Save to answer_value field
+   - [ ] Update answer_date timestamp
+   - [ ] Persist on each change
+   - [ ] Maintain quote context
 
-#### Phase 3: Frontend Implementation
-- [ ] Create `UnderwritingQuestionsForm` component using React Hook Form
-- [ ] Implement Zod schema for dynamic validation
-- [ ] Create `useUnderwritingEligibility` hook for real-time validation
-- [ ] Add mobile-responsive layout with error handling
-- [ ] Implement warning/error banner components
+4. **Phase 4**: Validation Logic
+   - [ ] Check is_required fields
+   - [ ] Parse validation_rules JSON
+   - [ ] Identify disqualifying answers
+   - [ ] Differentiate hard stops/warnings
+   - [ ] Display appropriate messages
 
-#### Phase 4: Integration & Testing
-- [ ] Integrate with existing quote flow navigation
-- [ ] Add comprehensive test coverage
-- [ ] Validate mobile responsiveness
-- [ ] Ensure accessibility compliance
+5. **Phase 5**: Eligibility Check
+   - [ ] Evaluate all responses
+   - [ ] Apply program rules
+   - [ ] Show warning banners
+   - [ ] Block/allow continuation
+   - [ ] Track override attempts
+
+6. **Phase 6**: Save & Navigation
+   - [ ] Validate all required answered
+   - [ ] Check no hard stops active
+   - [ ] Save final responses
+   - [ ] Enable/disable continue
+   - [ ] Navigate to Step 5
 
 ## Risk Assessment
-
-- **Risk 1**: Complex conditional question logic → Mitigation: Start with simple Yes/No pattern, add complexity incrementally
-- **Risk 2**: Performance with many questions → Mitigation: Use proper indexing and lazy loading if needed
-- **Risk 3**: Carrier-specific variations → Mitigation: Use flexible JSON metadata structure
-- **Risk 4**: Regulatory compliance → Mitigation: Implement comprehensive audit logging
+- **Risk 1**: Complex validation rules → Mitigation: Robust rule parser
+- **Risk 2**: Conditional logic errors → Mitigation: Comprehensive testing
+- **Risk 3**: Program rule changes → Mitigation: Database-driven configuration
+- **Risk 4**: Performance with many questions → Mitigation: Efficient queries
+- **Risk 5**: User confusion → Mitigation: Clear error messaging
 
 ## Context Preservation
+- Key Decisions: Use existing table structure, implement rule engine
+- Dependencies: Program configuration, validation rules, quote context
+- Future Impact: Foundation for automated underwriting decisions
 
-- **Key Decisions**: 
-  - Use reference tables instead of ENUMs for flexibility
-  - Implement simple Yes/No pattern initially
-  - Leverage existing validation patterns from payment forms
-  - Store responses in map table for consistency
-  
-- **Dependencies**: 
-  - Builds on existing quote flow (Steps 1-3)
-  - Uses established validation patterns from GR-04
-  - Follows workflow patterns from GR-18
-  
-- **Future Impact**: 
-  - Enables Step 5 (Coverages) which depends on underwriting eligibility
-  - Foundation for more complex question types if needed
-  - Reusable pattern for other questionnaires in the system
+## Database Requirements Summary
+- **New Tables**: 0 tables need to be created
+- **Existing Tables**: 3 tables will be reused as-is
+- **Modified Tables**: 0 existing tables need modifications
+
+## Database Schema Analysis
+
+### Core Tables (All Exist)
+1. **underwriting_question**: Comprehensive question/answer storage
+   - Has all required fields including validation_rules
+   - Supports parent/child relationships
+   - Stores answers directly in table
+   - Perfect for implementation
+
+2. **map_program_underwriting_question**: Program-question mapping
+   - Links questions to specific programs
+   - Controls which questions appear
+   - Supports program-specific rules
+
+3. **program**: Insurance program definitions
+   - Contains underwriting rules
+   - Links to questions via mapping
+
+### Key Features Already Supported
+- Dynamic question loading (program-based)
+- Conditional questions (parent_question_id)
+- Validation rules (validation_rules JSON)
+- Required field tracking (is_required)
+- Answer persistence (answer_value)
+- Display ordering (display_order)
+- Help text (help_text)
+
+### Validation Rules Structure
+The validation_rules field can store JSON like:
+```json
+{
+  "disqualifying": {
+    "value": "Yes",
+    "type": "hard_stop",
+    "message": "This risk is not eligible"
+  },
+  "warning": {
+    "value": "Yes", 
+    "type": "warning",
+    "message": "Additional review required"
+  }
+}
+```
+
+## Business Summary for Stakeholders
+### What We're Building
+An intelligent underwriting questionnaire that dynamically presents program-specific questions, validates responses in real-time, and determines quote eligibility. The system identifies high-risk factors, provides clear warnings for concerning answers, and ensures only qualified prospects proceed to coverage selection, reducing downstream underwriting issues.
+
+### Why It's Needed
+Manual underwriting question collection leads to inconsistent risk assessment and missed disqualifying factors. This automated system ensures all required questions are answered, immediately identifies eligibility issues, and prevents ineligible quotes from proceeding - saving time and reducing errors in the quote-to-bind process.
+
+### Expected Outcomes
+- Reduced quote abandonment through clear guidance
+- Improved risk selection with consistent questioning
+- Faster underwriting decisions via automated rules
+- Decreased bind-time rejections by catching issues early
+- Better agent experience with intelligent form behavior
+
+## Technical Summary for Developers
+### Key Technical Decisions
+- **Architecture Pattern**: Use existing underwriting_question table as-is
+- **Rule Engine**: JSON-based validation in validation_rules field
+- **State Management**: Answer persistence on each change
+- **Conditional Logic**: Parent/child question relationships
+- **Validation Approach**: Client and server-side rule evaluation
+
+### Implementation Guidelines
+- Load questions via program mapping
+- Parse validation_rules for each question
+- Implement conditional display logic
+- Build warning/error UI components
+- Create rule evaluation service
+- Use debounced auto-save
+- Cache program questions
+- Handle edge cases gracefully
+
+## Validation Criteria
+### Pre-Implementation Checkpoints
+- [x] Underwriting question table exists
+- [x] Program mapping table ready
+- [x] Validation rules field available
+- [x] Parent/child support exists
+- [x] Answer storage in place
+- [x] All required fields present
+
+### Success Metrics
+- [ ] Questions load by program
+- [ ] Yes/No radios function
+- [ ] Conditional questions show/hide
+- [ ] Required validation works
+- [ ] Disqualifying answers detected
+- [ ] Warnings display correctly
+- [ ] Hard stops block progression
+- [ ] Answers persist on reload
 
 ## Approval Section
-**Status**: PENDING APPROVAL
-**Reviewer Comments**: [Space for feedback]
+**Status**: Ready for Review  
+**Database Verification**: All tables exist with complete structure  
+**Pattern Reuse**: 100% - No modifications needed  
+**Risk Level**: Low - Comprehensive table structure supports all needs  
+**Next Steps**: Review approach and approve for implementation  
+**Reviewer Comments**: [Pending]  
 **Decision**: [ ] APPROVED [ ] REVISE [ ] REJECT [ ] DEFER

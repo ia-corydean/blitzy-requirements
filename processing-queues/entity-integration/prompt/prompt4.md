@@ -1,0 +1,49 @@
+lets take care of defining some other main entities for our catalogue these should all include an associated _type tables
+- policy
+- loss
+- claimant
+- coverage
+- witness
+- passenger
+- suspense
+- entity
+- quote
+- rate_factor
+- communication 
+- cancellation
+- communication_preference
+- configuration
+- country 
+- county
+- coverage
+- discount
+- document 
+- driver
+- endorsement
+- feature
+- fee
+- file
+- installment
+- language
+- limit
+- lock
+- news
+- non_renewal
+- note
+- producer
+- program
+- reinstatement
+- renewal
+- resource
+- signature
+- state
+- surcharge
+- template
+- term
+- user
+- vehicle
+- verification
+- zip_code
+
+reference Aime/workspace/requirements/processing-queues/entity-integration/in-progress/approaches/name-address-schema-approach-v4.md for additional tables to add to this list.
+- reanalyze processing-queues/entity-integration/in-progress/approaches/entity-catalog-extension-plan.md and create a -v2 file with an updated plan.

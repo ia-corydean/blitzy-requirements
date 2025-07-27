@@ -1,0 +1,11 @@
+GlobalRequirements/IndividualRequirements/approaches/v6-changes-summary.md
+- is_primary_driver BOOLEAN DEFAULT FALSE,
+  - this should be covered by policy.name_insured_driver_id
+- driver
+  - should reference name.id, license.id
+- circuit_breaker_state
+  - not sure about this.
+- lock_status
+  - this should be covered by lock.status_id and status.status_type_id
+- any enitites not defined in GlobalRequirements/IndividualRequirements/approaches/-additional-entities.md or shared-infrastructure/knowledge-base/universal-entity-catalog-v2-updated.json and are defined in our update-v3 files, should be provided in this summary for review to be added to GlobalRequirements/IndividualRequirements/approaches/-additional-entities.md.
+- create a v7-changes-summary file with your response and as an updated version of v6-changes-summary

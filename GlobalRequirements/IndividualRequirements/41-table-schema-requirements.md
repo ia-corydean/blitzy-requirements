@@ -12,7 +12,7 @@ To systematically outline and standardize table schema requirements, we must use
             - Primary Key (id) – Uniquely identifies each record.
             - Foreign Keys – References related entities.
             - Status Tracking – Uses a status_id column for record state management.
-            - Audit Fields – Tracks user interactions (created_by, updated_by) and timestamps (created_at, updated_at).
+            - Audit Fields – Tracks user interactions using INT fields (created_by, updated_by) and timestamps (created_at, updated_at).
             - Description Column (if applicable) – Stores additional details about the record.
     2. Naming Conventions
         - Tables: Use singular nouns (e.g., user, policy, producer).
@@ -38,7 +38,9 @@ To systematically outline and standardize table schema requirements, we must use
     - Tables use singular nouns.
     - Join tables use map_ prefix.
     - Each table includes a primary key (id), status tracking (status_id), and audit fields (created_by, updated_by, created_at, updated_at).
-    - Use BIGINT for IDs, VARCHAR(255) for names, and TEXT for descriptions.
+    - Use INT (not BIGINT) for IDs to match existing database schema.
+    - Use appropriate VARCHAR lengths based on data: VARCHAR(100) for names, VARCHAR(50) for codes.
+    - Use TEXT for descriptions and large text fields.
     - Ensure foreign keys reference appropriate parent tables.
     - Ensure timestamps track data changes.
 
@@ -49,36 +51,45 @@ The following status values must be added to support policy reinstatement workfl
 
 ```sql
 -- Additional status values for policy reinstatement
-INSERT INTO status (code, name, description, is_active) VALUES
-('ELIGIBLE_FOR_REINSTATEMENT', 'Eligible for Reinstatement', 'Policy cancelled but within reinstatement window', true),
-('REINSTATED', 'Reinstated', 'Policy successfully reinstated after cancellation', true),
-('EXPIRED_REINSTATEMENT', 'Reinstatement Expired', 'Policy reinstatement window has expired', false);
+INSERT INTO status (code, name, description, is_default, status_type_id) VALUES
+('ELIGIBLE_FOR_REINSTATEMENT', 'Eligible for Reinstatement', 'Policy cancelled but within reinstatement window', 0, 
+    (SELECT id FROM status_type WHERE code = 'POLICY')),
+('REINSTATED', 'Reinstated', 'Policy successfully reinstated after cancellation', 0,
+    (SELECT id FROM status_type WHERE code = 'POLICY')),
+('EXPIRED_REINSTATEMENT', 'Reinstatement Expired', 'Policy reinstatement window has expired', 0,
+    (SELECT id FROM status_type WHERE code = 'POLICY'));
 ```
 
 ### Reinstatement Calculation Table
 ```sql
 CREATE TABLE reinstatement_calculation (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    policy_id BIGINT UNSIGNED NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    policy_id INT NOT NULL,
     
     -- Calculation details
     cancellation_date DATE NOT NULL,
-    reinstatement_date DATE NOT NULL,
-    lapse_days INTEGER NOT NULL,
+    reinstatement_effective_date DATE NOT NULL,
+    lapse_days INT NOT NULL,
     
     -- Premium breakdown
-    original_premium DECIMAL(10,2) NOT NULL,
+    original_total_premium DECIMAL(10,2) NOT NULL,
     daily_premium_rate DECIMAL(8,4) NOT NULL,
-    lapsed_premium DECIMAL(10,2) NOT NULL,
-    adjusted_premium DECIMAL(10,2) NOT NULL,
-    unpaid_premium DECIMAL(10,2) DEFAULT 0,
-    reinstatement_fees DECIMAL(10,2) DEFAULT 0,
-    total_due DECIMAL(10,2) NOT NULL,
+    lapsed_premium_amount DECIMAL(10,2) NOT NULL,
+    adjusted_total_premium DECIMAL(10,2) NOT NULL,
+    unpaid_premium_balance DECIMAL(10,2) DEFAULT 0.00,
+    reinstatement_fee DECIMAL(10,2) DEFAULT 0.00,
+    total_amount_due DECIMAL(10,2) NOT NULL,
+    
+    -- Payment details
+    payment_due_date DATE NULL,
+    payment_received_date DATETIME NULL,
+    payment_method VARCHAR(50) NULL,
+    payment_reference VARCHAR(100) NULL,
     
     -- Standard audit fields
-    status_id BIGINT UNSIGNED NOT NULL,
-    created_by BIGINT UNSIGNED NOT NULL,
-    updated_by BIGINT UNSIGNED NULL,
+    status_id INT NOT NULL,
+    created_by INT NOT NULL,
+    updated_by INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
@@ -90,14 +101,74 @@ CREATE TABLE reinstatement_calculation (
     
     -- Indexes for performance
     INDEX idx_policy (policy_id),
-    INDEX idx_reinstatement_date (reinstatement_date),
-    INDEX idx_status (status_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    INDEX idx_effective_date (reinstatement_effective_date),
+    INDEX idx_status (status_id),
+    INDEX idx_payment_date (payment_received_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Tracks reinstatement calculations and payment details for cancelled policies';
 ```
 
 ## Cross-References
+
+### 41.1 Data Type Standards
+
+Based on the actual database schema analysis, the following data type standards must be followed:
+
+1. **Primary Keys**
+   - Use `INT AUTO_INCREMENT` (not BIGINT)
+   - Named simply `id` in all tables
+
+2. **Foreign Keys**
+   - Use `INT` to match primary key type
+   - Follow naming pattern: `[entity]_id`
+
+3. **String Fields**
+   - Codes: `VARCHAR(50)` - for short identifiers
+   - Names: `VARCHAR(100)` - for display names
+   - Descriptions: `TEXT` - for unlimited text
+   - URLs/Paths: `VARCHAR(500)` - for file paths and URLs
+   - Emails: `VARCHAR(255)` - for email addresses
+
+4. **Date/Time Fields**
+   - Dates: `DATE` - for date-only values
+   - Timestamps: `TIMESTAMP` or `DATETIME` - for date+time
+   - Default timestamps: Use `DEFAULT CURRENT_TIMESTAMP`
+   - Update tracking: Use `ON UPDATE CURRENT_TIMESTAMP`
+
+5. **Numeric Fields**
+   - Money: `DECIMAL(10,2)` - for currency amounts
+   - Percentages: `DECIMAL(5,2)` - for percentage values
+   - Counts: `INT` - for whole number counts
+   - Flags: `BOOLEAN` or `TINYINT(1)` - for true/false
+
+6. **Audit Fields (Required)**
+   ```sql
+   created_by INT NULL,
+   updated_by INT NULL,
+   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+   ```
+
+### 41.2 Index Standards
+
+1. **Primary Key Index**
+   - Automatically created on `id` column
+
+2. **Foreign Key Indexes**
+   - Create index on every foreign key column
+   - Name pattern: `idx_[column_name]`
+
+3. **Common Query Indexes**
+   - Date columns used in WHERE clauses
+   - Status columns for filtering
+   - Code columns for lookups
+
+4. **Composite Indexes**
+   - For multi-column queries
+   - Order columns by selectivity
 
 ### Related Global Requirements
 - **GR-64**: Policy Reinstatement with Lapse Process - Database schema requirements for reinstatement functionality
 - **GR-02**: Database Design Principles - Audit field and constraint standards
 - **GR-19**: Table Relationships - Mapping table and foreign key patterns
+- **GR-37**: Locking Workflow - User tracking pattern with user_id

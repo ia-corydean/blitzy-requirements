@@ -8,6 +8,12 @@
 - [ ] Note workflow states and transitions described
 - [ ] List relationships to existing entities
 
+### Database Schema Review (MANDATORY FIRST STEP)
+- [ ] **Review existing database schema FIRST** - Check what tables/columns already exist
+- [ ] **Document available existing tables** - List existing tables that could be reused
+- [ ] **Identify existing columns** - Map existing columns to UI requirements before adding new ones
+- [ ] **Assess reuse opportunities** - Identify which existing structures can support new UI elements
+
 ### Global Requirements Alignment
 - [ ] Review applicable global requirements
 - [ ] Note which GRs apply to this requirement
@@ -25,22 +31,33 @@
 - [ ] Check naming convention compliance
 - [ ] Validate reference table approach for ENUMs
 - [ ] Ensure status_id usage instead of is_active
+- [ ] **Validate every new column maps to specific UI element** - No speculative columns
+- [ ] **Justify new additions against existing schema** - Document why existing schema can't support the UI
 
 ---
 
 ## Entity Analysis
+
+### Existing Schema Analysis (Document First)
+| Existing Table | Available Columns | UI Elements Supported | Reusable For |
+|----------------|-------------------|-----------------------|--------------|
+| [table_name] | [list existing columns] | [which UI elements these support] | [how they can be reused] |
+
+### Existing Column Mapping to UI Elements
+| UI Element | Existing Table.Column | Status |
+|------------|----------------------|--------|
+| [UI field name] | [table.column] | Available/Needs Enhancement |
 
 ### Entities Involved
 | Entity Name | Type | Status | Notes |
 |-------------|------|--------|--------|
 | [entity] | Core/Reference/Map/Supporting | New/Existing/Modified | [usage notes] |
 
-### New Tables Required
-- **[table_name]**: [purpose and usage]
-- **[reference_table]**: [lookup/type data]
+### Gap Analysis - New Tables Required (Only if existing schema cannot support UI)
+- **[table_name]**: [purpose and usage] - **Justification**: [why existing tables cannot support this UI requirement]
 
-### Modifications to Existing Tables
-- **[table_name]**: [changes needed and impact]
+### Gap Analysis - Modifications to Existing Tables (Only if needed for UI)
+- **[table_name]**: [specific changes needed] - **UI Justification**: [which UI elements require these specific columns]
 
 ### Relationships Identified
 - [entity_a] → [relationship] → [entity_b]
@@ -143,9 +160,96 @@ CREATE TABLE [table_name] (
 
 ---
 
+## API and Integration Considerations
+
+### External API Dependencies
+- [List any third-party APIs required]
+- [Authentication/authorization requirements]
+- [Rate limiting and error handling]
+
+### Internal Service Integrations
+- [Services that need to be called]
+- [Data synchronization requirements]
+- [Circuit breaker/retry patterns needed]
+
+### Integration Patterns
+- [Real-time vs batch processing]
+- [Event-driven vs direct API calls]
+- [Data consistency requirements]
+
+### Security Considerations
+- [API authentication methods]
+- [Data encryption requirements]
+- [PII handling and masking]
+
+---
+
+## Project Manager Summary
+
+### What We're Building
+[Plain English description of the deliverable - what the user will see and be able to do]
+
+### Key Deliverables
+- [Frontend component/pages to be built]
+- [Backend services/APIs to be developed]
+- [Database changes required]
+- [Integration work needed]
+
+### Resource Requirements
+- **Frontend**: [Estimated effort and complexity]
+- **Backend**: [Estimated effort and complexity]
+- **Database**: [Schema changes and migration effort]
+- **Integration**: [External service setup and testing]
+
+### Dependencies and Risks
+- **Dependencies**: [Other teams, systems, or requirements needed first]
+- **Technical Risks**: [Complexity, unknowns, or integration challenges]
+- **Timeline Risks**: [External dependencies, resource availability]
+
+### Business Value
+- [Primary business outcomes delivered]
+- [User experience improvements]
+- [Operational efficiency gains]
+
+---
+
+## Technical Manager Summary
+
+### Architecture Decisions
+- **Design Patterns**: [Architectural patterns being used]
+- **Technology Stack**: [Key technologies and frameworks]
+- **Integration Approach**: [How components communicate]
+
+### Database Impact
+- **Schema Changes**: [New tables, columns, relationships]
+- **Performance Impact**: [Query complexity, indexing needs]
+- **Migration Requirements**: [Data migration, downtime considerations]
+
+### Performance Considerations
+- **Expected Load**: [User volume, data volume, query frequency]
+- **Optimization Strategy**: [Caching, indexing, query optimization]
+- **Monitoring Needs**: [Performance metrics to track]
+
+### Security and Compliance
+- **Security Measures**: [Authentication, authorization, data protection]
+- **Compliance Requirements**: [Regulatory or policy requirements]
+- **Audit Considerations**: [Logging, tracking, data retention]
+
+### Deployment and Operations
+- **Deployment Strategy**: [How changes will be rolled out]
+- **Rollback Plan**: [How to revert if issues arise]
+- **Monitoring and Alerting**: [What metrics to watch]
+- **Support Considerations**: [Documentation, training, maintenance]
+
+---
+
 ## Quality Checklist
 
 ### Pre-Implementation
+- [ ] **Existing database schema reviewed first** - Database-first approach followed
+- [ ] **All existing reusable tables and columns identified** - Documented in Existing Schema Analysis
+- [ ] **Every new column maps to specific UI element** - No orphaned or speculative columns
+- [ ] **New additions justified against existing schema** - Documented why existing cannot support UI
 - [ ] All UI fields mapped to database columns
 - [ ] Existing entities reused where possible
 - [ ] Reference tables created for all ENUMs
@@ -153,6 +257,9 @@ CREATE TABLE [table_name] (
 - [ ] Relationships properly defined with foreign keys
 
 ### Post-Implementation
+- [ ] **Verified existing schema was maximally reused** - No duplicate functionality created
+- [ ] **Confirmed all new columns serve documented UI requirements** - No convenience additions
+- [ ] **Validated no speculative columns were added** - All columns trace to UI elements
 - [ ] All foreign keys have proper constraints
 - [ ] Appropriate indexes for expected query patterns
 - [ ] Audit fields included on all tables
@@ -165,4 +272,5 @@ CREATE TABLE [table_name] (
 - [ ] Database schema follows all standards
 - [ ] No redundant tables or columns created
 - [ ] Performance considerations addressed
+- [ ] **Database-first approach validation completed** - Existing schema maximally reused
 - [ ] Documentation updated

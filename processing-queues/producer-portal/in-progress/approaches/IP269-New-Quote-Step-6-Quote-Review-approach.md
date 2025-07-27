@@ -1,123 +1,207 @@
 # IP269-New-Quote-Step-6-Quote-Review - Implementation Approach
 
 ## Requirement Understanding
-
-The Quote Review step consolidates all gathered information from previous steps into a comprehensive, editable summary before submission. This step must:
-
-- Display all quote data in organized sections (Primary Insured, Drivers, Vehicles, Coverages, Discounts, Premium)
-- Provide inline edit functionality that navigates back to specific steps
-- Show premium breakdown including total, fees, down payment, and installment amounts
-- Maintain state when editing and returning to review
-- Support mobile-responsive collapsible sections
-- Validate quote completeness before allowing progression to bind
-
-This is the final checkpoint ensuring accuracy and building user confidence before policy binding.
+The Quote Review step provides a comprehensive summary of all quote information collected across previous steps, allowing final review and edits before binding. The system must display primary insured info, drivers, vehicles, coverages, discounts, and premium calculations in an organized, editable format. Users can navigate back to any step for corrections while maintaining data integrity.
 
 ## Domain Classification
-- Primary Domain: ProducerPortal
-- Cross-Domain Impact: No
+- Primary Domain: Producer Portal / Quote Management
+- Cross-Domain Impact: Yes - Consolidates all quote data for final review
 - Complexity Level: Medium
 
 ## Pattern Analysis
 
 ### Reusable Patterns Identified
-
-**From Infrastructure Codebase:**
-- **PolicySummaryService**: Complete summary generation pattern with caching
-- **PolicySummaryTabs**: Tab-based organization for policy information
-- **CoverageResource**: Coverage formatting and display patterns
-- **Premium calculation patterns**: Total premium, fees, and payment breakdowns
-
-**From Global Requirements:**
-- **[GR-07 - Reusable Components]**: Component patterns for summary displays
-- **[GR-11 - Accessibility]**: WCAG compliance for navigation and review
-- **[GR-33 - Data Services & Caching]**: Caching strategies for summary data
-- **[GR-18 - Workflow Requirements]**: Navigation patterns between workflow steps
-
-**From Approved ProducerPortal Requirements:**
-- **[IP269-Quotes-Search]**: Summary display patterns
-- **[IP269-New-Quote-Step-1 through Step-5]**: Data structures from all previous steps
+- [GR-69]: Producer Portal Architecture - Summary review patterns
+- [GR-52]: Universal Entity Management - Consolidated entity display
+- [GR-41]: Database Standards - Data aggregation patterns
+- [GR-20]: Business Logic Standards - Validation before binding
+- [GR-44]: Communication Architecture - Quote confirmation
 
 ### Domain-Specific Needs
-- **Step-based navigation**: Return to specific steps while preserving state
-- **Discount display**: Show applied discounts with clear visual indicators
-- **Premium breakdown**: Detailed payment schedule for installments
-- **Validation summary**: Ensure all required data is complete
-- **Edit persistence**: Maintain all data when navigating between steps
+- Comprehensive data aggregation from all steps
+- Section-based edit navigation
+- Premium breakdown display
+- Discount application visibility
+- Payment schedule calculation
+- Mobile-responsive collapsible sections
+- State persistence during edits
 
 ## Proposed Implementation
 
 ### Simplification Approach
-- **Current Complexity**: Multiple data sources, state management across steps, premium calculations, edit navigation
-- **Simplified Solution**: 
-  - Leverage existing PolicySummaryService patterns for data aggregation
-  - Use tab/accordion pattern similar to PolicySummaryTabs
-  - Store quote state in session/cache during editing
-  - Reuse existing premium calculation logic
-  - Simple section-based layout with edit links
-- **Trade-offs**: 
-  - Gain: Consistent patterns, maintainable code, proven UI components
-  - Lose: Advanced inline editing (users navigate to specific steps instead)
+- Current Complexity: Aggregate data from multiple tables and steps
+- Simplified Solution: Build read-only views with edit navigation
+- Trade-offs: None - leverages existing data structures
 
 ### Technical Approach
+1. **Phase 1**: Data Aggregation
+   - [ ] Load quote with all relationships
+   - [ ] Query primary insured from driver
+   - [ ] Load all drivers via map_quote_driver
+   - [ ] Load vehicles via map_quote_vehicle
+   - [ ] Load coverages via map_quote_coverage
+   - [ ] Calculate applied discounts
 
-#### Phase 1: Backend Service Implementation
-- [ ] Create `QuoteSummaryService` extending PolicySummaryService patterns
-- [ ] Implement data aggregation from all quote steps
-- [ ] Add discount calculation and display logic
-- [ ] Create premium breakdown calculations
-- [ ] Implement session-based state preservation
+2. **Phase 2**: Primary Insured Section
+   - [ ] Display name and contact info
+   - [ ] Show address details
+   - [ ] Add edit link to Step 1
+   - [ ] Maintain quote context
+   - [ ] Display license information
 
-#### Phase 2: API Endpoints
-- [ ] GET `/api/quotes/{id}/summary` - Retrieve complete quote summary
-- [ ] GET `/api/quotes/{id}/validate` - Check quote completeness
-- [ ] POST `/api/quotes/{id}/navigate` - Handle step navigation with state preservation
-- [ ] GET `/api/quotes/{id}/premium-breakdown` - Detailed payment schedule
+3. **Phase 3**: Drivers Section
+   - [ ] List all drivers with status
+   - [ ] Show included/excluded tags
+   - [ ] Display key driver details
+   - [ ] Add edit link to Step 2
+   - [ ] Handle driver count display
 
-#### Phase 3: Frontend Components
-- [ ] Create `QuoteReviewPage` component with sections:
-  - Primary Insured Summary
-  - Drivers Summary with tags
-  - Vehicles Summary
-  - Coverage Details
-  - Discounts Applied
-  - Premium Breakdown
-- [ ] Implement `EditableSection` component with navigation links
-- [ ] Create `PremiumSummary` component for payment details
-- [ ] Add mobile-responsive accordion layout
+4. **Phase 4**: Vehicles Section
+   - [ ] Display year/make/model/VIN
+   - [ ] Show usage type
+   - [ ] List garaging address
+   - [ ] Add edit link to Step 3
+   - [ ] Display vehicle count
 
-#### Phase 4: State Management & Navigation
-- [ ] Implement quote state preservation during edits
-- [ ] Create navigation service for step transitions
-- [ ] Add validation before continuing to bind
-- [ ] Ensure data persistence across browser sessions
+5. **Phase 5**: Coverage Section
+   - [ ] Separate policy-wide coverages
+   - [ ] Show per-vehicle coverages
+   - [ ] Display limits and deductibles
+   - [ ] Add edit link to Step 5
+   - [ ] Show coverage premiums
+
+6. **Phase 6**: Discounts & Premium
+   - [ ] Calculate all applicable discounts
+   - [ ] Show discount breakdown
+   - [ ] Display total premium
+   - [ ] Show fees separately
+   - [ ] Calculate payment schedule
+   - [ ] Display down payment
+
+7. **Phase 7**: Navigation & Validation
+   - [ ] Implement edit navigation
+   - [ ] Preserve quote state
+   - [ ] Validate completeness
+   - [ ] Enable continue to bind
+   - [ ] Handle mobile responsiveness
 
 ## Risk Assessment
-
-- **Risk 1**: State loss during navigation → Mitigation: Use session storage and backend persistence
-- **Risk 2**: Complex premium calculations → Mitigation: Reuse existing calculation services
-- **Risk 3**: Data inconsistency → Mitigation: Single source of truth in backend
-- **Risk 4**: Mobile usability → Mitigation: Progressive disclosure with collapsible sections
+- **Risk 1**: Complex data aggregation → Mitigation: Efficient query design
+- **Risk 2**: State loss during edits → Mitigation: Robust session management
+- **Risk 3**: Performance with large data → Mitigation: Lazy loading sections
+- **Risk 4**: Mobile layout complexity → Mitigation: Progressive enhancement
+- **Risk 5**: Calculation discrepancies → Mitigation: Single source of truth
 
 ## Context Preservation
+- Key Decisions: Read-only display with navigation, maintain quote state
+- Dependencies: All previous steps' data, discount engine, premium calculator
+- Future Impact: Foundation for quote-to-bind conversion
 
-- **Key Decisions**: 
-  - Navigate to steps rather than inline editing
-  - Reuse PolicySummaryService patterns
-  - Session-based state management
-  - Section-based organization with clear visual hierarchy
-  
-- **Dependencies**: 
-  - Requires data from all previous steps (1-5)
-  - Uses existing summary and calculation services
-  - Builds on established UI patterns
-  
-- **Future Impact**: 
-  - Gateway to bind process
-  - Foundation for quote comparison features
-  - Template for other summary views in the system
+## Database Requirements Summary
+- **New Tables**: 0 tables need to be created
+- **Existing Tables**: 20+ tables will be queried
+- **Modified Tables**: 0 existing tables need modifications
+
+## Database Schema Analysis
+
+### Core Tables to Query (All Exist)
+1. **quote**: Base quote information
+   - Contains premium, dates, status
+   - Links to all related data
+
+2. **driver**: All driver information
+   - Primary insured and additional drivers
+   - Include/exclude status
+
+3. **vehicle**: Vehicle details
+   - Year, make, model, VIN
+   - Usage and garaging info
+
+4. **coverage**: Selected coverages
+   - Limits and deductibles
+   - Premium amounts
+
+5. **discount**: Applied discounts
+   - Multi-car, homeowner, etc.
+   - Discount amounts
+
+### Relationship Tables
+1. **map_quote_driver**: Quote-driver links
+2. **map_quote_vehicle**: Quote-vehicle links
+3. **map_quote_coverage**: Quote-coverage links
+4. **name**: Driver name details
+5. **address**: Address information
+6. **license**: License details
+
+### Reference Tables
+1. **coverage_type**: Coverage names
+2. **limit**: Limit values
+3. **deductible**: Deductible amounts
+4. **discount_type**: Discount categories
+5. **vehicle_use**: Usage types
+6. **payment_plan**: Payment options
+
+### Calculation Tables
+1. **fee**: Policy and installment fees
+2. **rate**: Rating factors
+3. **transaction**: Payment calculations
+
+## Business Summary for Stakeholders
+### What We're Building
+A comprehensive quote review screen that consolidates all information collected during the quote process into an organized, easy-to-review format. Users can verify all details including drivers, vehicles, coverages, and pricing before proceeding to bind the policy. The system allows quick edits to any section while maintaining all entered data.
+
+### Why It's Needed
+Quote errors discovered after binding are costly and time-consuming to fix. This review step ensures accuracy by presenting all information clearly and allowing last-minute corrections. It builds confidence in the quote accuracy, reduces bind-time errors, and improves the overall user experience with transparent pricing display.
+
+### Expected Outcomes
+- Reduced binding errors through comprehensive review
+- Improved quote accuracy with easy edit access
+- Increased user confidence with transparent pricing
+- Faster corrections with direct navigation to issues
+- Better mobile experience with responsive design
+
+## Technical Summary for Developers
+### Key Technical Decisions
+- **Architecture Pattern**: Aggregation service with read-only display
+- **Navigation Strategy**: Direct links to specific steps with state preservation
+- **Data Loading**: Eager load for performance vs lazy load for sections
+- **State Management**: Session-based quote state across edits
+- **Responsive Design**: Collapsible sections for mobile
+
+### Implementation Guidelines
+- Build quote aggregation service
+- Create section components for each data type
+- Implement navigation with state preservation
+- Use caching for repeated queries
+- Build responsive layouts with breakpoints
+- Ensure calculation consistency
+- Add loading states for sections
+- Handle edge cases in data display
+
+## Validation Criteria
+### Pre-Implementation Checkpoints
+- [x] All quote data tables exist
+- [x] Relationships properly defined
+- [x] Discount calculations available
+- [x] Premium calculations ready
+- [x] Navigation patterns established
+- [x] All reference data accessible
+
+### Success Metrics
+- [ ] All sections display correctly
+- [ ] Edit links navigate properly
+- [ ] State preserves during edits
+- [ ] Premium calculations accurate
+- [ ] Discounts display correctly
+- [ ] Payment schedule shows
+- [ ] Mobile layout responsive
+- [ ] Continue to bind works
 
 ## Approval Section
-**Status**: PENDING APPROVAL
-**Reviewer Comments**: [Space for feedback]
+**Status**: Ready for Review  
+**Database Verification**: All required tables exist  
+**Pattern Reuse**: 100% - No new tables or modifications needed  
+**Risk Level**: Low - Pure display and navigation functionality  
+**Next Steps**: Review approach and approve for implementation  
+**Reviewer Comments**: [Pending]  
 **Decision**: [ ] APPROVED [ ] REVISE [ ] REJECT [ ] DEFER
