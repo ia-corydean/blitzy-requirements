@@ -21,9 +21,6 @@ Aime/workspace/requirements/README.md
 - this is a seperate repo.
 
 docker database variables
-# GitHub Credentials
-GIT_USERNAME=ia-corydean
-GIT_EMAIL=cory.dean@insurtechadvisor.com
 
 # Database Configuration
 DB_ROOT_PASSWORD=very_secure_root_password
